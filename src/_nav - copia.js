@@ -37,7 +37,7 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Ingreso',
+        name: 'Accordion',
         to: '/base/accordion',
       },
       {
@@ -115,7 +115,7 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Ingreso',
+        name: 'Buttons',
         to: '/buttons/standard-buttons',
       },
       {
@@ -138,12 +138,12 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Deposito de caja',
+        name: 'Form Control',
         to: '/forms/form-control',
       },
       {
         component: 'CNavItem',
-        name: 'Retiros de bancos',
+        name: 'Select',
         to: '/forms/select',
       },
       {

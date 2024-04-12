@@ -1,442 +1,229 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            CoreUI includes a bunch of predefined buttons components, each
-            serving its own semantic purpose. Buttons show what action will
-            happen when the user clicks or touches it. CoreUI buttons are used
-            to initialize operations, both in the background or foreground of an
-            experience.
-          </p>
-          <DocsExample href="components/button.html">
-            <template
-              v-for="state in ['normal', 'active', 'disabled']"
-              :key="state"
-            >
-              <CRow class="align-items-center mb-3">
-                <CCol :xs="12" :xl="2" class="mb-3 mb-xl-0">{{
-                  state.charAt(0).toUpperCase() + state.slice(1)
-                }}</CCol>
-                <CCol xs>
-                  <template
-                    v-for="color in [
-                      'primary',
-                      'secondary',
-                      'success',
-                      'danger',
-                      'warning',
-                      'info',
-                      'light',
-                      'dark',
-                    ]"
-                    :key="color"
-                  >
-                    <CButton
-                      :color="color"
-                      :active="state === 'active' ? true : false"
-                      :disabled="state === 'disabled' ? true : false"
-                    >
-                      {{ color.charAt(0).toUpperCase() + color.slice(1) }}
-                    </CButton>
-                  </template>
-                </CCol>
-              </CRow>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>with icons</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            You can combine button with our
-            <a href="https://coreui.io/icons/">CoreUI Icons</a>.
-          </p>
-          <DocsExample href="components/button.html">
-            <template
-              v-for="state in ['normal', 'active', 'disabled']"
-              :key="state"
-            >
-              <CRow class="align-items-center mb-3">
-                <CCol :xs="12" :xl="2" class="mb-3 mb-xl-0">{{
-                  state.charAt(0).toUpperCase() + state.slice(1)
-                }}</CCol>
+  <div>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">
+        <div class="numero-inputs">
+          <label>Nro.</label>
+          <div class="numero-input">
+            <input type="text" v-model="numero">
+            <input type="text" v-model="numero">
+          </div>
+        </div>
+        <div class="fecha-inputs">
+            <label>Fecha</label>
+            <input type="date" v-model="fecha">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Segunda división -->
+    <div class="division-container">
+      <label>DPI/NIT</label>
+      <input type="text" v-model="dpiNit">
+      <label>Nombres</label>
+      <input type="text" v-model="nombres">
+      <label>Observaciones de comprobante</label>
+      <input type="text" v-model="apellidos">
+    </div>
+    
+    <!-- Tercera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">
+        <div class="numero-inputs">
+          <label>Nombre</label>
+          <select v-model="valor">
+            
+          </select>
+          <label>Valor</label>
+          <input type="text" v-model="valor">
+        </div>
+        <div class="fecha-inputs">
+            <label>Forma de ingreso</label>
+            <select v-model="otroValor">
+             
+            </select>
+        </div>
+      </div>
+    </div>
 
-                <CCol xs>
-                  <template
-                    v-for="color in [
-                      'primary',
-                      'secondary',
-                      'success',
-                      'danger',
-                      'warning',
-                      'info',
-                      'light',
-                      'dark',
-                    ]"
-                    :key="color"
-                  >
-                    <CButton
-                      :color="color"
-                      :active="state === 'active' ? true : false"
-                      :disabled="state === 'disabled' ? true : false"
-                    >
-                      <CIcon icon="cil-bell" class="me-2" />
-                      {{ color.charAt(0).toUpperCase() + color.slice(1) }}
-                    </CButton>
-                  </template>
-                </CCol>
-              </CRow>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>Button components</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            The <code>&lt;CButton&gt;</code> component are designed for
-            <code>&lt;button&gt;</code> , <code>&lt;a&gt;</code> or
-            <code>&lt;input&gt;</code>
-            elements (though some browsers may apply a slightly different
-            rendering).
-          </p>
-          <p class="text-body-secondary small">
-            If you&#39;re using <code>&lt;CButton&gt;</code> component as
-            <code>&lt;a&gt;</code> elements that are used to trigger
-            functionality ex. collapsing content, these links should be given a
-            <code>role=&#34;button&#34;</code> to adequately communicate their
-            meaning to assistive technologies such as screen readers.
-          </p>
-          <DocsExample href="components/button.html#button-components">
-            <CButton component="a" color="primary" href="#" role="button">
-              Link
-            </CButton>
-            <CButton type="submit" color="primary"> Button </CButton>
-            <CButton
-              component="input"
-              type="button"
-              color="primary"
-              value="Input"
-            />
-            <CButton
-              component="input"
-              type="submit"
-              color="primary"
-              value="Submit"
-            />
-            <CButton
-              component="input"
-              type="reset"
-              color="primary"
-              value="Reset"
-            />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>outline</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            If you need a button, but without the strong background colors. Set
-            <code>variant=&#34;outline&#34;</code> prop to remove all background
-            colors.
-          </p>
-          <DocsExample href="components/button.html#outline-buttons">
-            <template
-              v-for="state in ['normal', 'active', 'disabled']"
-              :key="state"
-            >
-              <CRow class="align-items-center mb-3">
-                <CCol :xs="12" :xl="2" class="mb-3 mb-xl-0">{{
-                  state.charAt(0).toUpperCase() + state.slice(1)
-                }}</CCol>
+    <!-- Cuarta división -->
+    <div class="division-container">
+      <label>DATOS DEL PAGO</label>
+      <div class="input-container">
+        <label>Documento:</label>
+        <select v-model="documento">
+            
+        </select>
+      </div>
+      <div class="input-container">
+        <label>Forma pago rentas:</label>
+        <select v-model="formaPago">
+            
+        </select>
+      </div>
+      <div class="input-container">
+        <label>Banco:</label>
+        <select v-model="banco">
+            
+        </select>
+      </div>
+      <div class="input-container">
+        <label># Documento:</label>
+        <input type="text" v-model="numDocumento">
+      </div>
+      <div class="input-container">
+        <label>Monto:</label>
+        <input type="text" v-model="monto">
+      </div>
+      <div class="input-container">
+        <label>Fecha emisión:</label>
+        <input type="date" v-model="fechaEmision">
+      </div>
+      <div class="input-container">
+        <label>Referente:</label>
+        <input type="text" v-model="referente">
+      </div>
+      <button @click="agregarDivision" style="margin-right: 10px;">Cancelar</button>
+      <button @click="agregarDivision">Aceptar</button>
+    </div>
 
-                <CCol xs>
-                  <template
-                    v-for="color in [
-                      'primary',
-                      'secondary',
-                      'success',
-                      'danger',
-                      'warning',
-                      'info',
-                      'light',
-                      'dark',
-                    ]"
-                    :key="color"
-                  >
-                    <CButton
-                      :color="color"
-                      :active="state === 'active' ? true : false"
-                      :disabled="state === 'disabled' ? true : false"
-                      variant="outline"
-                    >
-                      {{ color.charAt(0).toUpperCase() + color.slice(1) }}
-                    </CButton>
-                  </template>
-                </CCol>
-              </CRow>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>ghost</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            If you need a ghost variant of button, set
-            <code>variant=&#34;ghost&#34;</code> prop to remove all background
-            colors.
-          </p>
-          <DocsExample href="components/button.html#ghost-buttons">
-            <template
-              v-for="state in ['normal', 'active', 'disabled']"
-              :key="state"
-            >
-              <CRow class="align-items-center mb-3">
-                <CCol :xs="12" :xl="2" class="mb-3 mb-xl-0">{{
-                  state.charAt(0).toUpperCase() + state.slice(1)
-                }}</CCol>
-                <CCol xs>
-                  <template
-                    v-for="color in [
-                      'primary',
-                      'secondary',
-                      'success',
-                      'danger',
-                      'warning',
-                      'info',
-                      'light',
-                      'dark',
-                    ]"
-                    :key="color"
-                  >
-                    <CButton
-                      :color="color"
-                      :active="state === 'active' ? true : false"
-                      :disabled="state === 'disabled' ? true : false"
-                      variant="ghost"
-                    >
-                      <CIcon icon="cil-bell" class="me-2" />
-                      {{ color.charAt(0).toUpperCase() + color.slice(1) }}
-                    </CButton>
-                  </template>
-                </CCol>
-              </CRow>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>Sizes</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Larger or smaller buttons? Add <code>size=&#34;lg&#34;</code> or
-            <code>size=&#34;sm&#34;</code> for additional sizes.
-          </p>
-          <DocsExample href="components/button.html#sizes">
-            <CButton color="primary" size="lg"> Large button </CButton>
-            <CButton color="secondary" size="lg"> Large button </CButton>
-          </DocsExample>
-          <DocsExample href="components/button.html#sizes">
-            <CButton color="primary" size="sm"> Small button </CButton>
-            <CButton color="secondary" size="sm"> Small button </CButton>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>Pill</small>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="components/button.html#pill-buttons">
-            <template
-              v-for="color in [
-                'primary',
-                'secondary',
-                'success',
-                'danger',
-                'warning',
-                'info',
-                'light',
-                'dark',
-              ]"
-              :key="color"
-            >
-              <CButton :color="color" shape="rounded-pill">
-                {{ color.charAt(0).toUpperCase() + color.slice(1) }}
-              </CButton>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>Square</small>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="components/button.html#square">
-            <template
-              v-for="color in [
-                'primary',
-                'secondary',
-                'success',
-                'danger',
-                'warning',
-                'info',
-                'light',
-                'dark',
-              ]"
-              :key="color"
-            >
-              <CButton :color="color" shape="rounded-0">
-                {{ color.charAt(0).toUpperCase() + color.slice(1) }}
-              </CButton>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>Disabled state</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add the <code>disabled</code> boolean prop to any
-            <code>&lt;CButton&gt;</code>
-            component to make buttons look inactive. Disabled button has
-            <code>pointer-events: none</code> applied to, disabling hover and
-            active states from triggering.
-          </p>
-          <DocsExample href="components/button.html#disabled-state">
-            <CButton color="primary" size="lg" disabled>
-              Primary button
-            </CButton>
-            <CButton color="secondary" size="lg" disabled> Button </CButton>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Disabled buttons using the <code>&lt;a&gt;</code> component act a
-            little different:
-          </p>
-          <p class="text-body-secondary small">
-            <code>&lt;a&gt;</code>s don&#39;tsupport the
-            <code>disabled</code> attribute, so CoreUI has to add
-            <code>.disabled</code> class to make buttons look inactive. CoreUI
-            also has to add to the disabled button component
-            <code>aria-disabled=&#34;true&#34;</code> attribute to show the
-            state of the component to assistive technologies.
-          </p>
-          <DocsExample href="components/button.html#disabled-state">
-            <CButton component="a" href="#" color="primary" size="lg" disabled>
-              Primary link
-            </CButton>
-            <CButton
-              component="a"
-              href="#"
-              color="secondary"
-              size="lg"
-              disabled
-            >
-              Link
-            </CButton>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button</strong> <small>Block buttons</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Create buttons that span the full width of a parent—by using
-            utilities.
-          </p>
-          <DocsExample href="components/button.html#block-buttons">
-            <div class="d-grid gap-2">
-              <CButton color="primary">Button</CButton>
-              <CButton color="primary">Button</CButton>
-            </div>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Here we create a responsive variation, starting with vertically
-            stacked buttons until the <code>md</code> breakpoint, where
-            <code>.d-md-block</code> replaces the <code>.d-grid</code> class,
-            thus nullifying the <code>gap-2</code> utility. Resize your browser
-            to see them change.
-          </p>
-          <DocsExample href="components/button.html#block-buttons">
-            <div class="d-grid gap-2 d-md-block">
-              <CButton color="primary">Button</CButton>
-              <CButton color="primary">Button</CButton>
-            </div>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            You can adjust the width of your block buttons with grid column
-            width classes. For example, for a half-width &#34;block button&#34;,
-            use <code>.col-6</code>. Center it horizontally with
-            <code>.mx-auto</code>, too.
-          </p>
-          <DocsExample href="components/button.html#block-buttons">
-            <div class="d-grid gap-2 col-6 mx-auto">
-              <CButton color="primary">Button</CButton>
-              <CButton color="primary">Button</CButton>
-            </div>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Additional utilities can be used to adjust the alignment of buttons
-            when horizontal. Here we&#39;ve taken our previous responsive
-            example and added some flex utilities and a margin utility on the
-            button to right align the buttons when they&#39;re no longer
-            stacked.
-          </p>
-          <DocsExample href="components/button.html#block-buttons">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <CButton color="primary" class="me-md-2"> Button </CButton>
-              <CButton color="primary">Button</CButton>
-            </div>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="agregarDivision">Guardar</button>
+    <button @click="agregarDivision" style="margin-left: 10px;">Limpiar</button>
+  </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
-  name: 'Buttons',
+  name: 'Accordion',
+  setup() {
+    const activeKey = ref(1)
+    const flushActiveKey = ref(1)
+
+    const agregarDivision = () => {
+      // Lógica para agregar una nueva división
+    }
+
+    return {
+      activeKey,
+      flushActiveKey,
+      agregarDivision
+    }
+  },
 }
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>

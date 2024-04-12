@@ -1,250 +1,170 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="forms/form-control.html">
-            <CForm>
-              <div class="mb-3">
-                <CFormLabel for="exampleFormControlInput1"
-                  >Email address</CFormLabel
-                >
-                <CFormInput
-                  id="exampleFormControlInput1"
-                  type="email"
-                  placeholder="name@example.com"
-                />
-              </div>
-              <div class="mb-3">
-                <CFormLabel for="exampleFormControlTextarea1"
-                  >Example textarea</CFormLabel
-                >
-                <CFormTextarea
-                  id="exampleFormControlTextarea1"
-                  rows="3"
-                ></CFormTextarea>
-              </div>
-            </CForm>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong> <small>Sizing</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Set heights using <code>size</code> property like
-            <code>size=&#34;lg&#34;</code> and <code>size=&#34;sm&#34;</code>.
-          </p>
-          <DocsExample href="forms/form-control.html#sizing">
-            <CFormInput
-              type="text"
-              size="lg"
-              placeholder="Large input"
-              aria-label="lg input example"
-            />
-            <br />
-            <CFormInput
-              type="text"
-              placeholder="Default input"
-              aria-label="default input example"
-            />
-            <br />
-            <CFormInput
-              type="text"
-              size="sm"
-              placeholder="Small input"
-              aria-label="sm input example"
-            />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong> <small>Disabled</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add the <code>disabled</code> boolean attribute on an input to give
-            it a grayed out appearance and remove pointer events.
-          </p>
-          <DocsExample href="forms/form-control.html#disabled">
-            <CFormInput
-              type="text"
-              placeholder="Disabled input"
-              aria-label="Disabled input example"
-              disabled
-            />
-            <br />
-            <CFormInput
-              type="text"
-              placeholder="Disabled readonly input"
-              aria-label="Disabled input example"
-              disabled
-              readonly
-            />
-            <br />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong> <small>Readonly</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add the <code>readonly</code> boolean attribute on an input to
-            prevent modification of the input&#39;s value. Read-only inputs
-            appear lighter (just like disabled inputs), but retain the standard
-            cursor.
-          </p>
-          <DocsExample href="forms/form-control.html#readonly">
-            <CFormInput
-              type="text"
-              placeholder="Readonly input here..."
-              aria-label="readonly input example"
-              readonly
-            />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong> <small>Readonly plain text</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            If you want to have <code>&lt;input readonly&gt;</code> elements in
-            your form styled as plain text, use the
-            <code>plain-text</code> boolean property to remove the default form
-            field styling and preserve the correct margin and padding.
-          </p>
-          <DocsExample href="forms/form-control.html#readonly-plain-text">
-            <CRow class="mb-3">
-              <CFormLabel for="staticEmail" class="col-sm-2 col-form-label">
-                Email
-              </CFormLabel>
-              <div class="col-sm-10">
-                <CFormInput
-                  id="staticEmail"
-                  type="text"
-                  value="email@example.com"
-                  readonly
-                  plain-text
-                />
-              </div>
-            </CRow>
-            <CRow class="mb-3">
-              <CFormLabel for="inputPassword" class="col-sm-2 col-form-label">
-                Password
-              </CFormLabel>
-              <div class="col-sm-10">
-                <CFormInput id="inputPassword" type="password" />
-              </div>
-            </CRow>
-          </DocsExample>
-          <DocsExample href="forms/form-control.html#readonly-plain-text">
-            <CForm class="row g-3">
-              <div class="col-auto">
-                <CFormLabel for="staticEmail2" class="visually-hidden">
-                  Email
-                </CFormLabel>
-                <CFormInput
-                  id="staticEmail2"
-                  type="text"
-                  value="email@example.com"
-                  readonly
-                  plain-text
-                />
-              </div>
-              <div class="col-auto">
-                <CFormLabel for="inputPassword2" class="visually-hidden">
-                  Password
-                </CFormLabel>
-                <CFormInput
-                  id="inputPassword2"
-                  type="password"
-                  placeholder="Password"
-                />
-              </div>
-              <div class="col-auto">
-                <CButton type="submit" class="mb-3"> Confirm identity </CButton>
-              </div>
-            </CForm>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong> <small>File input</small>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="forms/form-control.html#file-input">
-            <div class="mb-3">
-              <CFormLabel for="formFile">Default file input example</CFormLabel>
-              <CFormInput id="formFile" type="file" />
-            </div>
-            <div class="mb-3">
-              <CFormLabel for="formFileMultiple"
-                >Multiple files input example</CFormLabel
-              >
-              <CFormInput id="formFileMultiple" type="file" multiple />
-            </div>
-            <div class="mb-3">
-              <CFormLabel for="formFileDisabled"
-                >Disabled file input example</CFormLabel
-              >
-              <CFormInput id="formFileDisabled" type="file" disabled />
-            </div>
-            <div class="mb-3">
-              <CFormLabel for="formFileSm">Small file input example</CFormLabel>
-              <CFormInput id="formFileSm" type="file" size="sm" />
-            </div>
-            <div>
-              <CFormLabel for="formFileLg">Large file input example</CFormLabel>
-              <CFormInput id="formFileLg" type="file" size="lg" />
-            </div>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Form Control</strong> <small>Color</small>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="forms/form-control.html#color">
-            <CFormLabel for="exampleColorInput">Color picker</CFormLabel>
-            <CFormInput
-              id="exampleColorInput"
-              type="color"
-              value="#563d7c"
-              title="Choose your color"
-            />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <label>RETIROS DE BANCOS</label>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">
+        <div class="numero-inputs">
+          <label>Banco:</label>
+          <div class="numero-input">
+            <select v-model="valor">
+            
+          </select>
+          </div>
+          <label>Numero:</label>
+              <input type="text" v-model="numero">  
+        </div>     
+        <div class="fecha-inputs">
+            <label>Fecha</label>
+            <input type="date" v-model="fecha">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Segunda división -->
+    <div class="division-container">
+      <label>MONTO A RETIRAR BANCOS</label>
+      <label>Valor a retirar:</label>
+      <input type="text" v-model="retiro">
+      <label>Observaciones</label>
+      <input type="text" v-model="apellidos">
+    </div>
+    
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="agregarDivision">Guardar</button>
+  </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
-  name: 'FormControl',
+  name: 'Accordion',
+  setup() {
+    const activeKey = ref(1)
+    const flushActiveKey = ref(1)
+
+    const agregarDivision = () => {
+      // Lógica para agregar una nueva división
+    }
+
+    return {
+      activeKey,
+      flushActiveKey,
+      agregarDivision
+    }
+  },
 }
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+  border-color: rgb(19, 19, 75);
+}
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>

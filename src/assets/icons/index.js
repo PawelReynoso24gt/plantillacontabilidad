@@ -29,8 +29,10 @@ import {
   cilArrowBottom,
   cilArrowRight,
   cilArrowTop,
+  cilCash,
   cilBan,
   cilBasket,
+  cilCart,
   cilBell,
   cilCalculator,
   cilCalendar,
@@ -79,6 +81,7 @@ import {
   cilUserFemale,
   cilUserFollow,
   cilXCircle,
+  
 } from '@coreui/icons'
 
 export const iconsSet = Object.assign(
@@ -87,8 +90,10 @@ export const iconsSet = Object.assign(
     cilArrowBottom,
     cilArrowRight,
     cilArrowTop,
+    cilCash,
     cilBan,
     cilBasket,
+    cilCart,
     cilBell,
     cilCalculator,
     cilCalendar,
