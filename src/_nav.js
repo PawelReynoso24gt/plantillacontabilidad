@@ -213,28 +213,28 @@ export default [
   },
   {
     component: 'CNavGroup',
-    name: 'Notifications',
+    name: 'CRUDS Simples',
     to: '/notifications',
     icon: 'cil-bell',
     items: [
       {
         component: 'CNavItem',
-        name: 'Alerts',
+        name: 'Login',
         to: '/notifications/alerts',
       },
       {
         component: 'CNavItem',
-        name: 'Badges',
+        name: 'Proyectos',
         to: '/notifications/badges',
       },
       {
         component: 'CNavItem',
-        name: 'Modals',
+        name: 'Bancos',
         to: '/notifications/modals',
       },
       {
         component: 'CNavItem',
-        name: 'Toasts',
+        name: 'Clasificacion',
         to: '/notifications/toasts',
       },
     ],

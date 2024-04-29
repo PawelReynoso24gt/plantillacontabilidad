@@ -1,95 +1,224 @@
 <template>
-  <CRow>
-    <CCol :lg="6">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Badges</strong> <small>Dismissing</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Bootstrap badge scale to suit the size of the parent element by
-            using relative font sizing and <code>em</code> units.
-          </p>
-          <DocsExample href="components/badge.html">
-            <h1>Example heading <CBadge color="secondary">New</CBadge></h1>
-            <h2>Example heading <CBadge color="secondary">New</CBadge></h2>
-            <h3>Example heading <CBadge color="secondary">New</CBadge></h3>
-            <h4>Example heading <CBadge color="secondary">New</CBadge></h4>
-            <h5>Example heading <CBadge color="secondary">New</CBadge></h5>
-            <h6>Example heading <CBadge color="secondary">New</CBadge></h6>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Badges can be used as part of links or buttons to provide a counter.
-          </p>
-          <DocsExample href="components/badge.html">
-            <CButton color="primary">
-              Notifications <CBadge color="secondary">4</CBadge>
-            </CButton>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Remark that depending on how you use them, badges may be complicated
-            for users of screen readers and related assistive technologies.
-          </p>
-          <p class="text-body-secondary small">
-            Unless the context is clear, consider including additional context
-            with a visually hidden piece of additional text.
-          </p>
-          <DocsExample href="components/badge.html">
-            <CButton color="primary">
-              Profile <CBadge color="secondary">9</CBadge>
-              <span class="visually-hidden">unread messages</span>
-            </CButton>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :lg="6">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Badges</strong> <small>Contextual variations</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add any of the below-mentioned <code>color</code> props to modify
-            the presentation of a badge.
-          </p>
-          <DocsExample href="components/badge.html#contextual-variations">
-            <CBadge color="primary">primary</CBadge>
-            <CBadge color="success">success</CBadge>
-            <CBadge color="danger">danger</CBadge>
-            <CBadge color="warning">warning</CBadge>
-            <CBadge color="info">info</CBadge>
-            <CBadge color="light">light</CBadge>
-            <CBadge color="dark">dark</CBadge>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Badges</strong> <small>Pill badges</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Apply the <code>shape=&#34;rounded-pill&#34;</code> prop to make
-            badges rounded.
-          </p>
-          <DocsExample href="components/badge.html#pill-badges">
-            <CBadge color="primary" shape="rounded-pill"> primary </CBadge>
-            <CBadge color="success" shape="rounded-pill"> success </CBadge>
-            <CBadge color="danger" shape="rounded-pill"> danger </CBadge>
-            <CBadge color="warning" shape="rounded-pill"> warning </CBadge>
-            <CBadge color="info" shape="rounded-pill"> info </CBadge>
-            <CBadge color="light" shape="rounded-pill"> light </CBadge>
-            <CBadge color="dark" shape="rounded-pill"> dark </CBadge>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="nombre-fecha-container">
+        <div class="id-inputs">
+          <label>ID</label>
+          <div class="numero-input">
+            <input type="text" v-model="id_proyectos">
+          </div>
+        </div>
+        <div class="nombre-inputs">
+          <label>Nombre</label>
+          <div class="numero-input">
+            <input type="text" v-model="nombre">
+          </div>
+        </div>
+        <div class="fecha-inputs">
+            <label>Estado</label>
+            <input type="text" v-model="estado">
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="insertar">Guardar</button>
+    <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
+  </div>
 </template>
 
 <script>
+import axios from '../../../node_modules/axios'
+import { ref } from 'vue'
 export default {
   name: 'Badges',
+  setup() {
+    const nombre = ref("");
+    const estado = ref("");
+    const id_proyectos = ref("");
+
+    const insertar = () => {
+      const datos = {
+        nombre: nombre.value,
+        estado: estado.value
+    };
+
+  axios.post('http://127.0.0.1:8000/proyectos/create', datos)
+    .then(response => {
+      console.log(response.data); 
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
+  const actualizar = () => {
+      const datos = {};
+
+      if (nombre.value.trim() !== '') {
+        datos.nombre = nombre.value;
+      }
+
+      if (estado.value.trim() !== '') {
+        datos.estado = estado.value;
+      }
+
+      if (Object.keys(datos).length === 0) {
+        console.log('No hay campos para actualizar');
+        return;
+      }
+
+      axios.put(`http://127.0.0.1:8000/proyectos/update/${id_proyectos.value}`, datos)
+        .then(response => {
+          console.log(response.data); 
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+
+    const limpiar = () => {
+      nombre.value = '';
+      estado.value = '';
+      id_proyectos.value = '';
+    };
+
+    return {
+      nombre,
+      estado,
+      id_proyectos,
+      insertar,
+      actualizar,
+      limpiar
+    }
+  },
+  mounted (){
+    this.consumirLaravel()
+  },
+  methods: {
+    consumirLaravel () {
+      axios.get('http://127.0.0.1:8000/proyectos/get').then((response) => {
+        console.log(response)
+      })
+    },
+    
+  }
 }
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>

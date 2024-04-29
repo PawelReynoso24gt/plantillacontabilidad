@@ -1,219 +1,105 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader> <strong>Vue Toast</strong> <small>Basic</small> </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Toasts are as flexible as you need and have very little required markup. At a minimum,
-            we require a single element to contain your “toasted” content and strongly encourage a
-            dismiss button.
-          </p>
-          <DocsExample href="components/toast.html">
-            <CToast title="CoreUI for Vue.js" :autohide="false" :visible="true">
-              <CToastHeader closeButton>
-                <svg
-                  class="rounded me-2"
-                  width="20"
-                  height="20"
-                  xmlns="http://www.w3.org/2000/svg"
-                  preserveAspectRatio="xMidYMid slice"
-                  focusable="false"
-                  role="img"
-                >
-                  <rect width="100%" height="100%" fill="#007aff"></rect>
-                </svg>
-                <strong class="me-auto">CoreUI for Vue.js</strong>
-                <small>7 min ago</small>
-              </CToastHeader>
-              <CToastBody>Hello, world! This is a toast message.</CToastBody>
-            </CToast>
-          </DocsExample>
-          <DocsExample href="components/toast.html">
-            <CButton color="primary" @click="createToast">Send a toast</CButton>
-            <CToaster placement="top-end">
-              <CToast v-for="(toast, index) in toasts" visible :key="index">
-                <CToastHeader closeButton>
-                  <span class="me-auto fw-bold">{{ toast.title }}</span>
-                  <small>7 min ago</small>
-                </CToastHeader>
-                <CToastBody>
-                  {{ toast.content }}
-                </CToastBody>
-              </CToast>
-            </CToaster>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader> <strong>Vue Toast</strong> <small>Translucent</small> </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Toasts are slightly translucent to blend in with what&#39;s below them.
-          </p>
-          <DocsExample href="components/toast.html#translucent" tabContentClass="bg-dark">
-            <CToast title="CoreUI for Vue.js" :autohide="false" :visible="true">
-              <CToastHeader closeButton>
-                <svg
-                  class="rounded me-2"
-                  width="20"
-                  height="20"
-                  xmlns="http://www.w3.org/2000/svg"
-                  preserveAspectRatio="xMidYMid slice"
-                  focusable="false"
-                  role="img"
-                >
-                  <rect width="100%" height="100%" fill="#007aff"></rect>
-                </svg>
-                <strong class="me-auto">CoreUI for Vue.js</strong>
-                <small>7 min ago</small>
-              </CToastHeader>
-              <CToastBody>Hello, world! This is a toast message.</CToastBody>
-            </CToast>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader> <strong>Vue Toast</strong> <small>Stacking</small> </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            You can stack toasts by wrapping them in a toast container, which will vertically add
-            some spacing.
-          </p>
-          <DocsExample href="components/toast.html#stacking">
-            <CToaster class="position-static">
-              <CToast title="CoreUI for Vue.js" :autohide="false" :visible="true">
-                <CToastHeader closeButton>
-                  <svg
-                    class="rounded me-2"
-                    width="20"
-                    height="20"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="xMidYMid slice"
-                    focusable="false"
-                    role="img"
-                  >
-                    <rect width="100%" height="100%" fill="#007aff"></rect>
-                  </svg>
-                  <strong class="me-auto">CoreUI for Vue.js</strong>
-                  <small>7 min ago</small>
-                </CToastHeader>
-                <CToastBody>Hello, world! This is a toast message.</CToastBody>
-              </CToast>
-              <CToast title="CoreUI for Vue.js" :autohide="false" :visible="true">
-                <CToastHeader closeButton>
-                  <svg
-                    class="rounded me-2"
-                    width="20"
-                    height="20"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="xMidYMid slice"
-                    focusable="false"
-                    role="img"
-                  >
-                    <rect width="100%" height="100%" fill="#007aff"></rect>
-                  </svg>
-                  <strong class="me-auto">CoreUI for Vue.js</strong>
-                  <small>7 min ago</small>
-                </CToastHeader>
-                <CToastBody>Hello, world! This is a toast message.</CToastBody>
-              </CToast>
-            </CToaster>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader> <strong>Vue Toast</strong> <small>Custom content</small> </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Customize your toasts by removing sub-components, tweaking them with
-            <a href="https://coreui.io/docs/utilities/api">utilities</a>, or by adding your own
-            markup. Here we&#39;ve created a simpler toast by removing the default
-            <code>&lt;CToastHeader&gt;</code>, adding a custom hide icon from
-            <a href="https://coreui.io/icons/">CoreUI Icons</a>, and using some
-            <a href="https://coreui.io/docs/utilities/flex">flexbox utilities</a> to adjust the
-            layout.
-          </p>
-          <DocsExample href="components/toast.html#custom-content">
-            <CToast :autohide="false" class="align-items-center" :visible="true">
-              <div class="d-flex">
-                <CToastBody>Hello, world! This is a toast message.</CToastBody>
-                <CToastClose class="me-2 m-auto" />
-              </div>
-            </CToast>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Alternatively, you can also add additional controls and components to toasts.
-          </p>
-          <DocsExample href="components/toast.html#custom-content">
-            <CToast :autohide="false" class="align-items-center" visible>
-              <CToastBody>
-                Hello, world! This is a toast message.
-                <div class="mt-2 pt-2 border-top">
-                  <CButton type="button" color="primary" size="sm"> Take action </CButton>
-                  <CToastClose component="CButton" color="secondary" size="sm" class="ms-1"
-                    >Close</CToastClose
-                  >
-                </div>
-              </CToastBody>
-            </CToast>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader> <strong>Vue Toast</strong> <small>Custom content</small> </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Building on the above example, you can create different toast color schemes with our
-            <a href="https://coreui.io/docs/utilities/colors">color</a> and
-            <a href="https://coreui.io/docs/utilities/background">background</a> utilities.
-            Here we&#39;ve set <code>color=&#34;primary&#34;</code> and added
-            <code>.text-white</code> class to the <code>&lt;Ctoast&gt;</code>, and then set
-            <code>white</code> property to our close button. For a crisp edge, we remove the default
-            border with <code>.border-0</code>.
-          </p>
-          <DocsExample href="components/toast.html#color-schemes">
-            <CToast
-              :autohide="false"
-              color="primary"
-              class="text-white align-items-center"
-              :visible="true"
-            >
-              <div class="d-flex">
-                <CToastBody>Hello, world! This is a toast message.</CToastBody>
-                <CToastClose class="me-2 m-auto" white />
-              </div>
-            </CToast>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <b-container fluid>
+    <form>
+      <div class="col-md-12 mb-3">
+        <label for="tipo">Tipo</label>
+        <input
+          required
+          type="text"
+          class="form-control"
+          id="tipo"
+          v-model.trim="$v.form.tipo.$model"
+          :state="!$v.form.tipo.$error"
+          placeholder="tipo..."
+        >
+      </div>
+    </form>
+    <div>
+      <button class="btn btn-primary" type="button" @click="onSave">Guardar</button>
+      <button class="btn btn-danger" type="button" @click="closeModal('save')">Cancelar</button>
+    </div>
+    <b-row>
+      <b-col md="12">
+        <iq-card>
+          <template v-slot:headerAction>
+            <button class="btn btn-primary" @click="mostrarModal1">AGREGAR NUEVO TIPO</button>
+          </template>
+          <template v-slot:body>
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <th>Tipo</th>
+              </thead>
+              <tbody>
+                <tr v-for="datos in datosPosts" :key="datos.id">
+                  <td v-text="datos.tipo"></td>
+                </tr>
+              </tbody>
+            </table>
+          </template>
+        </iq-card>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
+import axios from 'axios'
+import { apiUrl, laravelUrl } from '../../config/constant'
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
+
 export default {
+  name: 'Clasificacion',
+  setup() {
+    return { $v: useVuelidate() }
+  },
   data() {
     return {
-      toasts: [],
+      form: {
+        id: 0,
+        tipo: ''
+      },
+      datosPosts: [],
     }
   },
-
   methods: {
-    createToast() {
-      this.toasts.push({
-        title: 'new toast',
-        content: 'Lorem ipsum dolor cet emit',
-      })
+    mostrarModal1() {
+      // Aquí podrías mostrar un modal personalizado utilizando CSS o alguna otra librería de tu elección
     },
+    closeModal(action) {
+      // Aquí puedes definir la lógica para cerrar el modal o realizar alguna acción específica
+    },
+    onSave() {
+      axios.post(laravelUrl + '/clasificacion/create', {
+          tipo: this.form.tipo
+        })
+        .then(response => {
+          this.getDatos()
+          // Aquí podrías cerrar el modal si es necesario
+        })
+        .catch(error => {
+          console.error('Error!', error)
+        })
+    },
+    getDatos() {
+      axios.get(laravelUrl + '/clasificacion/get')
+        .then(response => {
+          this.datosPosts = response.data
+        })
+        .catch(error => {
+          console.error('Error al obtener los datos', error)
+        })
+    }
+  },
+  validations() {
+    return {
+      form: {
+        tipo: { required }
+      }
+    }
+  },
+  mounted() {
+    this.getDatos()
   },
 }
 </script>
