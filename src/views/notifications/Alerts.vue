@@ -1,156 +1,249 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Vue Alert is prepared for any length of text, as well as an optional
-            close button. For a styling, use one of the
-            <strong>required</strong> contextual <code>color</code> props (e.g.,
-            <code>primary</code>). For inline dismissal, use the
-            <a
-              href="https://coreui.io/vue/docs/components/alert.html#dismissing"
-            >
-              dismissing prop
-            </a>
-            .
-          </p>
-          <DocsExample href="components/alert.html">
-            <CAlert color="primary"
-              >A simple primary alert—check it out!</CAlert
-            >
-            <CAlert color="secondary"
-              >A simple secondary alert—check it out!</CAlert
-            >
-            <CAlert color="success"
-              >A simple success alert—check it out!</CAlert
-            >
-            <CAlert color="danger">A simple danger alert—check it out!</CAlert>
-            <CAlert color="warning"
-              >A simple warning alert—check it out!</CAlert
-            >
-            <CAlert color="info">A simple info alert—check it out!</CAlert>
-            <CAlert color="light">A simple light alert—check it out!</CAlert>
-            <CAlert color="dark">A simple dark alert—check it out!</CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong> <small>Link color</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Use the <code>&lt;CAlertLink&gt;</code> component to immediately
-            give matching colored links inside any alert.
-          </p>
-          <DocsExample href="components/alert.html#link-color">
-            <CAlert color="primary">
-              A simple primary alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="secondary">
-              A simple secondary alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="success">
-              A simple success alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="danger">
-              A simple danger alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="warning">
-              A simple warning alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="info">
-              A simple info alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="light">
-              A simple light alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="dark">
-              A simple dark alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong> <small>Additional content</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Alert can also incorporate supplementary components &amp; elements
-            like heading, paragraph, and divider.
-          </p>
-          <DocsExample href="components/alert.html#additional-content">
-            <CAlert color="success">
-              <CAlertHeading tag="h4">Well done!</CAlertHeading>
-              <p>
-                Aww yeah, you successfully read this important alert message.
-                This example text is going to run a bit longer so that you can
-                see how spacing within an alert works with this kind of content.
-              </p>
-              <hr />
-              <p class="mb-0">
-                Whenever you need to, be sure to use margin utilities to keep
-                things nice and tidy.
-              </p>
-            </CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong> <small>Dismissing</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Alerts can also be easily dismissed. Just add the
-            <code>dismissible</code> prop.
-          </p>
-          <DocsExample href="components/alert.html#dismissing">
-            <CAlert color="warning" dismissible @dismiss="alert">
-              <strong>Go right ahead</strong> and click that dimiss over there
-              on the right.
-            </CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="nombre-fecha-container">
+        <div class="nombre-inputs">
+          <label>Usuario</label>
+          <select v-model="selectedProject" @change="cargarDatosProyecto">
+            <option v-for="project in projects" :value="project.usuarios">{{ project.usuarios }}</option>
+          </select>
+        </div>
+        <div class="fecha-inputs">
+          <label>Contraseña</label>
+          <input type="text" v-model="contraseñas">
+        </div>
+        <div class="fecha-inputs">
+          <label>Estado</label>
+          <input type="text" v-model="estado">
+        </div>
+      </div>
+    </div>
+
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="insertar">Guardar</button>
+    <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
+  </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { ref, reactive } from 'vue';
+
 export default {
-  name: 'Alerts',
-  methods: {
-    alert: function () {
-      alert('👋 Well, hi there! Thanks for dismissing me.')
-    },
+  name: 'Badges',
+  setup() {
+    const usuarios = ref('');
+    const contraseñas = ref('');
+    const estado = ref('');
+    const selectedProject = ref('');
+    const projects = reactive([]);
+    
+    const cargarUsuarios = () => {
+      axios.get('http://127.0.0.1:8000/logins/getLogins').then((response) => {
+        projects.splice(0, projects.length, ...response.data);
+      });
+    };
+
+    const cargarDatosProyecto = () => {
+      if (!selectedProject.value) return;
+      axios.get(`http://127.0.0.1:8000/logins/getProjectName/${selectedProject.value}`)
+        .then(response => {
+          const proyecto = response.data;
+          usuarios.value = proyecto.usuarios;
+          contraseñas.value = proyecto.contraseñas;
+          estado.value = proyecto.estado;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+    const insertar = () => {
+      const datos = {
+        usuarios: usuarios.value,
+        contraseñas: contraseñas.value,
+        estado: estado.value,
+      };
+
+      axios.post('http://127.0.0.1:8000/logins/create', datos)
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+    const actualizar = () => {
+      if (!selectedProject.value) {
+        console.log('Por favor, selecciona un proyecto.');
+        return;
+      }
+
+      const datos = {};
+      
+      if (usuarios.value.trim() !== '') {
+        datos.usuarios = usuarios.value;
+      }
+
+      if (contraseñas.value.trim() !== '') {
+        datos.contraseñas = contraseñas.value;
+      }
+
+      if (estado.value.trim() !== '') {
+        datos.estado = estado.value;
+      }
+
+      if (Object.keys(datos).length === 0) {
+        console.log('No hay campos para actualizar');
+        return;
+      }
+
+      axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value}`, datos)
+        .then(response => {
+          console.log(response.data);
+          cargarUsuarios();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+    const limpiar = () => {
+      usuarios.value = '';
+      contraseñas.value = '';
+      estado.value = '';
+      selectedProject.value = '';
+    };
+
+    cargarUsuarios();
+
+    return {
+      usuarios,
+      contraseñas,
+      estado,
+      selectedProject,
+      projects,
+      insertar,
+      actualizar,
+      limpiar,
+      cargarDatosProyecto
+    };
   },
-}
+};
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>
