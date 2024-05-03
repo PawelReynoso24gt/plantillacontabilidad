@@ -56,7 +56,7 @@ export default {
         .then(response => {
           const proyecto = response.data;
           nombre.value = proyecto.nombre;
-          estado.value = proyecto.estado;
+          estado.value = proyecto.estado.toString();
         })
         .catch(error => {
           console.error(error);
@@ -84,7 +84,6 @@ export default {
         console.log('Por favor, selecciona un proyecto.');
         return;
       }
-
       const datos = {};
       
       if (nombre.value.trim() !== '') {
