@@ -1,5 +1,15 @@
 <template>
   <div>
+    <div class="division-container">
+      <div class="fecha-inputs">
+            <label>Ingreso para:</label>
+            <select v-model="otroValor">   
+              <option value="opcion1">Caja</option>
+              <option value="opcion2">Bancos</option>  
+            </select>
+            <button @click="seleccionar">Seleccionar</button>
+        </div>
+    </div>
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
@@ -40,15 +50,14 @@
         </div>
         <div class="fecha-inputs">
             <label>Forma de ingreso</label>
-            <select v-model="otroValor">
-             
+            <select v-model="otroValor">     
             </select>
         </div>
       </div>
     </div>
 
     <!-- Cuarta división -->
-    <div class="division-container">
+    <div class="division-container" v-if="mostrarDivisionCuatro">
       <label>DATOS DEL PAGO</label>
       <div class="input-container">
         <label>Documento:</label>
@@ -104,15 +113,24 @@ export default {
   setup() {
     const activeKey = ref(1)
     const flushActiveKey = ref(1)
+    const otroValor = ref('opcion1');
+    const mostrarDivisionCuatro = ref(true);
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
 
+    const seleccionar = () => {
+      mostrarDivisionCuatro.value = otroValor.value === 'opcion2';
+    }
+
     return {
       activeKey,
       flushActiveKey,
-      agregarDivision
+      agregarDivision,
+      otroValor,
+      mostrarDivisionCuatro,
+      seleccionar
     }
   },
 }

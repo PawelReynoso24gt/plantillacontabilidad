@@ -37,7 +37,7 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Ingreso',
+        name: 'Engreso',
         to: '/base/accordion',
       },
       {
