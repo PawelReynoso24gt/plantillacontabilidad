@@ -11,7 +11,7 @@
         </div>
         <div class="fecha-inputs">
           <label>Contraseña</label>
-          <input type="text" v-model="contraseñas">
+          <input type="text" v-model="contrasenias">
         </div>
         <div class="fecha-inputs">
           <label>Estado</label>
@@ -38,7 +38,7 @@ export default {
   name: 'Badges',
   setup() {
     const usuarios = ref('');
-    const contraseñas = ref('');
+    const contrasenias = ref('');
     const estado = ref('');
     const selectedProject = ref('');
     const projects = reactive([]);
@@ -55,7 +55,7 @@ export default {
         .then(response => {
           const proyecto = response.data;
           usuarios.value = proyecto.usuarios;
-          contraseñas.value = proyecto.contraseñas;
+          contrasenias.value = proyecto.contrasenias;
           estado.value = proyecto.estado;
         })
         .catch(error => {
@@ -66,7 +66,7 @@ export default {
     const insertar = () => {
       const datos = {
         usuarios: usuarios.value,
-        contraseñas: contraseñas.value,
+        contrasenias: contrasenias.value,
         estado: estado.value,
       };
 
@@ -92,7 +92,7 @@ export default {
       }
 
       if (contraseñas.value.trim() !== '') {
-        datos.contraseñas = contraseñas.value;
+        datos.contrasenia = contrasenia.value;
       }
 
       if (estado.value.trim() !== '') {
@@ -116,7 +116,7 @@ export default {
 
     const limpiar = () => {
       usuarios.value = '';
-      contraseñas.value = '';
+      contrasenias.value = '';
       estado.value = '';
       selectedProject.value = '';
     };
@@ -125,7 +125,7 @@ export default {
 
     return {
       usuarios,
-      contraseñas,
+      contrasenias,
       estado,
       selectedProject,
       projects,

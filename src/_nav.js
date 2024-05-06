@@ -1,7 +1,7 @@
 export default [
   {
     component: 'CNavItem',
-    name: 'Dashboard',
+    name: 'Inicio',
     to: '/dashboard',
     icon: 'cil-speedometer',
     badge: {
@@ -9,11 +9,11 @@ export default [
       text: 'NEW',
     },
   },
-  {
+ /* {
     component: 'CNavTitle',
     name: 'Theme',
-  },
-  {
+  },*/
+ /* {
     component: 'CNavItem',
     name: 'Colors',
     to: '/theme/colors',
@@ -24,10 +24,10 @@ export default [
     name: 'Typography',
     to: '/theme/typography',
     icon: 'cil-pencil',
-  },
+  },*/
   {
     component: 'CNavTitle',
-    name: 'Components',
+    name: 'Acciones',
   },
   {
     component: 'CNavGroup',
@@ -40,7 +40,7 @@ export default [
         name: 'Engreso',
         to: '/base/accordion',
       },
-      {
+     /* {
         component: 'CNavItem',
         name: 'Breadcrumbs',
         to: '/base/breadcrumbs',
@@ -104,7 +104,7 @@ export default [
         component: 'CNavItem',
         name: 'Tooltips',
         to: '/base/tooltips',
-      },
+      },*/
     ],
   },
   {
@@ -118,7 +118,7 @@ export default [
         name: 'Ingreso',
         to: '/buttons/standard-buttons',
       },
-      {
+     /* {
         component: 'CNavItem',
         name: 'Button Groups',
         to: '/buttons/button-groups',
@@ -127,7 +127,7 @@ export default [
         component: 'CNavItem',
         name: 'Dropdowns',
         to: '/buttons/dropdowns',
-      },
+      },*/
     ],
   },
   {
@@ -146,7 +146,7 @@ export default [
         name: 'Retiros de bancos',
         to: '/forms/select',
       },
-      {
+     /* {
         component: 'CNavItem',
         name: 'Checks & Radios',
         to: '/forms/checks-radios',
@@ -175,7 +175,7 @@ export default [
         component: 'CNavItem',
         name: 'Validation',
         to: '/forms/validation',
-      },
+      },*/
     ],
   },
   {
@@ -184,7 +184,7 @@ export default [
     to: '/charts',
     icon: 'cil-chart-pie',
   },
-  {
+  /*{
     component: 'CNavGroup',
     name: 'Sistema',
     to: '/icons',
@@ -210,7 +210,7 @@ export default [
         to: '/icons/flags',
       },
     ],
-  },
+  },*/
   {
     component: 'CNavGroup',
     name: 'CRUDS Simples',
@@ -237,9 +237,14 @@ export default [
         name: 'Clasificacion',
         to: '/notifications/toasts',
       },
+      {
+        component: 'CNavItem',
+        name: 'Cuentas',
+        to: '/notifications/cuentas',
+      },
     ],
   },
-  {
+ /* {
     component: 'CNavItem',
     name: 'Widgets',
     to: '/widgets',
@@ -249,12 +254,12 @@ export default [
       text: 'NEW',
       shape: 'pill',
     },
-  },
-  {
+  },*/
+  /*{
     component: 'CNavTitle',
     name: 'Extras',
-  },
-  {
+  },*/
+ /* {
     component: 'CNavGroup',
     name: 'Pages',
     to: '/pages',
@@ -281,7 +286,7 @@ export default [
         to: '/pages/500',
       },
     ],
-  },
+  },*/
 
   // {
   //   component: 'CNavItem',

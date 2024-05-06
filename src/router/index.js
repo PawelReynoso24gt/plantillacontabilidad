@@ -8,7 +8,7 @@ const routes = [
     path: '/',
     name: 'Home',
     component: DefaultLayout,
-    redirect: '/dashboard',
+    redirect: '/login',
     children: [
       {
         path: '/dashboard',
@@ -259,6 +259,11 @@ const routes = [
             name: 'Toasts',
             component: () => import('@/views/notifications/Toasts.vue'),
           },
+          {
+            path: '/notifications/cuentas',
+            name: 'Cuentas',
+            component: () => import('@/views/notifications/Cuentas.vue'),
+          },
         ],
       },
       {
@@ -310,5 +315,16 @@ const router = createRouter({
     return { top: 0 }
   },
 })
+
+// Guardia de ruta para redirigir al usuario a la página de inicio de sesión si no está autenticado
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('token') !== null; // Verificar si hay un token de autenticación en el almacenamiento local
+  if (to.name !== 'Login' && !isAuthenticated) {
+    next({ name: 'Login' }); // Redirigir a la página de inicio de sesión si no está autenticado
+  } else {
+    next();
+  }
+});
+
 
 export default router
