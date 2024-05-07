@@ -3,9 +3,9 @@
     <div class="division-container">
       <div class="fecha-inputs">
             <label>Egreso para:</label>
-            <select v-model="otroValor">   
-              <option value="opcion1">Caja</option>
-              <option value="opcion2">Bancos</option>  
+            <select v-model="tipo">   
+              <option value="opcion1">caja</option>
+              <option value="opcion2">bancos</option>  
             </select>
             <button @click="seleccionar">Seleccionar</button>
         </div>
@@ -13,13 +13,6 @@
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Nro.</label>
-          <div class="numero-input">
-            <input type="text" v-model="numero">
-            <input type="text" v-model="numero">
-          </div>
-        </div>
         <div class="fecha-inputs">
             <label>Fecha</label>
             <input type="date" v-model="fecha">
@@ -29,30 +22,26 @@
     
     <!-- Segunda división -->
     <div class="division-container">
-      <label>DPI/NIT</label>
-      <input type="text" v-model="dpiNit">
-      <label>Nombres</label>
-      <input type="text" v-model="nombres">
+      <label>DPI/NIT/CF</label>
+      <input type="text" v-model="identificacion">
+      <label>Nombre/CF</label>
+      <input type="text" v-model="nombre">
       <label>Observaciones de comprobante</label>
-      <input type="text" v-model="apellidos">
+      <input type="text" v-model="descripcion">
     </div>
     
     <!-- Tercera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
         <div class="numero-inputs">
-          <label>Nombre</label>
-          <select v-model="valor">
-            
+          <label>Cuenta</label>
+          <select v-model="cuentaCMB" @change="cargarCuentas">  
+            <option v-for="cuentab in cuentas" :value="cuentab.cuenta">{{ cuentab.cuenta }}</option> 
           </select>
-          <label>Valor</label>
-          <input type="text" v-model="valor">
         </div>
         <div class="fecha-inputs">
-            <label>Forma de ingreso</label>
-            <select v-model="otroValor">
-             
-            </select>
+          <label>Monto</label>
+          <input type="text" v-model="monto">
         </div>
       </div>
     </div>
@@ -63,59 +52,60 @@
       <div class="input-container">
         <label>Documento:</label>
         <select v-model="documento">
-            
+          <option value="opcion1">Transferencia</option> 
+          <option value="opcion2">Depósitos</option>
+          <option value="opcion3">Cheque</option> 
         </select>
       </div>
       <div class="input-container">
-        <label>Forma pago rentas:</label>
-        <select v-model="formaPago">
-            
-        </select>
+        <label>Cuenta Bancaria:</label>
+        <select v-model="bancos_b" @change="cargarBancos">   
+          <option v-for="bancosb in bancos" :value="bancosb.banco">{{ bancosb.banco }}</option> 
+            </select>
       </div>
       <div class="input-container">
-        <label>Banco:</label>
-        <select v-model="banco">
-            
-        </select>
-      </div>
-      <div class="input-container">
-        <label># Documento:</label>
-        <input type="text" v-model="numDocumento">
-      </div>
-      <div class="input-container">
-        <label>Monto:</label>
-        <input type="text" v-model="monto">
+        <label>No. Documento:</label>
+        <input type="text" v-model="numero_documento">
       </div>
       <div class="input-container">
         <label>Fecha emisión:</label>
-        <input type="date" v-model="fechaEmision">
+        <input type="date" v-model="fecha_emision">
       </div>
-      <div class="input-container">
-        <label>Referente:</label>
-        <input type="text" v-model="referente">
-      </div>
-      <button @click="agregarDivision" style="margin-right: 10px;">Cancelar</button>
-      <button @click="agregarDivision">Aceptar</button>
     </div>
 
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
     <!-- Botón Agregar -->
-    <button @click="agregarDivision">Guardar</button>
+    <button @click="enviarDatos">Guardar</button>
     <button @click="agregarDivision" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import axios from 'axios';
+import { ref, reactive, onMounted  } from 'vue';
+
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
     const otroValor = ref('opcion1');
     const mostrarDivisionCuatro = ref(true);
+    const fecha = ref('');
+    const identificacion = ref('');
+    const descripcion = ref('');
+    const nombre = ref('');
+    const monto = ref('');
+    const cuenta_bancaria = ref('');
+    const cuenta = ref('');
+    const documento = ref('');
+    const numero_documento = ref('');
+    const fecha_emision = ref('');
+    const tipo = ref('');
+    const cuentaCMB = ref('');
+    const bancos_b = ref('');
+    const cuentas = reactive([]);
+    const bancos = reactive([]);
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
@@ -125,13 +115,83 @@ export default {
       mostrarDivisionCuatro.value = otroValor.value === 'opcion2';
     }
 
+    const cargarCuentas = () => {
+      axios.get('http://127.0.0.1:8000/in_eg/getByCuentas')
+        .then((response) => {
+          cuentas.splice(0, cuentas.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+
+    const cargarBancos = () => {
+      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
+        .then((response) => {
+          bancos.splice(0, bancos.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+
+    const enviarDatos = () => {
+      const data = {
+        fecha: fecha.value,
+        identificacion: identificacion.value,
+        nombre: nombre.value,
+        descripcion: descripcion.value,
+        monto: monto.value,
+        tipo: tipo.value,
+        cuenta: cuenta.value,
+        cuenta_bancaria: cuenta_bancaria.value,
+        documento: documento.value,
+        numero_documento: numero_documento.value,
+        fecha_emision: fecha_emision.value
+      };
+      axios.post('http://127.0.0.1:8000/in_eg/createALLEG', data)
+        .then(response => {
+          cuenta.value = response.data;
+          console.log(response.data); 
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+
+    onMounted(() => {
+      cargarCuentas();
+      cargarBancos();
+    });
+
     return {
-      activeKey,
-      flushActiveKey,
       agregarDivision,
       otroValor,
       mostrarDivisionCuatro,
-      seleccionar
+      fecha,
+      identificacion,
+      nombre,
+      descripcion,
+      monto,
+      tipo,
+      cuenta_bancaria,
+      cuenta,
+      cuentas,
+      bancos,
+      documento,
+      numero_documento,
+      fecha_emision,
+      cuentaCMB,
+      bancos_b,
+      seleccionar,
+      enviarDatos,
+      cargarCuentas,
+      cargarBancos
     }
   },
 }

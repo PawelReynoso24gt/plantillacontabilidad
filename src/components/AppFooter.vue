@@ -1,15 +1,6 @@
 <template>
   <CFooter class="px-4">
-    <div>
-      <a href="https://coreui.io" target="_blank">CoreUI</a>
-      <span class="ms-1"
-        >&copy; {{ new Date().getFullYear() }} creativeLabs.</span
-      >
-    </div>
-    <div class="ms-auto">
-      <span class="me-1" target="_blank">Powered by</span>
-      <a href="https://coreui.io/vue">CoreUI for Vue</a>
-    </div>
+    <span class="center-text">Hecho por: Estudiantes de la Univerisdad Mesoamericana</span> <!-- Texto más largo -->
   </CFooter>
 </template>
 
@@ -18,3 +9,13 @@ export default {
   name: 'AppFooter',
 }
 </script>
+
+<style>
+.center-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ancho del 100% */
+  height: 200%; /* Alto del 100% */
+}
+</style>

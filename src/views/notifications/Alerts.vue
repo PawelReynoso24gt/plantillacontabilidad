@@ -91,8 +91,8 @@ export default {
         datos.usuarios = usuarios.value;
       }
 
-      if (contraseñas.value.trim() !== '') {
-        datos.contrasenia = contrasenia.value;
+      if (contrasenias.value.trim() !== '') {
+        datos.contrasenias = contrasenias.value;
       }
 
       if (estado.value.trim() !== '') {

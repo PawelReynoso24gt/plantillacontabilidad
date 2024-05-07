@@ -4,20 +4,32 @@
       <div class="division-container">
         <div class="nombre-fecha-container">
           <div class="id-inputs">
-            <label>Proyecto</label>
+            <label>Cuentas</label>
             <select v-model="selectedProject" @change="cargarDatosProyecto">
-              <option v-for="project in projects" :value="project.nombre">{{ project.nombre }}</option>
+              <option v-for="project in projects" :value="project.cuenta">{{ project.cuenta }}</option>
             </select>
           </div>
           <div class="nombre-inputs">
-            <label>Nombre Proyecto</label>
+            <label>Cuentas</label>
             <div class="numero-input">
-              <input type="text" v-model="nombre">
+              <input type="text" v-model="cuenta">
             </div>
           </div>
           <div class="fecha-inputs">
             <label>Estado</label>
             <input type="text" v-model="estado">
+          </div>
+          <div class="fecha-inputs">
+            <label>Codigo</label>
+            <input type="text" v-model="codigo">
+          </div>
+          <div class="fecha-inputs">
+            <label>Clasificacion</label>
+            <input type="text" v-model="id_clasificacion">
+          </div>
+          <div class="fecha-inputs">
+            <label>Proyectos</label>
+            <input type="text" v-model="id_proyectos">
           </div>
         </div>
       </div>
@@ -39,24 +51,30 @@
   export default {
     name: 'Cuentas',
     setup() {
-      const nombre = ref('');
+      const cuenta = ref('');
       const estado = ref('');
+      const codigo = ref('');
+      const id_clasificacion = ref('');
+      const id_proyectos = ref('');
       const selectedProject = ref('');
       const projects = reactive([]);
       
       const cargarProyectos = () => {
-        axios.get('http://127.0.0.1:8000/proyectos/get').then((response) => {
+        axios.get('http://127.0.0.1:8000/cuentas/get').then((response) => {
           projects.splice(0, projects.length, ...response.data);
         });
       };
   
       const cargarDatosProyecto = () => {
         if (!selectedProject.value) return;
-        axios.get(`http://127.0.0.1:8000/proyectos/getProjectName/${selectedProject.value}`)
+        axios.get(`http://127.0.0.1:8000/cuentas/get/${selectedProject.value}`)
           .then(response => {
             const proyecto = response.data;
-            nombre.value = proyecto.nombre;
-            estado.value = proyecto.estado.toString();
+            cuenta.value = proyecto.cuenta;
+            estado.value = proyecto.estado;
+            codigo.value = proyecto.codigo;
+            id_clasificacion.value = proyecto.id_clasificacion;
+            id_proyectos.value = proyecto.id_proyectos;
           })
           .catch(error => {
             console.error(error);
@@ -65,11 +83,14 @@
   
       const insertar = () => {
         const datos = {
-          nombre: nombre.value,
+          cuenta: cuenta.value,
           estado: estado.value,
+          codigo: codigo.value,
+          id_clasificacion: id_clasificacion.value,
+          id_proyectos: id_proyectos.value
         };
   
-        axios.post('http://127.0.0.1:8000/proyectos/create', datos)
+        axios.post('http://127.0.0.1:8000/cuentas/create', datos)
           .then(response => {
             console.log(response.data);
             cargarProyectos();
@@ -87,11 +108,23 @@
         const datos = {};
         
         if (nombre.value.trim() !== '') {
-          datos.nombre = nombre.value;
+          datos.cuenta = cuenta.value;
         }
   
         if (estado.value.trim() !== '') {
           datos.estado = estado.value;
+        }
+
+        if (codigo.value.trim() !== '') {
+          datos.codigo = codigo.value;
+        }
+
+        if (id_clasificacion.value.trim() !== '') {
+          datos.id_clasificacion = id_clasificacion.value;
+        }
+
+        if (id_proyectos.value.trim() !== '') {
+          datos.id_proyectos = id_proyectos.value;
         }
   
         if (Object.keys(datos).length === 0) {
@@ -99,7 +132,7 @@
           return;
         }
   
-        axios.put(`http://127.0.0.1:8000/proyectos/update/${selectedProject.value}`, datos)
+        axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
           .then(response => {
             console.log(response.data);
             cargarProyectos();
@@ -110,16 +143,22 @@
       };
   
       const limpiar = () => {
-        nombre.value = '';
+        cuenta.value = '';
         estado.value = '';
+        codigo.value = '';
+        id_clasificacion.value = '';
+        id_proyectos.value = '';
         selectedProject.value = '';
       };
   
       cargarProyectos();
   
       return {
-        nombre,
+        cuenta,
         estado,
+        codigo,
+        id_clasificacion,
+        id_proyectos,
         selectedProject,
         projects,
         insertar,
