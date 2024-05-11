@@ -2,10 +2,10 @@
   <div>
     <div class="division-container">
       <div class="fecha-inputs">
-            <label>Ingreso para:</label>
-            <select v-model="otroValor">   
-              <option value="opcion1">Caja</option>
-              <option value="opcion2">Bancos</option>  
+            <label>Egreso para:</label>
+            <select v-model="tipo">   
+              <option value="caja">caja</option>
+              <option value="bancos">bancos</option>  
             </select>
             <button @click="seleccionar">Seleccionar</button>
         </div>
@@ -13,13 +13,6 @@
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Nro.</label>
-          <div class="numero-input">
-            <input type="text" v-model="numero">
-            <input type="text" v-model="numero">
-          </div>
-        </div>
         <div class="fecha-inputs">
             <label>Fecha</label>
             <input type="date" v-model="fecha">
@@ -29,29 +22,26 @@
     
     <!-- Segunda división -->
     <div class="division-container">
-      <label>DPI/NIT</label>
-      <input type="text" v-model="dpiNit">
-      <label>Nombres</label>
-      <input type="text" v-model="nombres">
+      <label>DPI/NIT/CF</label>
+      <input type="text" v-model="identificacion">
+      <label>Nombre/CF</label>
+      <input type="text" v-model="nombre">
       <label>Observaciones de comprobante</label>
-      <input type="text" v-model="apellidos">
+      <input type="text" v-model="descripcion">
     </div>
     
     <!-- Tercera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
         <div class="numero-inputs">
-          <label>Nombre</label>
-          <select v-model="valor">
-            
+          <label>Cuenta</label>
+          <select v-model="cuentaCMB" @change="cargarCuentas">  
+            <option v-for="cuentab in cuentas" :value="cuentab.cuenta">{{ cuentab.cuenta }}</option> 
           </select>
-          <label>Valor</label>
-          <input type="text" v-model="valor">
         </div>
         <div class="fecha-inputs">
-            <label>Forma de ingreso</label>
-            <select v-model="otroValor">     
-            </select>
+          <label>Monto</label>
+          <input type="text" v-model="monto">
         </div>
       </div>
     </div>
@@ -62,75 +52,174 @@
       <div class="input-container">
         <label>Documento:</label>
         <select v-model="documento">
-            
+          <option value="Transferencia">Transferencia</option> 
+          <option value="Depósitos">Depósitos</option>
+          <option value="Cheque">Cheque</option> 
         </select>
       </div>
       <div class="input-container">
-        <label>Forma pago rentas:</label>
-        <select v-model="formaPago">
-            
-        </select>
+        <label>Cuenta Bancaria:</label>
+        <select v-model="bancos_b" @change="cargarBancos">   
+          <option v-for="bancosb in cuentas_bancarias" :value="bancosb.numero_cuenta">{{ bancosb.numero_cuenta }}</option> 
+            </select>
       </div>
       <div class="input-container">
-        <label>Banco:</label>
-        <select v-model="banco">
-            
-        </select>
-      </div>
-      <div class="input-container">
-        <label># Documento:</label>
-        <input type="text" v-model="numDocumento">
-      </div>
-      <div class="input-container">
-        <label>Monto:</label>
-        <input type="text" v-model="monto">
+        <label>No. Documento:</label>
+        <input type="text" v-model="numero_documento">
       </div>
       <div class="input-container">
         <label>Fecha emisión:</label>
-        <input type="date" v-model="fechaEmision">
+        <input type="date" v-model="fecha_emision">
       </div>
-      <div class="input-container">
-        <label>Referente:</label>
-        <input type="text" v-model="referente">
-      </div>
-      <button @click="agregarDivision" style="margin-right: 10px;">Cancelar</button>
-      <button @click="agregarDivision">Aceptar</button>
     </div>
 
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
     <!-- Botón Agregar -->
-    <button @click="agregarDivision">Guardar</button>
+    <button @click="enviarDatos">Guardar</button>
     <button @click="agregarDivision" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import axios from 'axios';
+import { ref, reactive, onMounted  } from 'vue';
+
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
     const otroValor = ref('opcion1');
     const mostrarDivisionCuatro = ref(true);
+    const fecha = ref('');
+    const identificacion = ref('');
+    const descripcion = ref('');
+    const nombre = ref('');
+    const monto = ref('');
+    const cuenta_bancaria = ref('');
+    const cuenta = ref('');
+    const documento = ref('');
+    const numero_documento = ref('');
+    const fecha_emision = ref('');
+    const tipo = ref('');
+    const cuentaCMB = ref('');
+    const bancos_b = ref('');
+    const cuentas = reactive([]);
+    const cuentas_bancarias = reactive([]);
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
 
     const seleccionar = () => {
-      mostrarDivisionCuatro.value = otroValor.value === 'opcion2';
+    mostrarDivisionCuatro.value = tipo.value === 'bancos'; // Muestra la división 4 solo si se selecciona la opción de bancos
+    if (tipo.value === 'caja') {
+      mostrarDivisionCuatro.value = false; // Oculta la división 4 si se selecciona la opción de caja
     }
+    fecha.value = '';
+    identificacion.value = '';
+    nombre.value = '';
+    descripcion.value = '';
+    monto.value = '';
+   }
+
+
+    const cargarCuentas = () => {
+      axios.get('http://127.0.0.1:8000/in_eg/getByCuentasI')
+        .then((response) => {
+          cuentas.splice(0, cuentas.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+
+    const cargarBancos = () => {
+      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
+        .then((response) => {
+          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+
+    const enviarDatos = () => {
+  if (tipo.value === 'caja') { 
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCaja', {
+      fecha: fecha.value,
+      identificacion: identificacion.value,
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      tipo: tipo.value,
+      cuenta: cuentaCMB.value,
+    })
+    .then(response => {
+      console.log(response.data); 
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  } else {
+    // Si no es "caja", enviar los datos como lo estás haciendo actualmente
+    const data = {
+      fecha: fecha.value,
+      identificacion: identificacion.value,
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      tipo: tipo.value,
+      cuenta: cuentaCMB.value,
+      cuenta_bancaria: bancos_b.value,
+      documento: documento.value,
+      numero_documento: numero_documento.value,
+      fecha_emision: fecha_emision.value
+    };
+    axios.post('http://127.0.0.1:8000/in_eg/createALLIN', data)
+      .then(response => {
+        console.log(response.data); 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+};
+
+
+
+    onMounted(() => {
+  cargarCuentas();
+  cargarBancos();
+});
 
     return {
-      activeKey,
-      flushActiveKey,
       agregarDivision,
       otroValor,
       mostrarDivisionCuatro,
-      seleccionar
+      fecha,
+      identificacion,
+      nombre,
+      descripcion,
+      monto,
+      tipo,
+      cuenta_bancaria,
+      cuenta,
+      cuentas,
+      cuentas_bancarias,
+      documento,
+      numero_documento,
+      fecha_emision,
+      cuentaCMB,
+      bancos_b,
+      seleccionar,
+      enviarDatos,
+      cargarCuentas,
+      cargarBancos
     }
   },
 }

@@ -4,8 +4,8 @@
       <div class="fecha-inputs">
             <label>Egreso para:</label>
             <select v-model="tipo">   
-              <option value="opcion1">caja</option>
-              <option value="opcion2">bancos</option>  
+              <option value="caja">caja</option>
+              <option value="bancos">bancos</option>  
             </select>
             <button @click="seleccionar">Seleccionar</button>
         </div>
@@ -52,15 +52,15 @@
       <div class="input-container">
         <label>Documento:</label>
         <select v-model="documento">
-          <option value="opcion1">Transferencia</option> 
-          <option value="opcion2">Depósitos</option>
-          <option value="opcion3">Cheque</option> 
+          <option value="Transferencia">Transferencia</option> 
+          <option value="Depósitos">Depósitos</option>
+          <option value="Cheque">Cheque</option> 
         </select>
       </div>
       <div class="input-container">
         <label>Cuenta Bancaria:</label>
         <select v-model="bancos_b" @change="cargarBancos">   
-          <option v-for="bancosb in bancos" :value="bancosb.banco">{{ bancosb.banco }}</option> 
+          <option v-for="bancosb in cuentas_bancarias" :value="bancosb.numero_cuenta">{{ bancosb.numero_cuenta }}</option> 
             </select>
       </div>
       <div class="input-container">
@@ -105,15 +105,24 @@ export default {
     const cuentaCMB = ref('');
     const bancos_b = ref('');
     const cuentas = reactive([]);
-    const bancos = reactive([]);
+    const cuentas_bancarias = reactive([]);
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
 
     const seleccionar = () => {
-      mostrarDivisionCuatro.value = otroValor.value === 'opcion2';
+    mostrarDivisionCuatro.value = tipo.value === 'bancos'; // Muestra la división 4 solo si se selecciona la opción de bancos
+    if (tipo.value === 'caja') {
+      mostrarDivisionCuatro.value = false; // Oculta la división 4 si se selecciona la opción de caja
     }
+    fecha.value = '';
+    identificacion.value = '';
+    nombre.value = '';
+    descripcion.value = '';
+    monto.value = '';
+   }
+
 
     const cargarCuentas = () => {
       axios.get('http://127.0.0.1:8000/in_eg/getByCuentas')
@@ -130,7 +139,7 @@ export default {
     const cargarBancos = () => {
       axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
         .then((response) => {
-          bancos.splice(0, bancos.length, ...response.data);
+          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
         })
         .catch((error) => {
@@ -140,34 +149,53 @@ export default {
 
 
     const enviarDatos = () => {
-      const data = {
-        fecha: fecha.value,
-        identificacion: identificacion.value,
-        nombre: nombre.value,
-        descripcion: descripcion.value,
-        monto: monto.value,
-        tipo: tipo.value,
-        cuenta: cuenta.value,
-        cuenta_bancaria: cuenta_bancaria.value,
-        documento: documento.value,
-        numero_documento: numero_documento.value,
-        fecha_emision: fecha_emision.value
-      };
-      axios.post('http://127.0.0.1:8000/in_eg/createALLEG', data)
-        .then(response => {
-          cuenta.value = response.data;
-          console.log(response.data); 
-        })
-        .catch(error => {
-          console.error(error);
-        });
+  if (tipo.value === 'caja') { 
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCaja', {
+      fecha: fecha.value,
+      identificacion: identificacion.value,
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      tipo: tipo.value,
+      cuenta: cuentaCMB.value,
+    })
+    .then(response => {
+      console.log(response.data); 
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  } else {
+    // Si no es "caja", enviar los datos como lo estás haciendo actualmente
+    const data = {
+      fecha: fecha.value,
+      identificacion: identificacion.value,
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      tipo: tipo.value,
+      cuenta: cuentaCMB.value,
+      cuenta_bancaria: bancos_b.value,
+      documento: documento.value,
+      numero_documento: numero_documento.value,
+      fecha_emision: fecha_emision.value
     };
+    axios.post('http://127.0.0.1:8000/in_eg/createALLEG', data)
+      .then(response => {
+        console.log(response.data); 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+};
+
 
 
     onMounted(() => {
-      cargarCuentas();
-      cargarBancos();
-    });
+  cargarCuentas();
+  cargarBancos();
+});
 
     return {
       agregarDivision,
@@ -182,7 +210,7 @@ export default {
       cuenta_bancaria,
       cuenta,
       cuentas,
-      bancos,
+      cuentas_bancarias,
       documento,
       numero_documento,
       fecha_emision,

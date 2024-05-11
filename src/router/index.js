@@ -294,7 +294,7 @@ const routes = [
         component: () => import('@/views/pages/Page500'),
       },
       {
-        path: 'login',
+        path: '/login',
         name: 'Login',
         component: () => import('@/views/pages/Login'),
       },

@@ -1,59 +1,115 @@
 <template>
   <div>
-    <label>RETIROS DE BANCOS</label>
+    <label>LIBRO DE CAJA</label>
     <!-- Primera división -->
     <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Banco:</label>
-          <div class="numero-input">
-            <select v-model="valor">
-            
-          </select>
-          </div>
-          <label>Numero:</label>
-              <input type="text" v-model="numero">  
-        </div>     
+      <div class="numero-fecha-container">    
         <div class="fecha-inputs">
-            <label>Fecha</label>
-            <input type="date" v-model="fecha">
+            <label>Fecha Inicial</label>
+            <input type="date" v-model="fechaInicial">
+        </div>
+        <div class="fecha-inputs">
+            <label>Fecha Final</label>
+            <input type="date" v-model="fechaFinal">
         </div>
       </div>
-    </div>
-    
-    <!-- Segunda división -->
-    <div class="division-container">
-      <label>MONTO A RETIRAR BANCOS</label>
-      <label>Valor a retirar:</label>
-      <input type="text" v-model="retiro">
-      <label>Observaciones</label>
-      <input type="text" v-model="apellidos">
     </div>
     
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
     <!-- Botón Agregar -->
-    <button @click="agregarDivision">Guardar</button>
+    <button @click="generarPDF">Generar PDF</button>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import jsPDF from 'jspdf'
+import axios from 'axios'
+import 'jspdf-autotable'
+
 export default {
   name: 'Accordion',
   setup() {
     const activeKey = ref(1)
     const flushActiveKey = ref(1)
+    const fechaInicial = ref('')
+    const fechaFinal = ref('')
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
 
+    const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
+
+    const generarPDF = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/in_eg/getWithCuenta')
+    const ingresosEgresos = response.data
+    
+    const doc = new jsPDF()
+    const textoEncabezado = nombreEncabezado.value
+
+    // Agregar encabezado al PDF
+    doc.text(textoEncabezado, 20, 20)
+
+    const textoAdicional = 'REPORTE: LIBRO CAJA'
+    doc.setFontSize(10)
+    doc.text(textoAdicional, 20, 30)
+
+    const especificacionFechas = `ESPECIFICACIÓN: Desde ${fechaInicial.value}, Hasta: ${fechaFinal.value}`
+    doc.text(especificacionFechas, 20, 40)
+
+    // Obtener las columnas
+    const columnas = [
+      'ID',
+      'Nomenclatura',
+      'Fecha',
+      'Identificación',
+      'Nombre',
+      'Descripción',
+      'Monto',
+      'Tipo',
+      'Cuenta'
+    ]
+    
+    // Construir la tabla
+    const filas = ingresosEgresos.map(ingresoEgreso => [
+      ingresoEgreso.id_ingresos_egresos,
+      ingresoEgreso.nomenclatura,
+      ingresoEgreso.fecha,
+      ingresoEgreso.identificacion,
+      ingresoEgreso.nombre,
+      ingresoEgreso.descripcion,
+      ingresoEgreso.monto,
+      ingresoEgreso.tipo,
+      ingresoEgreso.cuenta
+    ])
+
+    doc.autoTable({
+      head: [columnas],
+      body: filas,
+      startY: 50,
+      theme: 'grid'
+    })
+
+    const rutaArchivo = "C:\\Users\\angel\\Escritorio\\Libros\\libro_de_caja_" + ".pdf"
+    // Guardar el PDF
+    doc.save(rutaArchivo)
+  } catch (error) {
+    console.error('Error al generar el PDF:', error)
+  }
+}
+
+   
     return {
       activeKey,
       flushActiveKey,
-      agregarDivision
+      fechaInicial,
+      fechaFinal,
+      nombreEncabezado,
+      generarPDF,
     }
   },
 }
