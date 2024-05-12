@@ -130,9 +130,9 @@ export default [
       },*/
     ],
   },
-  /*{
+  {
     component: 'CNavGroup',
-    name: 'Tesoreria',
+    name: 'Traslados Internos',
     to: '/forms',
     icon: 'cil-notes',
     items: [
@@ -146,7 +146,7 @@ export default [
         name: 'Retiros de bancos',
         to: '/forms/select',
       },
-      {
+     /* {
         component: 'CNavItem',
         name: 'Checks & Radios',
         to: '/forms/checks-radios',
@@ -175,9 +175,9 @@ export default [
         component: 'CNavItem',
         name: 'Validation',
         to: '/forms/validation',
-      },
+      },*/
     ],
-  },*/
+  },
   {
     component: 'CNavItem',
     name: 'Informes',

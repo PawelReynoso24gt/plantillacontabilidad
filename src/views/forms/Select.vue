@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label>RETIROS DE BANCOS</label>
+    <label>TRASLADOS INTERNOS DE BANCOS</label>
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">

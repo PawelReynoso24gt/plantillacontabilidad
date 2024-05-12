@@ -10,6 +10,10 @@
           </select>
         </div>
         <div class="fecha-inputs">
+          <label>Nombre Usuario</label>
+          <input type="text" v-model="usuarios">
+        </div>
+        <div class="fecha-inputs">
           <label>Contraseña</label>
           <input type="text" v-model="contrasenias">
         </div>

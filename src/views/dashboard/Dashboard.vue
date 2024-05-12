@@ -5,7 +5,7 @@
     </div>
     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
       <div style="text-align: center; color: black; font-size: 50px; margin-bottom: 20px;">
-        PROYECTO AGRÍCOLA
+        PROYECTO AGRÍCOLA SAN JOSE
       </div>
       <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
         <img src="@/assets/brand/hogar12.jpg" class="small-image"/>

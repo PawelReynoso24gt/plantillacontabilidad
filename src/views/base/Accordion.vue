@@ -59,9 +59,9 @@
       </div>
       <div class="input-container">
         <label>Cuenta Bancaria:</label>
-        <select v-model="bancos_b" @change="cargarBancos">   
-          <option v-for="bancosb in cuentas_bancarias" :value="bancosb.numero_cuenta">{{ bancosb.numero_cuenta }}</option> 
-            </select>
+        <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
+              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
+        </select>
       </div>
       <div class="input-container">
         <label>No. Documento:</label>
@@ -105,6 +105,7 @@ export default {
     const cuentaCMB = ref('');
     const bancos_b = ref('');
     const cuentas = reactive([]);
+    const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
 
     const agregarDivision = () => {
@@ -135,6 +136,16 @@ export default {
         });
     };
 
+    const cargarBancosNoCuenta = () => {
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
+        .then((response) => {
+          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
 
     const cargarBancos = () => {
       axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
@@ -175,10 +186,10 @@ export default {
       monto: monto.value,
       tipo: tipo.value,
       cuenta: cuentaCMB.value,
-      cuenta_bancaria: bancos_b.value,
       documento: documento.value,
       numero_documento: numero_documento.value,
-      fecha_emision: fecha_emision.value
+      fecha_emision: fecha_emision.value,
+      cuenta_bancaria: cuentaBName.value,
     };
     axios.post('http://127.0.0.1:8000/in_eg/createALLEG', data)
       .then(response => {
@@ -193,9 +204,10 @@ export default {
 
 
     onMounted(() => {
-  cargarCuentas();
-  cargarBancos();
-});
+      cargarCuentas();
+      cargarBancos();
+      cargarBancosNoCuenta();
+    });
 
     return {
       agregarDivision,
@@ -215,11 +227,14 @@ export default {
       numero_documento,
       fecha_emision,
       cuentaCMB,
+      cuentaBName,
       bancos_b,
+      cuentaBName,
       seleccionar,
       enviarDatos,
       cargarCuentas,
-      cargarBancos
+      cargarBancos,
+      cargarBancosNoCuenta
     }
   },
 }

@@ -1,34 +1,20 @@
 <template>
   <div>
-    <label>RETIROS DE BANCOS</label>
+    <label>TRASLADOS INTERNOS DE CAJA</label>
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
         <div class="numero-inputs">
-          <label>Banco:</label>
+          <label>Cuenta Bancaria:</label>
           <div class="numero-input">
-            <select v-model="valor">
-            
-          </select>
+            <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
+              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.banco_y_cuenta">{{ cuentaN.banco_y_cuenta }}</option> 
+            </select>
           </div>
-          <label>Numero:</label>
-              <input type="text" v-model="numero">  
         </div>     
-        <div class="fecha-inputs">
-            <label>Fecha</label>
-            <input type="date" v-model="fecha">
-        </div>
       </div>
     </div>
     
-    <!-- Segunda división -->
-    <div class="division-container">
-      <label>MONTO A RETIRAR BANCOS</label>
-      <label>Valor a retirar:</label>
-      <input type="text" v-model="retiro">
-      <label>Observaciones</label>
-      <input type="text" v-model="apellidos">
-    </div>
     
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
@@ -39,21 +25,43 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import axios from 'axios';
+import { ref, reactive, onMounted  } from 'vue';
 export default {
   name: 'Accordion',
   setup() {
     const activeKey = ref(1)
     const flushActiveKey = ref(1)
+    const cuentaBName = ref('');
+    let cuentas_bancarias = reactive([]);
+
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
 
+    const cargarBancosNoCuenta = () => {
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
+        .then((response) => {
+          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    onMounted(() => {
+      cargarBancosNoCuenta();
+    });
+
     return {
       activeKey,
       flushActiveKey,
-      agregarDivision
+      cuentaBName,
+      cuentas_bancarias,
+      agregarDivision,
+      cargarBancosNoCuenta
     }
   },
 }
