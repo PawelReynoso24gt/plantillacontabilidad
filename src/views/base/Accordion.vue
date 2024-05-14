@@ -94,7 +94,7 @@ export default {
     const identificacion = ref('');
     const descripcion = ref('');
     const nombre = ref('');
-    const monto = ref('');
+    
     const cuenta_bancaria = ref('');
     const cuenta = ref('');
     const documento = ref('');
