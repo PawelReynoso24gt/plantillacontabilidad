@@ -77,7 +77,7 @@
 
     <!-- Botón Agregar -->
     <button @click="enviarDatos">Guardar</button>
-    <button @click="agregarDivision" style="margin-left: 10px;">Limpiar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 
@@ -94,7 +94,7 @@ export default {
     const identificacion = ref('');
     const descripcion = ref('');
     const nombre = ref('');
-    const monto = ref('');
+    
     const cuenta_bancaria = ref('');
     const cuenta = ref('');
     const documento = ref('');
@@ -106,6 +106,20 @@ export default {
     const cuentas = reactive([]);
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
+
+    const limpiar = () => {
+      tipo.value = '',
+      fecha.value = '',
+      identificacion.value = '',
+      nombre.value = '',
+      descripcion.value = '',
+      cuentaCMB.value = '',
+      monto.value = '',
+      documento.value = '',
+      cuentaBName.value = '',
+      numero_documento.value = '',
+      fecha_emision.value = ''
+    };
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
@@ -229,7 +243,8 @@ export default {
       cargarCuentas,
       cargarBancos,
       controlarVisibilidadDivisionCuatro,
-      cargarBancosNoCuenta
+      cargarBancosNoCuenta,
+      limpiar
     }
   },
 }

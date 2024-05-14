@@ -1,87 +1,170 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader> <strong>Vue Range</strong> <small></small> </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Create custom
-            <code>&lt;input type=&#34;range&#34;&gt;</code> controls with
-            <code>&lt;CFormRange&gt;</code>.
-          </p>
-          <DocsExample href="forms/range.html">
-            <CFormLabel for="customRange1">Example range</CFormLabel>
-            <CFormRange id="customRange1" />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Range</strong> <small>Disabled</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add the <code>disabled</code> boolean attribute on an input to give
-            it a grayed out appearance and remove pointer events.
-          </p>
-          <DocsExample href="forms/range.html#disabled">
-            <CFormLabel for="disabledRange">Disabled range</CFormLabel>
-            <CFormRange id="disabledRange" disabled />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Range</strong> <small>Min and max</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Range inputs have implicit values for <code>min</code> and
-            <code>max</code>— <code>0</code> and <code>100</code>, respectively.
-            You may specify new values for those using the <code>min</code> and
-            <code>max</code> attributes.
-          </p>
-          <DocsExample href="forms/range.html#min-and-max">
-            <CFormLabel for="customRange2">Example range</CFormLabel>
-            <CFormRange id="customRange2" :min="0" :max="5" value="3" />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Range</strong> <small>Steps</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            By default, range inputs &#34;snap&#34; to integer values. To change
-            this, you can specify a <code>step</code> value. In the example
-            below, we double the number of steps by using
-            <code>step=&#34;0.5&#34;</code>.
-          </p>
-          <DocsExample href="forms/range.html#steps">
-            <CFormLabel for="customRange3">Example range</CFormLabel>
-            <CFormRange
-              id="customRange3"
-              :min="0"
-              :max="5"
-              :step="0.5"
-              value="3"
-            />
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <label>DEPOSITOS DE CAJA</label>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">
+        <div class="numero-inputs">
+          <label>Banco:</label>
+          <div class="numero-input">
+            <select v-model="valor">
+            
+          </select>
+          </div>
+          <label>Numero:</label>
+              <input type="text" v-model="numero">  
+        </div>     
+        <div class="fecha-inputs">
+            <label>Fecha</label>
+            <input type="date" v-model="fecha">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Segunda división -->
+    <div class="division-container">
+      <label>MONTO A RETIRAR BANCOS</label>
+      <label>Valor a retirar:</label>
+      <input type="text" v-model="retiro">
+      <label>Observaciones</label>
+      <input type="text" v-model="apellidos">
+    </div>
+    
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="agregarDivision">Guardar</button>
+  </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
-  name: 'Range',
+  name: 'Accordion',
+  setup() {
+    const activeKey = ref(1)
+    const flushActiveKey = ref(1)
+
+    const agregarDivision = () => {
+      // Lógica para agregar una nueva división
+    }
+
+    return {
+      activeKey,
+      flushActiveKey,
+      agregarDivision
+    }
+  },
 }
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+  border-color: rgb(19, 19, 75);
+}
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>

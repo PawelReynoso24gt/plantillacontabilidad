@@ -37,12 +37,12 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Engreso Agrícola',
+        name: 'Egreso Agrícola',
         to: '/base/accordion',
       },
       {
         component: 'CNavItem',
-        name: 'Engreso Capilla',
+        name: 'Egreso Capilla',
         to: '/base/breadcrumbs',
       },
       /*{
