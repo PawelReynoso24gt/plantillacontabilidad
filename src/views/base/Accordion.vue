@@ -126,7 +126,7 @@ export default {
 
 
     const cargarCuentas = () => {
-      axios.get('http://127.0.0.1:8000/in_eg/getByCuentas')
+      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoAG')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
@@ -161,7 +161,7 @@ export default {
 
     const enviarDatos = () => {
   if (tipo.value === 'caja') { 
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCaja', {
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaAG', {
       fecha: fecha.value,
       identificacion: identificacion.value,
       nombre: nombre.value,
@@ -191,7 +191,7 @@ export default {
       fecha_emision: fecha_emision.value,
       cuenta_bancaria: cuentaBName.value,
     };
-    axios.post('http://127.0.0.1:8000/in_eg/createALLEG', data)
+    axios.post('http://127.0.0.1:8000/in_eg/createALLEGAG', data)
       .then(response => {
         console.log(response.data); 
       })
