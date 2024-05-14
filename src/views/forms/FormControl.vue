@@ -5,40 +5,51 @@
     <div class="division-container">
       <div class="numero-fecha-container">
         <div class="numero-inputs">
-          <label>Cuenta Bancaria:</label>
-          <div class="numero-input">
+          <label>Cuenta bancaria:</label>
             <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.banco_y_cuenta">{{ cuentaN.banco_y_cuenta }}</option> 
+              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
             </select>
-          </div>
+          <label>Numero de documento:</label>
+              <input type="text" v-model="numero_documento">  
         </div>     
+        <div class="fecha-inputs">
+            <label>Fecha</label>
+            <input type="date" v-model="fecha">
+        </div>
       </div>
     </div>
     
+    <!-- Segunda división -->
+    <div class="division-container">
+      <label>MONTO A RETIRAR BANCOS</label>
+      <label>Valor a retirar:</label>
+      <input type="text" v-model="monto">
+      <label>Observaciones</label>
+      <input type="text" v-model="descripcion">
+    </div>
     
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
     <!-- Botón Agregar -->
-    <button @click="agregarDivision">Guardar</button>
+    <button @click="enviarDatos">Guardar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted  } from 'vue';
+import { ref, reactive, onMounted} from 'vue';
+
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
+    const fecha = ref('');
+    const descripcion = ref('');
+    const monto = ref('');
+    const numero_documento = ref('');
+    const cuentas_bancarias = reactive([]);
     const cuentaBName = ref('');
-    let cuentas_bancarias = reactive([]);
-
-
-    const agregarDivision = () => {
-      // Lógica para agregar una nueva división
-    }
 
     const cargarBancosNoCuenta = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
@@ -51,17 +62,49 @@ export default {
         });
     };
 
-    onMounted(() => {
-      cargarBancosNoCuenta();
+    
+
+
+    const enviarDatos = () => {
+     axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaAG', {
+      cuenta_bancaria: cuentaBName.value,
+      fecha: fecha.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      numero_documento: numero_documento.value,
+    })
+     .then(response => {
+      console.log(response.data); 
+    })
+    .catch(error => {
+      console.error(error);
     });
 
+    }
+
+    const limpiar = () => {
+      fecha.value = '';
+      descripcion.value = '';
+      monto.value = '';
+     cuentas_bancarias.value = '';
+     numero_documento.value = '';
+     cuentaBName.value = '';
+    }
+
+    onMounted(() => {
+  cargarBancosNoCuenta();
+});
+
     return {
-      activeKey,
-      flushActiveKey,
+      limpiar,
+      enviarDatos,
+      cargarBancosNoCuenta,
       cuentaBName,
       cuentas_bancarias,
-      agregarDivision,
-      cargarBancosNoCuenta
+      fecha,
+      monto,
+      descripcion,
+      numero_documento
     }
   },
 }
