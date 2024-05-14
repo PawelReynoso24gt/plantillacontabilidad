@@ -138,25 +138,25 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Deposito de caja',
+        name: 'Deposito de caja Agrícola',
         to: '/forms/form-control',
       },
       {
         component: 'CNavItem',
-        name: 'Retiros de bancos',
+        name: 'Retiros de bancos Agrícola',
         to: '/forms/select',
       },
-     /* {
+      {
         component: 'CNavItem',
-        name: 'Checks & Radios',
+        name: 'Deposito de caja Capilla',
         to: '/forms/checks-radios',
       },
       {
         component: 'CNavItem',
-        name: 'Range',
+        name: 'Retiros de bancos Capilla',
         to: '/forms/range',
       },
-      {
+     /* {
         component: 'CNavItem',
         name: 'Input Group',
         to: '/forms/input-group',
