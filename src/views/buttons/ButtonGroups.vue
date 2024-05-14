@@ -1,423 +1,378 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Basic example</span>
-        </CCardHeader>
-        <CCardBody>
-          <p>
-            Wrap a series of <code>&lt;CButton&gt;</code> components in
-            <code>&lt;CButtonGroup&gt;</code>.
-          </p>
-          <DocsExample href="components/button-group.html">
-            <CButtonGroup role="group" aria-label="Basic example">
-              <CButton color="primary">Left</CButton>
-              <CButton color="primary">Middle</CButton>
-              <CButton color="primary">Right</CButton>
-            </CButtonGroup>
-          </DocsExample>
-          <p>
-            These classes can also be added to groups of links, as an
-            alternative to the
-            <code>&lt;CNav&gt;</code> components.
-          </p>
-          <DocsExample href="components/button-group.html">
-            <CButtonGroup>
-              <CButton href="#" color="primary" active> Active link </CButton>
-              <CButton href="#" color="primary"> Link </CButton>
-              <CButton href="#" color="primary"> Link </CButton>
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Mixed styles</span>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="components/button-group.html#mixed-styles">
-            <CButtonGroup role="group" aria-label="Basic mixed styles example">
-              <CButton color="danger">Left</CButton>
-              <CButton color="warning">Middle</CButton>
-              <CButton color="success">Right</CButton>
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Outlined styles</span>
-        </CCardHeader>
-        <CCardBody>
-          <DocsExample href="components/button-group.html#outlined-styles">
-            <CButtonGroup role="group" aria-label="Basic outlined example">
-              <CButton color="primary" variant="outline"> Left </CButton>
-              <CButton color="primary" variant="outline"> Middle </CButton>
-              <CButton color="primary" variant="outline"> Right </CButton>
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong>
-          <span>Checkbox and radio button groups</span>
-        </CCardHeader>
-        <CCardBody>
-          <p>
-            Combine button-like checkbox and radio toggle buttons into a
-            seamless looking button group.
-          </p>
-          <DocsExample
-            href="components/button-group.html#checkbox-and-radio-button-groups"
-          >
-            <CButtonGroup
-              role="group"
-              aria-label="Basic checkbox toggle button group"
-            >
-              <CFormCheck
-                id="btncheck1"
-                :button="{ color: 'primary', variant: 'outline' }"
-                autocomplete="off"
-                label="Checkbox 1"
-              />
-              <CFormCheck
-                id="btncheck2"
-                :button="{ color: 'primary', variant: 'outline' }"
-                autocomplete="off"
-                label="Checkbox 2"
-              />
-              <CFormCheck
-                id="btncheck3"
-                :button="{ color: 'primary', variant: 'outline' }"
-                autocomplete="off"
-                label="Checkbox 3"
-              />
-            </CButtonGroup>
-          </DocsExample>
-          <DocsExample
-            href="components/button-group.html#checkbox-and-radio-button-groups"
-          >
-            <CButtonGroup
-              role="group"
-              aria-label="Basic checkbox toggle button group"
-            >
-              <CFormCheck
-                id="btnradio1"
-                type="radio"
-                :button="{ color: 'primary', variant: 'outline' }"
-                name="btnradio"
-                autocomplete="off"
-                label="Radio 1"
-              />
-              <CFormCheck
-                id="btnradio2"
-                type="radio"
-                :button="{ color: 'primary', variant: 'outline' }"
-                name="btnradio"
-                autocomplete="off"
-                label="Radio 2"
-              />
-              <CFormCheck
-                id="btnradio3"
-                type="radio"
-                :button="{ color: 'primary', variant: 'outline' }"
-                name="btnradio"
-                autocomplete="off"
-                label="Radio 3"
-              />
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Button toolbar</span>
-        </CCardHeader>
-        <CCardBody>
-          <p>
-            Join sets of button groups into button toolbars for more complicated
-            components. Use utility classes as needed to space out groups,
-            buttons, and more.
-          </p>
-          <DocsExample href="components/button-group.html#button-toolbar">
-            <CButtonToolbar
-              role="group"
-              aria-label="Toolbar with button groups"
-            >
-              <CButtonGroup class="me-2" role="group" aria-label="First group">
-                <CButton color="primary">1</CButton>
-                <CButton color="primary">2</CButton>
-                <CButton color="primary">3</CButton>
-                <CButton color="primary">4</CButton>
-              </CButtonGroup>
-              <CButtonGroup class="me-2" role="group" aria-label="Second group">
-                <CButton color="secondary">5</CButton>
-                <CButton color="secondary">6</CButton>
-                <CButton color="secondary">7</CButton>
-              </CButtonGroup>
-              <CButtonGroup class="me-2" role="group" aria-label="Third group">
-                <CButton color="info">8</CButton>
-              </CButtonGroup>
-            </CButtonToolbar>
-          </DocsExample>
-          <p>
-            Feel free to combine input groups with button groups in your
-            toolbars. Similar to the example above, you’ll likely need some
-            utilities through to space items correctly.
-          </p>
-          <DocsExample href="components/button-group.html#button-toolbar">
-            <CButtonToolbar
-              class="mb-3"
-              role="group"
-              aria-label="Toolbar with button groups"
-            >
-              <CButtonGroup class="me-2" role="group" aria-label="First group">
-                <CButton color="secondary" variant="outline"> 1 </CButton>
-                <CButton color="secondary" variant="outline"> 2 </CButton>
-                <CButton color="secondary" variant="outline"> 3 </CButton>
-                <CButton color="secondary" variant="outline"> 4 </CButton>
-              </CButtonGroup>
-              <CInputGroup>
-                <CInputGroupText>@</CInputGroupText>
-                <CFormInput
-                  placeholder="Input group example"
-                  aria-label="Input group example"
-                  aria-describedby="btnGroupAddon"
-                />
-              </CInputGroup>
-            </CButtonToolbar>
-            <CButtonToolbar
-              class="justify-content-between"
-              role="group"
-              aria-label="Toolbar with button groups"
-            >
-              <CButtonGroup class="me-2" role="group" aria-label="First group">
-                <CButton color="secondary" variant="outline"> 1 </CButton>
-                <CButton color="secondary" variant="outline"> 2 </CButton>
-                <CButton color="secondary" variant="outline"> 3 </CButton>
-                <CButton color="secondary" variant="outline"> 4 </CButton>
-              </CButtonGroup>
-              <CInputGroup>
-                <CInputGroupText>@</CInputGroupText>
-                <CFormInput
-                  placeholder="Input group example"
-                  aria-label="Input group example"
-                  aria-describedby="btnGroupAddon"
-                />
-              </CInputGroup>
-            </CButtonToolbar>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Sizing</span>
-        </CCardHeader>
-        <CCardBody>
-          <p>
-            Alternatively, of implementing button sizing classes to each button
-            in a group, set
-            <code>size</code> property to all
-            <code>&lt;CButtonGroup&gt;</code>&#39;s, including each one when
-            nesting multiple groups.
-          </p>
-          <DocsExample href="components/button-group.html#sizing">
-            <CButtonGroup
-              size="lg"
-              role="group"
-              aria-label="Large button group"
-            >
-              <CButton color="dark" variant="outline"> Left </CButton>
-              <CButton color="dark" variant="outline"> Middle </CButton>
-              <CButton color="dark" variant="outline"> Right </CButton>
-            </CButtonGroup>
-            <br />
-            <CButtonGroup role="group" aria-label="Default button group">
-              <CButton color="dark" variant="outline"> Left </CButton>
-              <CButton color="dark" variant="outline"> Middle </CButton>
-              <CButton color="dark" variant="outline"> Right </CButton>
-            </CButtonGroup>
-            <br />
-            <CButtonGroup
-              size="sm"
-              role="group"
-              aria-label="Small button group"
-            >
-              <CButton color="dark" variant="outline"> Left </CButton>
-              <CButton color="dark" variant="outline"> Middle </CButton>
-              <CButton color="dark" variant="outline"> Right </CButton>
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Nesting</span>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Put a <code>&lt;CButtonGroup&gt;</code> inside another
-            <code>&lt;CButtonGroup&gt;</code> when you need dropdown menus
-            combined with a series of buttons.
-          </p>
-          <DocsExample href="components/button-group.html#nesting">
-            <CButtonGroup
-              role="group"
-              aria-label="Button group with nested dropdown"
-            >
-              <CButton color="primary">1</CButton>
-              <CButton color="primary">2</CButton>
-              <CDropdown variant="btn-group">
-                <CDropdownToggle color="primary">Dropdown</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">Action</CDropdownItem>
-                  <CDropdownItem href="#">Another action</CDropdownItem>
-                  <CDropdownItem href="#">Something else here</CDropdownItem>
-                  <CDropdownDivider />
-                  <CDropdownItem href="#">Separated link</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Button Group</strong> <span>Vertical variation</span>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Create a set of buttons that appear vertically stacked rather than
-            horizontally.
-            <strong>Split button dropdowns are not supported here.</strong>
-          </p>
-          <DocsExample href="components/button-group.html/#vertical-variation">
-            <CButtonGroup
-              vertical
-              role="group"
-              aria-label="Vertical button group"
-            >
-              <CButton color="dark">Button</CButton>
-              <CButton color="dark">Button</CButton>
-              <CButton color="dark">Button</CButton>
-              <CButton color="dark">Button</CButton>
-              <CButton color="dark">Button</CButton>
-              <CButton color="dark">Button</CButton>
-              <CButton color="dark">Button</CButton>
-            </CButtonGroup>
-          </DocsExample>
-          <DocsExample href="components/button-group.html/#vertical-variation">
-            <CButtonGroup
-              vertical
-              role="group"
-              aria-label="Vertical button group"
-            >
-              <CButton color="primary">Button</CButton>
-              <CButton color="primary">Button</CButton>
-              <CDropdown variant="btn-group">
-                <CDropdownToggle color="primary">Dropdown</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">Action</CDropdownItem>
-                  <CDropdownItem href="#">Another action</CDropdownItem>
-                  <CDropdownItem href="#">Something else here</CDropdownItem>
-                  <CDropdownDivider />
-                  <CDropdownItem href="#">Separated link</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-              <CButton color="primary">Button</CButton>
-              <CButton color="primary">Button</CButton>
-              <CDropdown variant="btn-group">
-                <CDropdownToggle color="primary">Dropdown</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">Action</CDropdownItem>
-                  <CDropdownItem href="#">Another action</CDropdownItem>
-                  <CDropdownItem href="#">Something else here</CDropdownItem>
-                  <CDropdownDivider />
-                  <CDropdownItem href="#">Separated link</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-              <CDropdown variant="btn-group">
-                <CDropdownToggle color="primary">Dropdown</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">Action</CDropdownItem>
-                  <CDropdownItem href="#">Another action</CDropdownItem>
-                  <CDropdownItem href="#">Something else here</CDropdownItem>
-                  <CDropdownDivider />
-                  <CDropdownItem href="#">Separated link</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-              <CDropdown variant="btn-group">
-                <CDropdownToggle color="primary">Dropdown</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">Action</CDropdownItem>
-                  <CDropdownItem href="#">Another action</CDropdownItem>
-                  <CDropdownItem href="#">Something else here</CDropdownItem>
-                  <CDropdownDivider />
-                  <CDropdownItem href="#">Separated link</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            </CButtonGroup>
-          </DocsExample>
-          <DocsExample href="components/button-group.html/#vertical-variation">
-            <CButtonGroup
-              vertical
-              role="group"
-              aria-label="Vertical button group"
-            >
-              <CFormCheck
-                id="vbtnradio1"
-                type="radio"
-                :button="{ color: 'danger', variant: 'outline' }"
-                name="vbtnradio"
-                autocomplete="off"
-                label="Radio
-              1"
-                checked
-              />
-              <CFormCheck
-                id="vbtnradio2"
-                type="radio"
-                :button="{ color: 'danger', variant: 'outline' }"
-                name="vbtnradio"
-                autocomplete="off"
-                label="Radio
-              2"
-              />
-              <CFormCheck
-                id="vbtnradio3"
-                type="radio"
-                :button="{ color: 'danger', variant: 'outline' }"
-                name="vbtnradio"
-                autocomplete="off"
-                label="Radio
-              3"
-              />
-            </CButtonGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <div class="division-container">
+      <div class="fecha-inputs">
+            <label>Ingreso para:</label>
+            <select v-model="tipo">   
+              <option value="caja">caja</option>
+              <option value="bancos">bancos</option>  
+            </select>
+            <!--button @click="seleccionar">Seleccionar</button -->
+        </div>
+    </div>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">
+        <div class="fecha-inputs">
+            <label>Fecha</label>
+            <input type="date" v-model="fecha">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Segunda división -->
+    <div class="division-container">
+      <label>DPI/NIT/CF</label>
+      <input type="text" v-model="identificacion">
+      <label>Nombre/CF</label>
+      <input type="text" v-model="nombre">
+      <label>Observaciones de comprobante</label>
+      <input type="text" v-model="descripcion">
+    </div>
+    
+    <!-- Tercera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">
+        <div class="numero-inputs">
+          <label>Cuenta</label>
+          <select v-model="cuentaCMB" @change="cargarCuentas">  
+            <option v-for="cuentab in cuentas" :value="cuentab.cuenta">{{ cuentab.cuenta }}</option> 
+          </select>
+        </div>
+        <div class="fecha-inputs">
+          <label>Monto</label>
+          <input type="text" v-model="monto">
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuarta división -->
+    <div class="division-container" v-if="mostrarDivisionCuatro">
+      <label>DATOS DEL PAGO</label>
+      <div class="input-container">
+        <label>Documento:</label>
+        <select v-model="documento">
+          <option value="Transferencia">Transferencia</option> 
+          <option value="Depósitos">Depósitos</option>
+          <option value="Cheque">Cheque</option> 
+        </select>
+      </div>
+      <div class="input-container">
+        <label>Cuenta Bancaria:</label>
+        <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
+              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
+        </select>
+      </div>
+      <div class="input-container">
+        <label>No. Documento:</label>
+        <input type="text" v-model="numero_documento">
+      </div>
+      <div class="input-container">
+        <label>Fecha emisión:</label>
+        <input type="date" v-model="fecha_emision">
+      </div>
+    </div>
+
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="enviarDatos">Guardar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
+  </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { ref, reactive, onMounted, watch } from 'vue';
+
 export default {
-  name: 'ButtonGroups',
+  name: 'Accordion',
+  setup() {
+    const otroValor = ref('opcion1');
+    const mostrarDivisionCuatro = ref(true);
+    const fecha = ref('');
+    const identificacion = ref('');
+    const descripcion = ref('');
+    const nombre = ref('');
+    const monto = ref('');
+    const cuenta_bancaria = ref('');
+    const cuenta = ref('');
+    const documento = ref('');
+    const numero_documento = ref('');
+    const fecha_emision = ref('');
+    const tipo = ref('');
+    const cuentaCMB = ref('');
+    const bancos_b = ref('');
+    const cuentas = reactive([]);
+    const cuentaBName = ref('');
+    const cuentas_bancarias = reactive([]);
+
+    const agregarDivision = () => {
+      // Lógica para agregar una nueva división
+    }
+
+    const seleccionar = () => {
+    mostrarDivisionCuatro.value = tipo.value === 'bancos'; // Muestra la división 4 solo si se selecciona la opción de bancos
+    if (tipo.value === 'caja') {
+      mostrarDivisionCuatro.value = false; // Oculta la división 4 si se selecciona la opción de caja
+    }
+    fecha.value = '';
+    identificacion.value = '';
+    nombre.value = '';
+    descripcion.value = '';
+    monto.value = '';
+   }
+
+   const limpiar = () => {
+     fecha.value = '',
+     identificacion.value = '';
+     descripcion.value = '';
+     nombre.value = '';
+     monto.value = '';
+     cuenta_bancaria.value = '';
+     cuenta.value = '';
+     documento.value = '';
+     numero_documento.value = '';
+     fecha_emision.value = '';
+     tipo.value = '';
+     cuentaCMB.value = '';
+     bancos_b.value = '';
+     cuentas.value = '';
+     cuentaBName.value = '';
+     cuentas_bancarias.value = '';
+    }
+
+   const controlarVisibilidadDivisionCuatro = () => {
+      mostrarDivisionCuatro.value = tipo.value === 'bancos';
+    }
+
+    watch(tipo, controlarVisibilidadDivisionCuatro);
+
+    controlarVisibilidadDivisionCuatro();
+
+    const cargarCuentas = () => {
+      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasIngresoCA')
+        .then((response) => {
+          cuentas.splice(0, cuentas.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    const cargarBancosNoCuenta = () => {
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
+        .then((response) => {
+          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+    const cargarBancos = () => {
+      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
+        .then((response) => {
+          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
+          console.log(response.data); 
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+
+
+    const enviarDatos = () => {
+  if (tipo.value === 'caja') { 
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
+      fecha: fecha.value,
+      identificacion: identificacion.value,
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      tipo: tipo.value,
+      cuenta: cuentaCMB.value,
+    })
+    .then(response => {
+      console.log(response.data); 
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  } else {
+    // Si no es "caja", enviar los datos como lo estás haciendo actualmente
+    const data = {
+      fecha: fecha.value,
+      identificacion: identificacion.value,
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      monto: monto.value,
+      tipo: tipo.value,
+      cuenta: cuentaCMB.value,
+      cuenta_bancaria: bancos_b.value,
+      documento: documento.value,
+      numero_documento: numero_documento.value,
+      fecha_emision: fecha_emision.value,
+      cuenta_bancaria: cuentaBName.value,
+    };
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINCA', data)
+      .then(response => {
+        console.log(response.data); 
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+};
+
+
+
+    onMounted(() => {
+  cargarCuentas();
+  cargarBancos();
+  cargarBancosNoCuenta();
+});
+
+    return {
+      limpiar,
+      agregarDivision,
+      otroValor,
+      mostrarDivisionCuatro,
+      fecha,
+      identificacion,
+      nombre,
+      descripcion,
+      monto,
+      tipo,
+      cuenta_bancaria,
+      cuenta,
+      cuentas,
+      cuentas_bancarias,
+      documento,
+      numero_documento,
+      fecha_emision,
+      cuentaCMB,
+      cuentaBName,
+      bancos_b,
+      seleccionar,
+      enviarDatos,
+      cargarCuentas,
+      cargarBancos,
+      cargarBancosNoCuenta
+    }
+  },
 }
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>
