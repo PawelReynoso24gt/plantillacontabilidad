@@ -7,7 +7,6 @@
               <option value="caja">caja</option>
               <option value="bancos">bancos</option>  
             </select>
-            <button @click="seleccionar">Seleccionar</button>
         </div>
     </div>
     <!-- Primera división -->
@@ -84,7 +83,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted  } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 
 export default {
   name: 'Accordion',
@@ -112,18 +111,13 @@ export default {
       // Lógica para agregar una nueva división
     }
 
-    const seleccionar = () => {
-    mostrarDivisionCuatro.value = tipo.value === 'bancos'; // Muestra la división 4 solo si se selecciona la opción de bancos
-    if (tipo.value === 'caja') {
-      mostrarDivisionCuatro.value = false; // Oculta la división 4 si se selecciona la opción de caja
+    const controlarVisibilidadDivisionCuatro = () => {
+      mostrarDivisionCuatro.value = tipo.value === 'bancos';
     }
-    fecha.value = '';
-    identificacion.value = '';
-    nombre.value = '';
-    descripcion.value = '';
-    monto.value = '';
-   }
 
+    watch(tipo, controlarVisibilidadDivisionCuatro);
+
+    controlarVisibilidadDivisionCuatro();
 
     const cargarCuentas = () => {
       axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoCA')
@@ -230,10 +224,10 @@ export default {
       cuentaBName,
       bancos_b,
       cuentaBName,
-      seleccionar,
       enviarDatos,
       cargarCuentas,
       cargarBancos,
+      controlarVisibilidadDivisionCuatro,
       cargarBancosNoCuenta
     }
   },
