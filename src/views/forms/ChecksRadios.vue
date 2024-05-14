@@ -35,6 +35,7 @@
 
     <!-- Botón Agregar -->
     <button @click="insertar">Guardar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 
@@ -57,6 +58,15 @@ export default {
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
+
+    const limpiar = () => {
+      cuentaBName.value = '',
+      numero_documento.value = '',
+      fecha.value = '',
+      monto.value = '',
+      descripcion.value = '',
+      descripcion.value = ''
+    };
 
     const cargarBancosNoCuenta = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
@@ -104,7 +114,8 @@ export default {
       numero_documento,
       agregarDivision,
       cargarBancosNoCuenta,
-      insertar
+      insertar,
+      limpiar
     }
   },
 }
