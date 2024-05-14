@@ -2,12 +2,12 @@
   <div>
     <div class="division-container">
       <div class="fecha-inputs">
-            <label>Egreso para:</label>
+            <label>Ingreso para:</label>
             <select v-model="tipo">   
               <option value="caja">caja</option>
               <option value="bancos">bancos</option>  
             </select>
-            <button @click="seleccionar">Seleccionar</button>
+          <!--  <button @click="seleccionar">Seleccionar</button>-->
         </div>
     </div>
     <!-- Primera división -->
@@ -78,19 +78,20 @@
 
     <!-- Botón Agregar -->
     <button @click="enviarDatos">Guardar</button>
-    <button @click="agregarDivision" style="margin-left: 10px;">Limpiar</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted  } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
+
 
 export default {
   name: 'Accordion',
   setup() {
     const otroValor = ref('opcion1');
-    const mostrarDivisionCuatro = ref(true);
+    const mostrarDivisionCuatro = ref(false);
     const fecha = ref('');
     const identificacion = ref('');
     const descripcion = ref('');
@@ -108,8 +109,23 @@ export default {
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
 
-    const agregarDivision = () => {
-      // Lógica para agregar una nueva división
+    const limpiar = () => {
+     fecha.value = '',
+     identificacion.value = '';
+     descripcion.value = '';
+     nombre.value = '';
+     monto.value = '';
+     cuenta_bancaria.value = '';
+     cuenta.value = '';
+     documento.value = '';
+     numero_documento.value = '';
+     fecha_emision.value = '';
+     tipo.value = '';
+     cuentaCMB.value = '';
+     bancos_b.value = '';
+     cuentas.value = '';
+     cuentaBName.value = '';
+     cuentas_bancarias.value = '';
     }
 
     const seleccionar = () => {
@@ -123,10 +139,17 @@ export default {
     descripcion.value = '';
     monto.value = '';
    }
+    
+    const controlarVisibilidadDivisionCuatro = () => {
+      mostrarDivisionCuatro.value = tipo.value === 'bancos';
+    }
 
+    watch(tipo, controlarVisibilidadDivisionCuatro);
+
+    controlarVisibilidadDivisionCuatro();
 
     const cargarCuentas = () => {
-      axios.get('http://127.0.0.1:8000/in_eg/getByCuentasI')
+      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasIngresoAG')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
@@ -161,7 +184,7 @@ export default {
 
     const enviarDatos = () => {
   if (tipo.value === 'caja') { 
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCaja', {
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaAG', {
       fecha: fecha.value,
       identificacion: identificacion.value,
       nombre: nombre.value,
@@ -192,7 +215,7 @@ export default {
       fecha_emision: fecha_emision.value,
       cuenta_bancaria: cuentaBName.value,
     };
-    axios.post('http://127.0.0.1:8000/in_eg/createALLIN', data)
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINAG', data)
       .then(response => {
         console.log(response.data); 
       })
@@ -211,7 +234,7 @@ export default {
 });
 
     return {
-      agregarDivision,
+      limpiar,
       otroValor,
       mostrarDivisionCuatro,
       fecha,
