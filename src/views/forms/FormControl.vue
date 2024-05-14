@@ -21,7 +21,7 @@
     
     <!-- Segunda división -->
     <div class="division-container">
-      <label>MONTO A RETIRAR BANCOS</label>
+      <label>MONTO A RETIRAR DE CAJA</label>
       <label>Valor a retirar:</label>
       <input type="text" v-model="monto">
       <label>Observaciones</label>
