@@ -37,15 +37,15 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Engreso',
+        name: 'Engreso Agrícola',
         to: '/base/accordion',
       },
-     /* {
+      {
         component: 'CNavItem',
-        name: 'Breadcrumbs',
+        name: 'Engreso Capilla',
         to: '/base/breadcrumbs',
       },
-      {
+      /*{
         component: 'CNavItem',
         name: 'Cards',
         to: '/base/cards',
@@ -115,15 +115,15 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Ingreso',
+        name: 'Ingreso Agrícola',
         to: '/buttons/standard-buttons',
       },
-     /* {
+     {
         component: 'CNavItem',
-        name: 'Button Groups',
+        name: 'Ingreso Capilla',
         to: '/buttons/button-groups',
       },
-      {
+     /*  {
         component: 'CNavItem',
         name: 'Dropdowns',
         to: '/buttons/dropdowns',

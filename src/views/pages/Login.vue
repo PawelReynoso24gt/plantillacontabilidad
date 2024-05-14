@@ -20,7 +20,7 @@
                       autocomplete="usuarios"
                     />
                   </CInputGroup>
-                  <CInputGroup class="mb-4">
+                  <CInputGroup class="mb-3">
                     <CInputGroupText>
                       <CIcon icon="cil-lock-locked" />
                     </CInputGroupText>
@@ -31,6 +31,17 @@
                       placeholder="Contraseña"
                       autocomplete="contrasenias"
                     />
+                  </CInputGroup>
+                  <!-- Agregar combobox para seleccionar tipo de proyecto -->
+                  <CInputGroup class="mb-4">
+                    <CInputGroupText>
+                      <CIcon icon="cil-project" />
+                    </CInputGroupText>
+                    <select v-model="tipoProyecto" class="form-select">
+                      <option :value="null" disabled>Seleccionar tipo de proyecto</option>
+                      <option value="Proyecto Agrícola">Proyecto Agrícola</option>
+                      <option value="Proyecto Capilla">Proyecto Capilla</option>
+                    </select>
                   </CInputGroup>
                   <CRow>
                     <CCol :xs="6">
@@ -77,33 +88,41 @@ export default {
   setup() {
     const usuarios = ref('');
     const contrasenias = ref('');
+    const tipoProyecto = ref(null); // Variable para almacenar el tipo de proyecto seleccionado
 
     const router = useRouter();
 
     const login = async () => {
-  try {
-    console.log('Usuario:', usuarios.value);
-    console.log('Contraseña:', contrasenias.value);
-    const response = await axios.post('http://127.0.0.1:8000/logins/authenticate', {
-      usuarios: usuarios.value,
-      contrasenias: contrasenias.value
-    }); 
-    if (response.status === 200) {
-    console.log('Autenticación exitosa');
-    localStorage.setItem('token', response.data.token);
+      try {
+        console.log('Usuario:', usuarios.value);
+        console.log('Contraseña:', contrasenias.value);
+        console.log('Tipo de proyecto:', tipoProyecto.value); // Agrega esta línea para ver el tipo de proyecto seleccionado
+        const response = await axios.post('http://127.0.0.1:8000/logins/authenticate', {
+          usuarios: usuarios.value,
+          contrasenias: contrasenias.value,
+          tipoProyecto: tipoProyecto.value, // Envía el tipo de proyecto al servidor
+        }); 
+        if (response.status === 200) {
+          console.log('Autenticación exitosa');
+          localStorage.setItem('tipoUsuario', response.data.tipoUsuario);
+          localStorage.setItem('token', response.data.token);
           // Redirigir al dashboard
-    router.push('/dashboard');
-  } else {
-    console.error('Error de inicio de sesión: Datos de autenticación no válidos');
-  }
+          router.push('/dashboard');
+        } else {
+          console.error('Error de inicio de sesión: Datos de autenticación no válidos');
+        }
+      } catch (error) {
+        console.error('Error de inicio de sesión:', error);
+      }
+    };
 
-  } catch (error) {
-    console.error('Error de inicio de sesión:', error);
-  }
-};
+    // Opciones para el combobox de tipo de proyecto
+    const opcionesTipoProyecto = [
+      { value: 'agricola', text: 'Proyecto Agrícola' },
+      { value: 'capilla', text: 'Proyecto Capilla' },
+    ];
 
-
-    return { usuarios, contrasenias, login };
+    return { usuarios, contrasenias, tipoProyecto, login, opcionesTipoProyecto };
   }
 };
 </script>
