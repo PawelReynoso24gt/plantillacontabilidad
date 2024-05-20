@@ -42,7 +42,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/getWithCuentasLibroDiario', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/libroDiario', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
@@ -56,9 +56,9 @@ export default {
         doc.rect(60, 15, 90, 20); // Dibujar el cuadro alrededor del nombre del proyecto
 
         doc.setFontSize(12);
-        doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
+        doc.text(`Dirección del Proyecto: ${'8va calle 5-21 zona 10, Quetzaltenango'}`, 20, 40);
 
-        const textoAdicional = 'REPORTE: LIBRO BANCOS';
+        const textoAdicional = 'REPORTE: LIBRO DIARIO';
         doc.setFontSize(10);
         doc.text(textoAdicional, 20, 50);
 
@@ -68,20 +68,20 @@ export default {
         // Obtener las columnas
         const columnas = [
           { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'Número de Documento', dataKey: 'numero_documento' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },
           { title: 'Descripción', dataKey: 'descripcion' },
           { title: 'Acredita', dataKey: 'acredita' },
           { title: 'Debita', dataKey: 'debita' },
-          { title: 'Saldo', dataKey: 'total' },
-          { title: 'Número de Documento', dataKey: 'numero_documento' }
+          { title: 'Saldo', dataKey: 'total' }
         ];
 
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso, index) => {
           const total = typeof ingresoEgreso.total === 'number' ? ingresoEgreso.total.toFixed(2) : '';
 
-          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total bancos') {
+          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total') {
             return {
               nomenclatura: ingresoEgreso.nomenclatura,
               fecha: ingresoEgreso.fecha || '',
