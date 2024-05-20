@@ -156,21 +156,7 @@ export default [
         name: 'Retiros de bancos Capilla',
         to: '/forms/range',
       },
-     /* {
-        component: 'CNavItem',
-        name: 'Input Group',
-        to: '/forms/input-group',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Floating Labels',
-        to: '/forms/floating-labels',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Layout',
-        to: '/forms/layout',
-      },
+     /* 
       {
         component: 'CNavItem',
         name: 'Validation',
@@ -178,21 +164,21 @@ export default [
       },*/
     ],
   },
-  {
+  /*{
     component: 'CNavItem',
     name: 'Informes',
     to: '/charts',
     icon: 'cil-chart-pie',
-  },
-  /*{
+  },*/
+  {
     component: 'CNavGroup',
-    name: 'Sistema',
+    name: 'Informes',
     to: '/icons',
     icon: 'cil-star',
     items: [
       {
         component: 'CNavItem',
-        name: 'CoreUI Icons',
+        name: 'Libro Caja Agrícola',
         to: '/icons/coreui-icons',
         badge: {
           color: 'info',
@@ -201,16 +187,31 @@ export default [
       },
       {
         component: 'CNavItem',
-        name: 'Brands',
+        name: 'Libro Bancos Agrícola',
         to: '/icons/brands',
       },
       {
         component: 'CNavItem',
-        name: 'Flags',
+        name: 'Libro Diario Agrícola',
         to: '/icons/flags',
       },
+      {
+        component: 'CNavItem',
+        name: 'Libro Caja Capilla',
+        to: '/forms/input-group',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Libro Bancos Capilla',
+        to: '/forms/floating-labels',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Libro Diario Capilla',
+        to: '/forms/layout',
+      },
     ],
-  },*/
+  },
   {
     component: 'CNavGroup',
     name: 'CRUDS Simples',

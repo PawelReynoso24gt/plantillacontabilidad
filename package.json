@@ -30,6 +30,7 @@
     "@vuelidate/validators": "^2.0.4",
     "axios": "^1.6.8",
     "chart.js": "^4.4.2",
+    "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "simplebar-vue": "^2.3.3",

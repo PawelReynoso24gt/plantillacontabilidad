@@ -1,36 +1,259 @@
 <template>
-  <CRow>
-    <CCol>
-      <CCard>
-        <CCardHeader>CoreUI Icons Free</CCardHeader>
-        <CCardBody>
-          <CRow class="text-center">
-            <template v-for="(icon, iconName) in icons" :key="iconName">
-              <CCol class="mb-5" :xs="3" :sm="2">
-                <CIcon :content="icon" size="xxl" />
-                <div>{{ toKebabCase(iconName) }}</div>
-              </CCol>
-            </template>
-          </CRow>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <label>LIBRO DE CAJA</label>
+    <!-- Primera división -->
+    <div class="division-container">
+      <div class="numero-fecha-container">    
+        <div class="fecha-inputs">
+            <label>Fecha Inicial</label>
+            <input type="date" v-model="fechaInicial">
+        </div>
+        <div class="fecha-inputs">
+            <label>Fecha Final</label>
+            <input type="date" v-model="fechaFinal">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Espacio entre la división 3 y el botón -->
+    <div style="margin-top: 20px;"></div>
+
+    <!-- Botón Agregar -->
+    <button @click="generarPDF">Generar PDF</button>
+  </div>
 </template>
 
 <script>
-import { freeSet } from '@coreui/icons'
+import { ref } from 'vue'
+import jsPDF from 'jspdf'
+import axios from 'axios'
+import 'jspdf-autotable'
+
 export default {
-  name: 'CoreUIIcons',
+  name: 'Accordion',
   setup() {
-    const toKebabCase = (str) =>
-      str.replace(/([a-z])([A-Z0-9])/g, '$1-$2').toLowerCase()
-    const icons = freeSet
+    const activeKey = ref(1)
+    const flushActiveKey = ref(1)
+    const fechaInicial = ref('')
+    const fechaFinal = ref('')
+
+    const agregarDivision = () => {
+      // Lógica para agregar una nueva división
+    }
+
+    const nombreEncabezado = ref('PROYECTO AGRICOLA')
+    const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango')
+
+    const generarPDF = async () => {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/fecha', {
+          fechaInicial: fechaInicial.value,
+          fechaFinal: fechaFinal.value
+        });
+        const ingresosEgresos = response.data;
+
+        const doc = new jsPDF();
+
+        // Agregar encabezado al PDF
+        doc.setFontSize(16);
+        doc.text(nombreEncabezado.value, 105, 30, { align: 'center' });
+        doc.rect(60, 15, 90, 20); // Dibujar el cuadro alrededor del nombre del proyecto
+
+        doc.setFontSize(12);
+        doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
+
+        const textoAdicional = 'REPORTE: LIBRO CAJA';
+        doc.setFontSize(10);
+        doc.text(textoAdicional, 20, 50);
+
+        const especificacionFechas = `ESPECIFICACIÓN: Desde: ${fechaInicial.value}, Hasta: ${fechaFinal.value}`;
+        doc.text(especificacionFechas, 20, 60);
+
+        // Obtener las columnas
+        const columnas = [
+          { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'Fecha', dataKey: 'fecha' },
+          { title: 'Cuenta', dataKey: 'cuenta' },
+          { title: 'Descripción', dataKey: 'descripcion' },
+          { title: 'Acredita', dataKey: 'acredita' },
+          { title: 'Debita', dataKey: 'debita' },
+          { title: 'Saldo', dataKey: 'total' }
+        ];
+
+        // Construir la tabla
+        const filas = ingresosEgresos.map((ingresoEgreso, index) => {
+          const total = typeof ingresoEgreso.total === 'number' ? ingresoEgreso.total.toFixed(2) : '';
+
+          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
+            return {
+              nomenclatura: ingresoEgreso.nomenclatura,
+              fecha: ingresoEgreso.fecha || '',
+              cuenta: ingresoEgreso.cuenta,
+              descripcion: ingresoEgreso.descripcion,
+              acredita: '', // Acredita vacío
+              debita: '', // Debita vacío
+              total:  ingresoEgreso.total ? parseFloat(ingresoEgreso.total).toFixed(2) : ''
+            };
+          } else {
+            return {
+              nomenclatura: ingresoEgreso.nomenclatura,
+              fecha: ingresoEgreso.fecha,
+              cuenta: ingresoEgreso.cuenta,
+              descripcion: ingresoEgreso.descripcion,
+              acredita: ingresoEgreso.acredita ? parseFloat(ingresoEgreso.acredita).toFixed(2) : '',
+              debita: ingresoEgreso.debita ? parseFloat(ingresoEgreso.debita).toFixed(2) : '',
+              total:  ingresoEgreso.total ? parseFloat(ingresoEgreso.total).toFixed(2) : ''
+            };
+          }
+        });
+
+        doc.autoTable({
+          columns: columnas,
+          body: filas,
+          startY: 70,
+          theme: 'grid',
+          styles: {
+            cellPadding: 3,
+            fontSize: 8,
+            halign: 'center',
+            valign: 'middle'
+          },
+          headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255]
+          },
+          footStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255]
+          }
+        });
+
+        // Guardar el PDF
+        doc.save('libro_de_caja.pdf');
+      } catch (error) {
+        console.error('Error al generar el PDF:', error);
+      }
+    };
 
     return {
-      icons,
-      toKebabCase,
+      activeKey,
+      flushActiveKey,
+      fechaInicial,
+      fechaFinal,
+      nombreEncabezado,
+      direccionProyecto,
+      generarPDF,
     }
   },
 }
 </script>
+
+<style scoped>
+/* Estilos para el contenedor principal */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Estilos para las divisiones */
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+  border-color: rgb(19, 19, 75);
+}
+/* Estilos para las etiquetas */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Estilos para los campos de entrada */
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el botón */
+button {
+  padding: 10px 20px;
+  background-color: #14491b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #475f27;
+}
+
+/* Estilos para los campos de entrada de número y select */
+.numero-fecha-container {
+  display: flex;
+}
+
+.numero-inputs,
+.fecha-inputs {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.numero-inputs label,
+.fecha-inputs label {
+  display: block;
+}
+
+/* Estilos para los campos de entrada de número */
+.numero-input {
+  display: flex;
+}
+
+.numero-input input[type="text"] {
+  margin-right: 10px;
+}
+
+/* Estilos para los campos de entrada de fecha */
+.fecha-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.fecha-container label {
+  display: block;
+}
+
+.fecha-container select {
+  width: calc(100% - 10px);
+  border: none;
+  outline: none;
+}
+
+/* Estilos para los contenedores de entrada */
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container label {
+  width: 150px; /* Ancho fijo para las etiquetas */
+  margin-right: 10px;
+}
+
+.input-container select,
+.input-container input {
+  flex: 1;
+}
+</style>
