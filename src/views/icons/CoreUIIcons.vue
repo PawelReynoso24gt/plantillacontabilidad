@@ -82,7 +82,8 @@ export default {
 
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso, index) => {
-          const total = typeof ingresoEgreso.total === 'number' ? ingresoEgreso.total.toFixed(2) : '';
+          // Aquí se ajusta la variable 'total' para evitar truncar los números
+          const total = ingresoEgreso.total ? ingresoEgreso.total : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
             return {
@@ -92,7 +93,7 @@ export default {
               descripcion: ingresoEgreso.descripcion,
               acredita: '', // Acredita vacío
               debita: '', // Debita vacío
-              total:  ingresoEgreso.total ? parseFloat(ingresoEgreso.total).toFixed(2) : ''
+              total: total
             };
           } else {
             return {
@@ -100,9 +101,9 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? parseFloat(ingresoEgreso.acredita).toFixed(2) : '',
-              debita: ingresoEgreso.debita ? parseFloat(ingresoEgreso.debita).toFixed(2) : '',
-              total:  ingresoEgreso.total ? parseFloat(ingresoEgreso.total).toFixed(2) : ''
+              acredita: ingresoEgreso.acredita ? ingresoEgreso.acredita : '',
+              debita: ingresoEgreso.debita ? ingresoEgreso.debita : '',
+              total: total
             };
           }
         });

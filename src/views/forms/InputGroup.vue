@@ -1,121 +1,149 @@
 <template>
   <div>
-    <label>DEPOSITOS DE CAJA</label>
+    <label>LIBRO DE CAJA</label>
     <!-- Primera división -->
     <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Banco:</label>
-          <div class="numero-input">
-            <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
-        </select>
-          </div>
-          <label>Numero de documento:</label>
-              <input type="text" v-model="numero_documento">  
-        </div>     
+      <div class="numero-fecha-container">    
         <div class="fecha-inputs">
-            <label>Fecha</label>
-            <input type="date" v-model="fecha">
+            <label>Fecha Inicial</label>
+            <input type="date" v-model="fechaInicial">
+        </div>
+        <div class="fecha-inputs">
+            <label>Fecha Final</label>
+            <input type="date" v-model="fechaFinal">
         </div>
       </div>
-    </div>
-    
-    <!-- Segunda división -->
-    <div class="division-container">
-      <label>MONTO A RETIRAR BANCOS</label>
-      <label>Valor a retirar:</label>
-      <input type="text" v-model="monto">
-      <label>Observaciones</label>
-      <input type="text" v-model="descripcion">
     </div>
     
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
     <!-- Botón Agregar -->
-    <button @click="insertar">Guardar</button>
-    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
+    <button @click="generarPDF">Generar PDF</button>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref } from 'vue'
+import jsPDF from 'jspdf'
+import axios from 'axios'
+import 'jspdf-autotable'
+
 export default {
   name: 'Accordion',
   setup() {
     const activeKey = ref(1)
     const flushActiveKey = ref(1)
-    const cuentaBName = ref('');
-    const cuentas_bancarias = reactive([]);
-    const cuenta_bancaria = ref('');
-    const fecha = ref('');
-    const descripcion = ref('');
-    const monto = ref('');
-    const numero_documento = ref('');
+    const fechaInicial = ref('')
+    const fechaFinal = ref('')
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
     }
 
-    const limpiar = () => {
-      cuentaBName.value = '',
-      numero_documento.value = '',
-      fecha.value = '',
-      monto.value = '',
-      descripcion.value = '',
-      descripcion.value = ''
-    };
+    const nombreEncabezado = ref('PROYECTO CAPILLA')
+    const direccionProyecto = ref('15 avenida, entre 3a y 4a calle zona 3, Quetzaltenango')
 
-    const cargarBancosNoCuenta = () => {
-      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
-        .then((response) => {
-          cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data); 
-        })
-        .catch((error) => {
-          console.error(error);
+    const generarPDF = async () => {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/fechaCA', {
+          fechaInicial: fechaInicial.value,
+          fechaFinal: fechaFinal.value
         });
-    };
+        const ingresosEgresos = response.data;
 
-    const insertar = () => {
-      const datos = {
-        fecha: fecha.value,
-        descripcion: descripcion.value,
-        monto: monto.value,
-        cuenta_bancaria: cuentaBName.value,
-        numero_documento: numero_documento.value,
-      };
+        const doc = new jsPDF();
 
-      axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaCA', datos)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error(error);
+        // Agregar encabezado al PDF
+        doc.setFontSize(16);
+        doc.text(nombreEncabezado.value, 105, 30, { align: 'center' });
+        doc.rect(60, 15, 90, 20); // Dibujar el cuadro alrededor del nombre del proyecto
+
+        doc.setFontSize(12);
+        doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
+
+        const textoAdicional = 'REPORTE: LIBRO CAJA';
+        doc.setFontSize(10);
+        doc.text(textoAdicional, 20, 50);
+
+        const especificacionFechas = `ESPECIFICACIÓN: Desde: ${fechaInicial.value}, Hasta: ${fechaFinal.value}`;
+        doc.text(especificacionFechas, 20, 60);
+
+        // Obtener las columnas
+        const columnas = [
+          { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'Fecha', dataKey: 'fecha' },
+          { title: 'Cuenta', dataKey: 'cuenta' },
+          { title: 'Descripción', dataKey: 'descripcion' },
+          { title: 'Acredita', dataKey: 'acredita' },
+          { title: 'Debita', dataKey: 'debita' },
+          { title: 'Saldo', dataKey: 'total' }
+        ];
+
+        // Construir la tabla
+        const filas = ingresosEgresos.map((ingresoEgreso, index) => {
+          // Aquí se ajusta la variable 'total' para evitar truncar los números
+          const total = ingresoEgreso.total ? ingresoEgreso.total : '';
+
+          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
+            return {
+              nomenclatura: ingresoEgreso.nomenclatura,
+              fecha: ingresoEgreso.fecha || '',
+              cuenta: ingresoEgreso.cuenta,
+              descripcion: ingresoEgreso.descripcion,
+              acredita: '', // Acredita vacío
+              debita: '', // Debita vacío
+              total: total
+            };
+          } else {
+            return {
+              nomenclatura: ingresoEgreso.nomenclatura,
+              fecha: ingresoEgreso.fecha,
+              cuenta: ingresoEgreso.cuenta,
+              descripcion: ingresoEgreso.descripcion,
+              acredita: ingresoEgreso.acredita ? ingresoEgreso.acredita : '',
+              debita: ingresoEgreso.debita ? ingresoEgreso.debita : '',
+              total: total
+            };
+          }
         });
+
+        doc.autoTable({
+          columns: columnas,
+          body: filas,
+          startY: 70,
+          theme: 'grid',
+          styles: {
+            cellPadding: 3,
+            fontSize: 8,
+            halign: 'center',
+            valign: 'middle'
+          },
+          headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255]
+          },
+          footStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255]
+          }
+        });
+
+        // Guardar el PDF
+        doc.save('libro_de_caja.pdf');
+      } catch (error) {
+        console.error('Error al generar el PDF:', error);
+      }
     };
-
-
-    onMounted(() => {
-      cargarBancosNoCuenta();
-    });
 
     return {
       activeKey,
       flushActiveKey,
-      cuentaBName,
-      cuentas_bancarias,
-      cuenta_bancaria,
-      fecha,
-      descripcion,
-      monto,
-      numero_documento,
-      agregarDivision,
-      cargarBancosNoCuenta,
-      insertar,
-      limpiar
+      fechaInicial,
+      fechaFinal,
+      nombreEncabezado,
+      direccionProyecto,
+      generarPDF,
     }
   },
 }
