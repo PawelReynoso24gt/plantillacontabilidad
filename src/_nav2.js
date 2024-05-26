@@ -1,11 +1,14 @@
-export default function useNavAgricola() {
+export default function useNavCapilla() {
   const navConfig = [
-  {
-    component: 'CNavItem',
-    name: 'Inicio',
-    to: '/theme/colors',
-    icon: 'cil-drop',
-  },
+    {
+      component: 'CNavItem',
+      name: 'Inicio',
+      to: '/dashboard',
+      icon: 'cil-speedometer',
+      badge: {
+        color: 'primary'
+      },
+    },
     {
       component: 'CNavTitle',
       name: 'Acciones',
@@ -18,8 +21,8 @@ export default function useNavAgricola() {
       items: [
         {
           component: 'CNavItem',
-          name: 'Egreso Agrícola',
-          to: '/base/accordion',
+          name: 'Egreso Capilla',
+          to: '/base/breadcrumbs',
         }
       ],
     },
@@ -31,8 +34,8 @@ export default function useNavAgricola() {
       items: [
         {
           component: 'CNavItem',
-          name: 'Ingreso Agrícola',
-          to: '/buttons/standard-buttons',
+          name: 'Ingreso Capilla',
+          to: '/buttons/button-groups',
         }
       ],
     },
@@ -44,13 +47,13 @@ export default function useNavAgricola() {
       items: [
         {
           component: 'CNavItem',
-          name: 'Deposito de caja Agrícola',
-          to: '/forms/form-control',
+          name: 'Deposito de caja Capilla',
+          to: '/forms/checks-radios',
         },
         {
           component: 'CNavItem',
-          name: 'Retiros de bancos Agrícola',
-          to: '/forms/select',
+          name: 'Retiros de bancos Capilla',
+          to: '/forms/range',
         }
       ],
     },
@@ -62,22 +65,18 @@ export default function useNavAgricola() {
       items: [
         {
           component: 'CNavItem',
-          name: 'Libro Caja Agrícola',
-          to: '/icons/coreui-icons',
-          badge: {
-            color: 'info',
-            text: 'NEW',
-          },
+          name: 'Libro Caja Capilla',
+          to: '/forms/input-group',
         },
         {
           component: 'CNavItem',
-          name: 'Libro Bancos Agrícola',
-          to: '/icons/brands',
+          name: 'Libro Bancos Capilla',
+          to: '/forms/floating-labels',
         },
         {
           component: 'CNavItem',
-          name: 'Libro Diario Agrícola',
-          to: '/icons/flags',
+          name: 'Libro Diario Capilla',
+          to: '/forms/layout',
         },
       ],
     },
@@ -116,6 +115,6 @@ export default function useNavAgricola() {
     },
   ];
 
-  console.log('Nav Config Agrícola:', navConfig);
+  console.log('Nav Config Capilla:', navConfig);
   return navConfig;
 }

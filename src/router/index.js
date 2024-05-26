@@ -1,7 +1,7 @@
 import { h, resolveComponent } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
-
 import DefaultLayout from '@/layouts/DefaultLayout'
+import store from '@/store'  // Asegúrate de importar tu store
 
 const routes = [
   {
@@ -13,9 +13,6 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: () =>
           import(
             /* webpackChunkName: "dashboard" */ '@/views/dashboard/Dashboard.vue'
@@ -322,9 +319,11 @@ router.beforeEach((to, from, next) => {
   if (to.name !== 'Login' && !isAuthenticated) {
     next({ name: 'Login' }); // Redirigir a la página de inicio de sesión si no está autenticado
   } else {
+    if (localStorage.getItem('selectedProject')) {
+      store.commit('updateSelectedProject', localStorage.getItem('selectedProject'));
+    }
     next();
   }
 });
-
 
 export default router

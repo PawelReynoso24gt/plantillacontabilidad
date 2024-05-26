@@ -1,22 +1,39 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
 
-export default createStore({
+const store = createStore({
   state: {
-    sidebarVisible: '',
     sidebarUnfoldable: false,
-    theme: 'light',
+    sidebarVisible: true,
+    selectedProject: localStorage.getItem('selectedProject') || '',
+    projectToken: localStorage.getItem('projectToken') || null,
   },
   mutations: {
     toggleSidebar(state) {
-      state.sidebarVisible = !state.sidebarVisible
+      state.sidebarVisible = !state.sidebarVisible;
     },
     toggleUnfoldable(state) {
-      state.sidebarUnfoldable = !state.sidebarUnfoldable
+      state.sidebarUnfoldable = !state.sidebarUnfoldable;
     },
-    updateSidebarVisible(state, payload) {
-      state.sidebarVisible = payload.value
+    updateSidebarVisible(state, { value }) {
+      state.sidebarVisible = value;
+    },
+    updateSelectedProject(state, project) {
+      state.selectedProject = project;
+      localStorage.setItem('selectedProject', project);
+    },
+    updateProjectToken(state, token) {
+      state.projectToken = token;
+      localStorage.setItem('projectToken', token);
     },
   },
-  actions: {},
-  modules: {},
-})
+  actions: {
+    updateSelectedProject({ commit }, project) {
+      commit('updateSelectedProject', project);
+    },
+    updateProjectToken({ commit }, token) {
+      commit('updateProjectToken', token);
+    },
+  },
+});
+
+export default store;
