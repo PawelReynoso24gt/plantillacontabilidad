@@ -3,7 +3,7 @@ export default function useNavCapilla() {
     {
       component: 'CNavItem',
       name: 'Inicio',
-      to: '/dashboard',
+      to: '/honey123',
       icon: 'cil-speedometer',
       badge: {
         color: 'primary'

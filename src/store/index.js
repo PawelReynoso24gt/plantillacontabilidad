@@ -6,6 +6,7 @@ const store = createStore({
     sidebarVisible: true,
     selectedProject: localStorage.getItem('selectedProject') || '',
     projectToken: localStorage.getItem('projectToken') || null,
+    token: localStorage.getItem('token') || '', // Estado para el token de autenticación
   },
   mutations: {
     toggleSidebar(state) {
@@ -25,6 +26,14 @@ const store = createStore({
       state.projectToken = token;
       localStorage.setItem('projectToken', token);
     },
+    setToken(state, token) {
+      state.token = token;
+      localStorage.setItem('token', token);
+    },
+    clearToken(state) {
+      state.token = '';
+      localStorage.removeItem('token');
+    },
   },
   actions: {
     updateSelectedProject({ commit }, project) {
@@ -33,6 +42,15 @@ const store = createStore({
     updateProjectToken({ commit }, token) {
       commit('updateProjectToken', token);
     },
+    login({ commit }, token) {
+      commit('setToken', token);
+    },
+    logout({ commit }) {
+      commit('clearToken');
+    },
+  },
+  getters: {
+    isAuthenticated: state => !!state.token, // Getter para verificar si el usuario está autenticado
   },
 });
 

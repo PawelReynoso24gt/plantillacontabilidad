@@ -17,6 +17,7 @@
                       v-model="usuarios"
                       placeholder="Usuario"
                       autocomplete="usuarios"
+                      :disabled="isSubmitting"
                     />
                   </CInputGroup>
                   <CInputGroup class="mb-3">
@@ -28,13 +29,14 @@
                       type="password"
                       placeholder="Contraseña"
                       autocomplete="contrasenias"
+                      :disabled="isSubmitting"
                     />
                   </CInputGroup>
                   <CInputGroup class="mb-4">
                     <CInputGroupText>
                       <CIcon icon="cil-project" />
                     </CInputGroupText>
-                    <select v-model="tipoProyecto" class="form-select">
+                    <select v-model="tipoProyecto" class="form-select" :disabled="isSubmitting">
                       <option :value="null" disabled>Seleccionar tipo de proyecto</option>
                       <option value="agricola">Proyecto Agrícola</option>
                       <option value="capilla">Proyecto Capilla</option>
@@ -42,9 +44,13 @@
                   </CInputGroup>
                   <CRow>
                     <CCol :xs="6">
-                      <CButton type="submit" color="primary" class="px-4">Login</CButton>
+                      <CButton type="submit" color="primary" class="px-4" :disabled="isSubmitting || submitCountdown > 0">Login</CButton>
                     </CCol>
                   </CRow>
+                  <p v-if="errorMessage" class="text-danger mt-3">{{ errorMessage }}</p>
+                  <p v-if="submitCountdown > 0" class="text-warning mt-3">
+                    Por favor, espera {{ submitCountdown }} segundos antes de intentar nuevamente.
+                  </p>
                 </CForm>
               </CCardBody>
             </CCard>
@@ -59,7 +65,6 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import axios from 'axios';
 
 export default {
   name: 'Login',
@@ -67,35 +72,72 @@ export default {
     const usuarios = ref('');
     const contrasenias = ref('');
     const tipoProyecto = ref(null);
+    const errorMessage = ref('');
+    const isSubmitting = ref(false);
+    const submitCountdown = ref(0);
     const router = useRouter();
     const store = useStore();
 
-    const login = async () => {
-      try {
-        console.log('Usuario:', usuarios.value);
-        console.log('Contraseña:', contrasenias.value);
-        console.log('Tipo de proyecto:', tipoProyecto.value);
-        const response = await axios.post('http://127.0.0.1:8000/logins/authenticate', {
-          usuarios: usuarios.value,
-          contrasenias: contrasenias.value,
-          tipoProyecto: tipoProyecto.value,
-        });
-        if (response.status === 200) {
-          console.log('Autenticación exitosa');
-          localStorage.setItem('token', response.data.token);
-          const projectToken = tipoProyecto.value === 'agricola' ? '1' : '2';
-          store.dispatch('updateSelectedProject', tipoProyecto.value === 'agricola' ? 'Proyecto Agrícola' : 'Proyecto Capilla');
-          store.dispatch('updateProjectToken', projectToken);
-          router.push('/dashboard');
-        } else {
-          console.error('Error de inicio de sesión: Datos de autenticación no válidos');
-        }
-      } catch (error) {
-        console.error('Error de inicio de sesión:', error);
+    const validateAndSanitizeInput = (input) => {
+      const sanitizedInput = input.replace(/['"]/g, '');
+      if (sanitizedInput.length > 0 && sanitizedInput.length <= 100) {
+        return sanitizedInput;
+      } else {
+        throw new Error('Entrada no válida');
       }
     };
 
-    return { usuarios, contrasenias, tipoProyecto, login };
+    const login = () => {
+      if (isSubmitting.value || submitCountdown.value > 0) {
+        return;
+      }
+
+      try {
+        const safeUsuarios = validateAndSanitizeInput(usuarios.value);
+        const safeContrasenias = validateAndSanitizeInput(contrasenias.value);
+        const safeTipoProyecto = validateAndSanitizeInput(tipoProyecto.value);
+
+        if (!safeUsuarios || !safeContrasenias || !safeTipoProyecto) {
+          errorMessage.value = 'Todos los campos son obligatorios.';
+          return;
+        }
+
+        if (safeUsuarios !== 'honey' || safeContrasenias !== 'honey1313') {
+          errorMessage.value = 'Usuario o contraseña incorrectos.';
+          return;
+        }
+
+        isSubmitting.value = true;
+        errorMessage.value = '';
+
+        // Simular autenticación exitosa
+        const projectToken = safeTipoProyecto === 'agricola' ? '1' : '2';
+        store.dispatch('updateSelectedProject', safeTipoProyecto === 'agricola' ? 'Proyecto Agrícola' : 'Proyecto Capilla');
+        store.dispatch('updateProjectToken', projectToken);
+
+        // Redirigir a la ruta a la que el usuario intentaba acceder o al dashboard por defecto
+        const redirectPath = router.currentRoute.value.query.redirect || '/honey123';
+        router.push(redirectPath);
+
+      } catch (error) {
+        errorMessage.value = error.message || 'Error de inicio de sesión. Por favor, intenta nuevamente.';
+      } finally {
+        isSubmitting.value = false;
+      }
+    };
+
+    const startCountdown = () => {
+      submitCountdown.value = 60; // 60 segundos de espera
+      const interval = setInterval(() => {
+        if (submitCountdown.value > 0) {
+          submitCountdown.value--;
+        } else {
+          clearInterval(interval);
+        }
+      }, 1000);
+    };
+
+    return { usuarios, contrasenias, tipoProyecto, login, errorMessage, isSubmitting, submitCountdown, validateAndSanitizeInput };
   },
 };
 </script>

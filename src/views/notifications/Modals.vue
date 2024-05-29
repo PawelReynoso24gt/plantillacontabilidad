@@ -40,14 +40,14 @@ export default {
     const bancos = reactive([]);
     
     const cargarBancos = () => {
-      axios.get('http://127.0.0.1:8000/bancos/get').then((response) => {
+      axios.get('http://192.168.19.66:8000/bancos/get').then((response) => {
         bancos.splice(0, bancos.length, ...response.data);
       });
     };
 
     const cargarDatosBanco = () => {
       if (!selectedBancos.value) return;
-      axios.get(`http://127.0.0.1:8000/bancos/getBancoName/${selectedBancos.value}`)
+      axios.get(`http://192.168.19.66:8000/bancos/getBancoName/${selectedBancos.value}`)
         .then(response => {
           const bancos = response.data;
           banco.value = bancos.banco;
@@ -62,7 +62,7 @@ export default {
         banco: banco.value,
       };
 
-      axios.post('http://127.0.0.1:8000/bancos/create', datos)
+      axios.post('http://192.168.19.66:8000/bancos/create', datos)
         .then(response => {
           console.log(response.data);
           cargarBancos();
@@ -90,7 +90,7 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/bancos/updatebyname/${selectedBancos.value}`, datos)
+      axios.put(`http://192.168.19.66:8000/bancos/updatebyname/${selectedBancos.value}`, datos)
         .then(response => {
           console.log(response.data);
           cargarBancos();
