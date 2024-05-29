@@ -65,8 +65,7 @@ export default function useNavAgricola() {
           name: 'Libro Caja Agrícola',
           to: '/icons/coreui-icons',
           badge: {
-            color: 'info',
-            text: 'NEW',
+            color: 'info'
           },
         },
         {

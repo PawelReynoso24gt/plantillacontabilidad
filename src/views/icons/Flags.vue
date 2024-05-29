@@ -67,7 +67,7 @@ export default {
 
         // Obtener las columnas
         const columnas = [
-          { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'No.Operación', dataKey: 'nomenclatura' },
           { title: 'Número de Documento', dataKey: 'numero_documento' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },
