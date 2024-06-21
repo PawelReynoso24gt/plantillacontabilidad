@@ -101,9 +101,9 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? ingresoEgreso.acredita : '',
-              debita: ingresoEgreso.debita ? ingresoEgreso.debita : '',
-              total: total
+              acredita: ingresoEgreso.acredita ? 'Q. ' + ingresoEgreso.acredita : '', // Agregar "Q. " al inicio de acredita
+              debita: ingresoEgreso.debita ? 'Q. ' + ingresoEgreso.debita : '', // Agregar "Q. " al inicio de debita
+              total: 'Q. ' + total // Agregar "Q. " al inicio de total
             };
           }
         });
