@@ -35,8 +35,8 @@
     "jspdf-autotable": "^3.8.2",
     "simplebar-vue": "^2.3.3",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0",
-    "vuex": "^4.1.0"
+    "vue-router": "^4.3.2",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

@@ -42,7 +42,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/libroDiario', {
+        const response = await axios.post('http://192.168.19.66:8000/in_eg/libroDiario', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
@@ -67,7 +67,7 @@ export default {
 
         // Obtener las columnas
         const columnas = [
-          { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'No.Operación', dataKey: 'nomenclatura' },
           { title: 'Número de Documento', dataKey: 'numero_documento' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },

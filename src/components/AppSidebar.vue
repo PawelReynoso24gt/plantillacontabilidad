@@ -5,13 +5,7 @@
     position="fixed"
     :unfoldable="sidebarUnfoldable"
     :visible="sidebarVisible"
-    @visible-change="
-      (event) =>
-        $store.commit({
-          type: 'updateSidebarVisible',
-          value: event,
-        })
-    "
+    @visible-change="(event) => $store.commit({ type: 'updateSidebarVisible', value: event })"
   >
     <CSidebarHeader class="border-bottom">
       <RouterLink custom to="/" v-slot="{ href, navigate }">
@@ -32,8 +26,8 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useStore } from 'vuex'
-import { AppSidebarNav } from './AppSidebarNav'
-import { sygnet } from '@/assets/brand/sygnet'
+import AppSidebarNav from './AppSidebarNav'
+
 export default {
   name: 'AppSidebar',
   components: {
@@ -43,7 +37,6 @@ export default {
   setup() {
     const store = useStore()
     return {
-      sygnet,
       sidebarUnfoldable: computed(() => store.state.sidebarUnfoldable),
       sidebarVisible: computed(() => store.state.sidebarVisible),
     }

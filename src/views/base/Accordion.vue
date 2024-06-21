@@ -94,7 +94,7 @@ export default {
     const identificacion = ref('');
     const descripcion = ref('');
     const nombre = ref('');
-    
+    const monto = ref('');
     const cuenta_bancaria = ref('');
     const cuenta = ref('');
     const documento = ref('');
@@ -135,7 +135,7 @@ export default {
     controlarVisibilidadDivisionCuatro();
 
     const cargarCuentas = () => {
-      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoAG')
+      axios.get('http://192.168.19.66:8000/in_eg/getAllCuentasEgresoAG')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
@@ -146,7 +146,7 @@ export default {
     };
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
+      axios.get('http://192.168.19.66:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -157,7 +157,7 @@ export default {
     };
 
     const cargarBancos = () => {
-      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
+      axios.get('http://192.168.19.66:8000/in_eg/getByNombreB')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -170,7 +170,7 @@ export default {
 
     const enviarDatos = () => {
   if (tipo.value === 'caja') { 
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaAG', {
+    axios.post('http://192.168.19.66:8000/in_eg/createALLINEGCajaAG', {
       fecha: fecha.value,
       identificacion: identificacion.value,
       nombre: nombre.value,
@@ -200,7 +200,7 @@ export default {
       fecha_emision: fecha_emision.value,
       cuenta_bancaria: cuentaBName.value,
     };
-    axios.post('http://127.0.0.1:8000/in_eg/createALLEGAG', data)
+    axios.post('http://192.168.19.66:8000/in_eg/createALLEGAG', data)
       .then(response => {
         console.log(response.data); 
       })

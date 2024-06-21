@@ -1,7 +1,7 @@
-import { h, resolveComponent } from 'vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
-
-import DefaultLayout from '@/layouts/DefaultLayout'
+import { h, resolveComponent } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+import DefaultLayout from '@/layouts/DefaultLayout';
+import store from '@/store'; // Asegúrate de importar tu store
 
 const routes = [
   {
@@ -11,11 +11,9 @@ const routes = [
     redirect: '/login',
     children: [
       {
-        path: '/dashboard',
+        path: '/honey123',
         name: 'Dashboard',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
+        meta: { requiresAuth: true },
         component: () =>
           import(
             /* webpackChunkName: "dashboard" */ '@/views/dashboard/Dashboard.vue'
@@ -30,11 +28,13 @@ const routes = [
         path: '/theme/colors',
         name: 'Colors',
         component: () => import('@/views/theme/Colors.vue'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/theme/typography',
         name: 'Typography',
         component: () => import('@/views/theme/Typography.vue'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/base',
@@ -50,71 +50,85 @@ const routes = [
             path: '/base/accordion',
             name: 'Accordion',
             component: () => import('@/views/base/Accordion.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/breadcrumbs',
             name: 'Breadcrumbs',
             component: () => import('@/views/base/Breadcrumbs.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/cards',
             name: 'Cards',
             component: () => import('@/views/base/Cards.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/carousels',
             name: 'Carousels',
             component: () => import('@/views/base/Carousels.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/collapses',
             name: 'Collapses',
             component: () => import('@/views/base/Collapses.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/list-groups',
             name: 'List Groups',
             component: () => import('@/views/base/ListGroups.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/navs',
             name: 'Navs',
             component: () => import('@/views/base/Navs.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/paginations',
             name: 'Paginations',
             component: () => import('@/views/base/Paginations.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/placeholders',
             name: 'Placeholders',
             component: () => import('@/views/base/Placeholders.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/popovers',
             name: 'Popovers',
             component: () => import('@/views/base/Popovers.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/progress',
             name: 'Progress',
             component: () => import('@/views/base/Progress.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/spinners',
             name: 'Spinners',
             component: () => import('@/views/base/Spinners.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/tables',
             name: 'Tables',
             component: () => import('@/views/base/Tables.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/tooltips',
             name: 'Tooltips',
             component: () => import('@/views/base/Tooltips.vue'),
+            meta: { requiresAuth: true }
           },
         ],
       },
@@ -132,16 +146,19 @@ const routes = [
             path: '/buttons/standard-buttons',
             name: 'Buttons',
             component: () => import('@/views/buttons/Buttons.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/buttons/dropdowns',
             name: 'Dropdowns',
             component: () => import('@/views/buttons/Dropdowns.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/buttons/button-groups',
             name: 'Button Groups',
             component: () => import('@/views/buttons/ButtonGroups.vue'),
+            meta: { requiresAuth: true }
           },
         ],
       },
@@ -159,41 +176,49 @@ const routes = [
             path: '/forms/form-control',
             name: 'Form Control',
             component: () => import('@/views/forms/FormControl.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/select',
             name: 'Select',
             component: () => import('@/views/forms/Select.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/checks-radios',
             name: 'Checks & Radios',
             component: () => import('@/views/forms/ChecksRadios.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/range',
             name: 'Range',
             component: () => import('@/views/forms/Range.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/input-group',
             name: 'Input Group',
             component: () => import('@/views/forms/InputGroup.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/floating-labels',
             name: 'Floating Labels',
             component: () => import('@/views/forms/FloatingLabels.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/layout',
             name: 'Layout',
             component: () => import('@/views/forms/Layout.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/forms/validation',
             name: 'Validation',
             component: () => import('@/views/forms/Validation.vue'),
+            meta: { requiresAuth: true }
           },
         ],
       },
@@ -201,6 +226,7 @@ const routes = [
         path: '/charts',
         name: 'Charts',
         component: () => import('@/views/charts/Charts.vue'),
+        meta: { requiresAuth: true }
       },
       {
         path: '/icons',
@@ -216,16 +242,19 @@ const routes = [
             path: '/icons/coreui-icons',
             name: 'CoreUI Icons',
             component: () => import('@/views/icons/CoreUIIcons.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/icons/brands',
             name: 'Brands',
             component: () => import('@/views/icons/Brands.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/icons/flags',
             name: 'Flags',
             component: () => import('@/views/icons/Flags.vue'),
+            meta: { requiresAuth: true }
           },
         ],
       },
@@ -243,26 +272,31 @@ const routes = [
             path: '/notifications/alerts',
             name: 'Alerts',
             component: () => import('@/views/notifications/Alerts.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/notifications/badges',
             name: 'Badges',
             component: () => import('@/views/notifications/Badges.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/notifications/modals',
             name: 'Modals',
             component: () => import('@/views/notifications/Modals.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/notifications/toasts',
             name: 'Toasts',
             component: () => import('@/views/notifications/Toasts.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/notifications/cuentas',
             name: 'Cuentas',
             component: () => import('@/views/notifications/Cuentas.vue'),
+            meta: { requiresAuth: true }
           },
         ],
       },
@@ -270,6 +304,7 @@ const routes = [
         path: '/widgets',
         name: 'Widgets',
         component: () => import('@/views/widgets/Widgets.vue'),
+        meta: { requiresAuth: true }
       },
     ],
   },
@@ -305,7 +340,7 @@ const routes = [
       },
     ],
   },
-]
+];
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
@@ -314,17 +349,19 @@ const router = createRouter({
     // always scroll to top
     return { top: 0 }
   },
-})
+});
 
 // Guardia de ruta para redirigir al usuario a la página de inicio de sesión si no está autenticado
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('token') !== null; // Verificar si hay un token de autenticación en el almacenamiento local
-  if (to.name !== 'Login' && !isAuthenticated) {
+  const isAuthenticated = store.getters.isAuthenticated; // Verificar el estado de autenticación desde Vuex
+  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
     next({ name: 'Login' }); // Redirigir a la página de inicio de sesión si no está autenticado
   } else {
+    if (localStorage.getItem('selectedProject')) {
+      store.commit('updateSelectedProject', localStorage.getItem('selectedProject'));
+    }
     next();
   }
 });
 
-
-export default router
+export default router;

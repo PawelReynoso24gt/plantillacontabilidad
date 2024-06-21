@@ -1,39 +1,45 @@
 <template>
-  <CRow>
-    <CCol>
-      <CCard>
-        <CCardHeader> <CIcon icon="cil-drop" /> Theme colors </CCardHeader>
-        <CCardBody>
-          <CRow>
-            <ColorTheme color="bg-primary">
-              <h6>Brand Primary Color</h6>
-            </ColorTheme>
-            <ColorTheme color="bg-secondary"
-              ><h6>Brand Secondary Color</h6></ColorTheme
-            >
-            <ColorTheme color="bg-success"
-              ><h6>Brand Success Color</h6></ColorTheme
-            >
-            <ColorTheme color="bg-danger"
-              ><h6>Brand Danger Color</h6></ColorTheme
-            >
-            <ColorTheme color="bg-warning"
-              ><h6>Brand Warning Color</h6></ColorTheme
-            >
-            <ColorTheme color="bg-info"><h6>Brand Info Color</h6></ColorTheme>
-            <ColorTheme color="bg-light"><h6>Brand Light Color</h6></ColorTheme>
-            <ColorTheme color="bg-dark"><h6>Brand Dark Color</h6></ColorTheme>
-          </CRow>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <div style="display: flex; justify-content: center; align-items: center; height: 30vh;">
+      <img src="@/assets/brand/logoComp.png" class="large-image"/>
+    </div>
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <div style="text-align: center; color: black; font-size: 50px; margin-bottom: 20px;">
+        PROYECTO AGRÍCOLA
+      </div>
+      <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+        <img src="@/assets/brand/hogar12.jpg" class="small-image"/>
+        <img src="@/assets/brand/hogar123.jpg" class="small-image"/>
+      </div>
+    </div>
+  </div>
 </template>
 
+<style>
+.large-image {
+  width: 500px; /* O el tamaño deseado */
+  height: auto; /* Mantener la proporción original */
+}
+
+.small-image {
+  width: 600px; /* Tamaño de las imágenes */
+  height: auto; /* Mantener la proporción original */
+}
+</style>
+
 <script>
-import ColorTheme from './ColorTheme'
+
+import WidgetsStatsA from './../widgets/WidgetsStatsTypeA.vue'
+import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
+
 export default {
-  name: 'Colors',
-  components: { ColorTheme },
+  name: 'Dashboard',
+  components: {
+    WidgetsStatsA,
+    WidgetsStatsD,
+  },
+  setup() {
+    return {}
+  },
 }
 </script>

@@ -1,22 +1,57 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
 
-export default createStore({
+const store = createStore({
   state: {
-    sidebarVisible: '',
     sidebarUnfoldable: false,
-    theme: 'light',
+    sidebarVisible: true,
+    selectedProject: localStorage.getItem('selectedProject') || '',
+    projectToken: localStorage.getItem('projectToken') || null,
+    token: localStorage.getItem('token') || '', // Estado para el token de autenticación
   },
   mutations: {
     toggleSidebar(state) {
-      state.sidebarVisible = !state.sidebarVisible
+      state.sidebarVisible = !state.sidebarVisible;
     },
     toggleUnfoldable(state) {
-      state.sidebarUnfoldable = !state.sidebarUnfoldable
+      state.sidebarUnfoldable = !state.sidebarUnfoldable;
     },
-    updateSidebarVisible(state, payload) {
-      state.sidebarVisible = payload.value
+    updateSidebarVisible(state, { value }) {
+      state.sidebarVisible = value;
+    },
+    updateSelectedProject(state, project) {
+      state.selectedProject = project;
+      localStorage.setItem('selectedProject', project);
+    },
+    updateProjectToken(state, token) {
+      state.projectToken = token;
+      localStorage.setItem('projectToken', token);
+    },
+    setToken(state, token) {
+      state.token = token;
+      localStorage.setItem('token', token);
+    },
+    clearToken(state) {
+      state.token = '';
+      localStorage.removeItem('token');
     },
   },
-  actions: {},
-  modules: {},
-})
+  actions: {
+    updateSelectedProject({ commit }, project) {
+      commit('updateSelectedProject', project);
+    },
+    updateProjectToken({ commit }, token) {
+      commit('updateProjectToken', token);
+    },
+    login({ commit }, token) {
+      commit('setToken', token);
+    },
+    logout({ commit }) {
+      commit('clearToken');
+    },
+  },
+  getters: {
+    isAuthenticated: state => !!state.token, // Getter para verificar si el usuario está autenticado
+  },
+});
+
+export default store;

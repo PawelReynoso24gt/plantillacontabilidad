@@ -80,18 +80,18 @@ $ yarn install
 ### Basic usage
 
 ``` bash
-# dev server with hot reload at http://localhost:3000
+# dev server with hot reload at http://localhost:8080
 $ npm run dev
 ```
 
 or 
 
 ``` bash
-# dev server with hot reload at http://localhost:3000
+# dev server with hot reload at http://localhost:8080
 $ yarn dev
 ```
 
-Navigate to [http://localhost:3000](http://localhost:3000). The app will automatically reload if you change any of the source files.
+Navigate to [http://localhost:8080](http://localhost:8080). The app will automatically reload if you change any of the source files.
 
 #### Build
 

@@ -46,7 +46,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/fecha', {
+        const response = await axios.post('http://192.168.19.66:8000/in_eg/fecha', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
