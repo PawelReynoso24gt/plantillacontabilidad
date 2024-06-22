@@ -1,3 +1,4 @@
+<!-- DefaultLayout.vue -->
 <template>
   <div>
     <AppSidebar />
@@ -14,10 +15,14 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import { CContainer } from '@coreui/vue';
 import AppFooter from '@/components/AppFooter.vue';
 import AppHeader from '@/components/AppHeader.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
+import useNavAgricola from '../_nav2';
+import useNavCapilla from '../_nav';
 
 export default {
   name: 'DefaultLayout',
@@ -26,6 +31,16 @@ export default {
     AppHeader,
     AppSidebar,
     CContainer,
+  },
+  setup() {
+    const store = useStore();
+    const navConfig = computed(() => {
+      return store.state.selectedProject === 'Proyecto Agrícola'
+        ? useNavAgricola()
+        : useNavCapilla();
+    });
+
+    return { navConfig };
   },
 };
 </script>
