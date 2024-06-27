@@ -152,7 +152,7 @@ export default {
     controlarVisibilidadDivisionCuatro();
 
     const cargarCuentas = () => {
-      axios.get('http://192.168.19.66:8000/in_eg/getAllCuentasIngresoCA')
+      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasIngresoCA')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
@@ -163,7 +163,7 @@ export default {
     };
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://192.168.19.66:8000/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -174,7 +174,7 @@ export default {
     };
 
     const cargarBancos = () => {
-      axios.get('http://192.168.19.66:8000/in_eg/getByNombreB')
+      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -187,7 +187,7 @@ export default {
 
     const enviarDatos = () => {
   if (tipo.value === 'caja') { 
-    axios.post('http://192.168.19.66:8000/in_eg/createALLINEGCajaCA', {
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
       fecha: fecha.value,
       identificacion: identificacion.value,
       nombre: nombre.value,
@@ -218,7 +218,7 @@ export default {
       fecha_emision: fecha_emision.value,
       cuenta_bancaria: cuentaBName.value,
     };
-    axios.post('http://192.168.19.66:8000/in_eg/createALLINCA', data)
+    axios.post('http://127.0.0.1:8000/in_eg/createALLINCA', data)
       .then(response => {
         console.log(response.data); 
       })

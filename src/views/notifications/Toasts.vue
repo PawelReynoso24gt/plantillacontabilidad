@@ -40,7 +40,7 @@ export default {
     const projects = reactive([]);
     
     const cargarProyectos = () => {
-      axios.get('http://192.168.19.66:8000/clasificacion/get').then((response) => {
+      axios.get('http://127.0.0.1:8000/clasificacion/get').then((response) => {
         projects.splice(0, projects.length, ...response.data);
       });
     };
@@ -62,7 +62,7 @@ export default {
         tipo: tipo.value,
       };
 
-      axios.post('http://192.168.19.66:8000/clasificacion/create', datos)
+      axios.post('http://127.0.0.1:8000/clasificacion/create', datos)
         .then(response => {
           console.log(response.data);
           cargarProyectos();
@@ -89,7 +89,7 @@ export default {
         return;
       }
 
-      axios.put(`http://192.168.19.66:8000/clasificacion/updateTipo/${selectedProject.value}`, datos)
+      axios.put(`http://127.0.0.1:8000/clasificacion/updateTipo/${selectedProject.value}`, datos)
         .then(response => {
           console.log(response.data);
           cargarProyectos();

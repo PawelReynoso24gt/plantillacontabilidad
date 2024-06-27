@@ -111,6 +111,11 @@ export default function useNavCapilla() {
           name: 'Cuentas',
           to: '/notifications/cuentas',
         },
+        {
+          component: 'CNavItem',
+          name: 'Cuentas Bancarias',
+          to: '/base/navs',
+        },
       ],
     },
   ];

@@ -52,7 +52,7 @@ export default {
     const cuentaBName = ref('');
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://192.168.19.66:8000/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -66,7 +66,7 @@ export default {
 
 
     const enviarDatos = () => {
-     axios.post('http://192.168.19.66:8000/in_eg/createTrasRetBanAG', {
+     axios.post('http://127.0.0.1:8000/in_eg/createTrasRetBanAG', {
       cuenta_bancaria: cuentaBName.value,
       fecha: fecha.value,
       descripcion: descripcion.value,
