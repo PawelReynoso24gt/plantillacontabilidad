@@ -48,14 +48,14 @@ export default {
     const flushActiveKey = ref(1)
     const fechaInicial = ref('')
     const fechaFinal = ref('')
-    const nombreEncabezado = ref('PROYECTO AGRICOLA')
+    const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
     const direccionProyecto = ref('Dirección del Proyecto')
 
     const cuentas_bancarias = reactive([])
     const cuentaBName = ref('')
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://192.168.19.66:8000/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data)
           console.log(response.data); 
@@ -71,7 +71,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://192.168.19.66:8000/in_eg/fechaBanco', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/fechaBanco', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value,
           banco_y_cuenta: cuentaBName.value
@@ -101,7 +101,7 @@ export default {
 
         // Obtener las columnas
         const columnas = [
-          { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'Conteo', dataKey: 'nomenclatura' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },
           { title: 'Descripción', dataKey: 'descripcion' },

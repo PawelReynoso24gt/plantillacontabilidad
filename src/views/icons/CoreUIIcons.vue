@@ -37,16 +37,12 @@ export default {
     const fechaInicial = ref('')
     const fechaFinal = ref('')
 
-    const agregarDivision = () => {
-      // Lógica para agregar una nueva división
-    }
-
-    const nombreEncabezado = ref('PROYECTO AGRICOLA')
+    const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
     const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango')
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://192.168.19.66:8000/in_eg/fecha', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/fecha', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
@@ -56,8 +52,8 @@ export default {
 
         // Agregar encabezado al PDF
         doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 105, 30, { align: 'center' });
-        doc.rect(60, 15, 90, 20); // Dibujar el cuadro alrededor del nombre del proyecto
+        doc.text(nombreEncabezado.value, 105, 27, { align: 'center' });
+        doc.rect(60, 17, 90, 15); // Dibujar el cuadro alrededor del nombre del proyecto
 
         doc.setFontSize(12);
         doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
@@ -71,7 +67,7 @@ export default {
 
         // Obtener las columnas
         const columnas = [
-          { title: 'Nomenclatura', dataKey: 'nomenclatura' },
+          { title: 'Conteo', dataKey: 'nomenclatura' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },
           { title: 'Descripción', dataKey: 'descripcion' },
@@ -83,7 +79,7 @@ export default {
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso, index) => {
           // Aquí se ajusta la variable 'total' para evitar truncar los números
-          const total = ingresoEgreso.total ? ingresoEgreso.total : '';
+          const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
             return {
@@ -93,7 +89,8 @@ export default {
               descripcion: ingresoEgreso.descripcion,
               acredita: '', // Acredita vacío
               debita: '', // Debita vacío
-              total: total
+              total: { content: total, styles: { fontStyle: 'bold' }},
+              borderBottom: { width: 4, color: [0, 0, 0], double: true } // Hacer el total en negrita y agregar doble línea en el borde inferior
             };
           } else {
             return {
@@ -101,9 +98,9 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? 'Q. ' + ingresoEgreso.acredita : '', // Agregar "Q. " al inicio de acredita
-              debita: ingresoEgreso.debita ? 'Q. ' + ingresoEgreso.debita : '', // Agregar "Q. " al inicio de debita
-              total: 'Q. ' + total // Agregar "Q. " al inicio de total
+              acredita: ingresoEgreso.acredita ? `Q. ${ingresoEgreso.acredita}` : '',
+              debita: ingresoEgreso.debita ? `Q. ${ingresoEgreso.debita}` : '',
+              total: total
             };
           }
         });
@@ -111,11 +108,11 @@ export default {
         doc.autoTable({
           columns: columnas,
           body: filas,
-          startY: 70,
+          startY: 65,
           theme: 'grid',
           styles: {
-            cellPadding: 3,
-            fontSize: 8,
+            cellPadding: 2.5,
+            fontSize: 7,
             halign: 'center',
             valign: 'middle'
           },
@@ -123,9 +120,35 @@ export default {
             fillColor: [41, 128, 185],
             textColor: [255, 255, 255]
           },
-          footStyles: {
-            fillColor: [41, 128, 185],
-            textColor: [255, 255, 255]
+          columnStyles: {
+            nomenclatura: {
+              minCellWidth: 20,
+              overflow: 'visible' // Asegurar que la columna "Nomenclatura" sea de una sola línea
+            },
+            fecha: {
+              minCellWidth: 20,
+              overflow: 'visible' // Asegurar que la columna "Fecha" sea de una sola línea
+            },
+            descripcion: {
+              minCellWidth: 40,
+              overflow: 'linebreak' // Ajustar el texto en los límites del cuadro solo para la descripción
+            },
+            cuenta: {
+              minCellWidth: 40,
+              overflow: 'linebreak' // Ajustar el texto en los límites del cuadro solo para la cuenta
+            },
+            acredita: {
+              minCellWidth: 20,
+              halign: 'right'
+            },
+            debita: {
+              minCellWidth: 20,
+              halign: 'right'
+            },
+            total: {
+              minCellWidth: 20,
+              halign: 'right'
+            }
           }
         });
 

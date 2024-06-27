@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive } from 'vue'
 import jsPDF from 'jspdf'
 import axios from 'axios'
 import 'jspdf-autotable'
@@ -31,32 +31,28 @@ import 'jspdf-autotable'
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
     const fechaInicial = ref('')
     const fechaFinal = ref('')
-    const nombreEncabezado = ref('PROYECTO AGRICOLA')
-    const direccionProyecto = ref('Dirección del Proyecto')
-    const cuentas_bancarias = reactive([])
-
+    const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
+    const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango')
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://192.168.19.66:8000/in_eg/libroDiario', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/libroDiario', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
         const ingresosEgresos = response.data;
 
-        const doc = new jsPDF();
+        const doc = new jsPDF('landscape');
 
         // Agregar encabezado al PDF
         doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 105, 30, { align: 'center' });
-        doc.rect(60, 15, 90, 20); // Dibujar el cuadro alrededor del nombre del proyecto
+        doc.text(nombreEncabezado.value, 148.5, 30, { align: 'center' });
+        doc.rect(108.5, 15, 80, 20); // Dibujar el cuadro alrededor del nombre del proyecto
 
         doc.setFontSize(12);
-        doc.text(`Dirección del Proyecto: ${'8va calle 5-21 zona 10, Quetzaltenango'}`, 20, 40);
+        doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
 
         const textoAdicional = 'REPORTE: LIBRO DIARIO';
         doc.setFontSize(10);
@@ -67,7 +63,7 @@ export default {
 
         // Obtener las columnas
         const columnas = [
-          { title: 'No.Operación', dataKey: 'nomenclatura' },
+          { title: 'Conteo', dataKey: 'nomenclatura' },
           { title: 'Número de Documento', dataKey: 'numero_documento' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },
@@ -78,9 +74,8 @@ export default {
         ];
 
         // Construir la tabla
-        const filas = ingresosEgresos.map((ingresoEgreso, index) => {
-          // Aquí se ajusta la variable 'total' para evitar truncar los números
-          const total = ingresoEgreso.total ? ingresoEgreso.total : '';
+        const filas = ingresosEgresos.map((ingresoEgreso) => {
+          const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total') {
             return {
@@ -88,10 +83,10 @@ export default {
               fecha: ingresoEgreso.fecha || '',
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: '', // Acredita vacío
-              debita: '', // Debita vacío
-              total: total,
-              numero_documento: ingresoEgreso.numero_documento || '-' // Número de documento
+              acredita: '',
+              debita: '',
+              total: { content: total, styles: { fontStyle: 'bold' } },
+              numero_documento: ingresoEgreso.numero_documento || '-' 
             };
           } else {
             return {
@@ -99,10 +94,10 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? ingresoEgreso.acredita : '',
-              debita: ingresoEgreso.debita ? ingresoEgreso.debita : '',
+              acredita: ingresoEgreso.acredita ? `Q. ${ingresoEgreso.acredita}` : '',
+              debita: ingresoEgreso.debita ? `Q. ${ingresoEgreso.debita}` : '',
               total: total,
-              numero_documento: ingresoEgreso.numero_documento || '-' // Número de documento
+              numero_documento: ingresoEgreso.numero_documento || '-' 
             };
           }
         });
@@ -122,9 +117,15 @@ export default {
             fillColor: [41, 128, 185],
             textColor: [255, 255, 255]
           },
-          footStyles: {
-            fillColor: [41, 128, 185],
-            textColor: [255, 255, 255]
+          columnStyles: {
+            nomenclatura: { minCellWidth: 20, overflow: 'visible' },
+            numero_documento: { minCellWidth: 30, overflow: 'visible' },
+            fecha: { minCellWidth: 20, overflow: 'visible' },
+            cuenta: { minCellWidth: 40, overflow: 'linebreak' },
+            descripcion: { minCellWidth: 40, overflow: 'linebreak' },
+            acredita: { minCellWidth: 20, halign: 'right' },
+            debita: { minCellWidth: 20, halign: 'right' },
+            total: { minCellWidth: 20, halign: 'right' }
           }
         });
 
@@ -136,14 +137,11 @@ export default {
     };
 
     return {
-      activeKey,
-      flushActiveKey,
       fechaInicial,
       fechaFinal,
       nombreEncabezado,
       direccionProyecto,
-      generarPDF,
-      cuentas_bancarias
+      generarPDF
     }
   },
 }
@@ -167,6 +165,7 @@ export default {
   margin-top: 10px;
   border-color: rgb(19, 19, 75);
 }
+
 /* Estilos para las etiquetas */
 label {
   display: block;
