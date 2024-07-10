@@ -81,7 +81,7 @@ export default function useNavCapilla() {
         {
           component: 'CNavItem',
           name: 'Ingresos y Egresos Capilla',
-          to: '/base/ListGroups',
+          to: '/base/list-groups',
         },
       ],
     },
