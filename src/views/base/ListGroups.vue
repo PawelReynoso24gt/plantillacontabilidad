@@ -1,5 +1,5 @@
 <template>
-  <CRow>
+  <CRow> 
     <CCol :xs="12">
       <CCard class="mb-4">
         <CCardHeader>

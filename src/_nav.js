@@ -78,6 +78,11 @@ export default function useNavAgricola() {
           name: 'Libro Diario Agrícola',
           to: '/icons/flags',
         },
+        {
+          component: 'CNavItem',
+          name: 'Ingresos y Egresos Agrícola',
+          to: '/base/Collapses',
+        },
       ],
     },
     {

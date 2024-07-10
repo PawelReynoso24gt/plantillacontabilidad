@@ -78,6 +78,11 @@ export default function useNavCapilla() {
           name: 'Libro Diario Capilla',
           to: '/forms/layout',
         },
+        {
+          component: 'CNavItem',
+          name: 'Ingresos y Egresos Capilla',
+          to: '/base/ListGroups',
+        },
       ],
     },
     {
