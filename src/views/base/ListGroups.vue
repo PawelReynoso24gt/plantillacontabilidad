@@ -1,363 +1,297 @@
 <template>
-  <CRow> 
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Basic example</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            The default list group is an unordered list with items and the
-            proper CSS classes. Build upon it with the options that follow, or
-            with your CSS as required.
-          </p>
-          <DocsExample href="components/list-group.html">
-            <CListGroup>
-              <CListGroupItem>Cras justo odio</CListGroupItem>
-              <CListGroupItem>Dapibus ac facilisis in</CListGroupItem>
-              <CListGroupItem>Morbi leo risus</CListGroupItem>
-              <CListGroupItem>Porta ac consectetur ac</CListGroupItem>
-              <CListGroupItem>Vestibulum at eros</CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Active items</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add <code>active</code> boolean property to a
-            <code>&lt;CListGroupItem&gt;</code> to show the current active
-            selection.
-          </p>
-          <DocsExample href="components/list-group.html#active-items">
-            <CListGroup>
-              <CListGroupItem active>Cras justo odio</CListGroupItem>
-              <CListGroupItem>Dapibus ac facilisis in</CListGroupItem>
-              <CListGroupItem>Morbi leo risus</CListGroupItem>
-              <CListGroupItem>Porta ac consectetur ac</CListGroupItem>
-              <CListGroupItem>Vestibulum at eros</CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Disabled items</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add <code>disabled</code> boolean property to a
-            <code>&lt;CListGroupItem&gt;</code> to make it appear disabled.
-          </p>
-          <DocsExample href="components/list-group.html#disabled-items">
-            <CListGroup>
-              <CListGroupItem disabled>Cras justo odio</CListGroupItem>
-              <CListGroupItem>Dapibus ac facilisis in</CListGroupItem>
-              <CListGroupItem>Morbi leo risus</CListGroupItem>
-              <CListGroupItem>Porta ac consectetur ac</CListGroupItem>
-              <CListGroupItem>Vestibulum at eros</CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Links and buttons</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Use <code>&lt;a&gt;</code>s or <code>&lt;button&gt;</code>s to
-            create <em>actionable</em> list group items with hover, disabled,
-            and active states by adding
-            <code>component=&#34;a|button&#34;</code>. We separate these
-            pseudo-classes to ensure list groups made of non-interactive
-            elements (like <code>&lt;li&gt;</code>s or
-            <code>&lt;div&gt;</code>
-            s) don&#39;tprovide a click or tap affordance.
-          </p>
-          <DocsExample href="components/list-group.html#links-and-buttons">
-            <CListGroup>
-              <CListGroupItem component="a" href="#" active>
-                Cras justo odio
-              </CListGroupItem>
-              <CListGroupItem component="a" href="#">
-                Dapibus ac facilisis in
-              </CListGroupItem>
-              <CListGroupItem component="a" href="#">
-                Morbi leo risus
-              </CListGroupItem>
-              <CListGroupItem component="a" href="#">
-                Porta ac consectetur ac
-              </CListGroupItem>
-              <CListGroupItem component="a" href="#" disabled>
-                Vestibulum at eros
-              </CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Flush</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add <code>flush</code> boolean property to remove some borders and
-            rounded corners to render list group items edge-to-edge in a parent
-            container (e.g., cards).
-          </p>
-          <DocsExample href="components/list-group.html#flush">
-            <CListGroup flush>
-              <CListGroupItem>Cras justo odio</CListGroupItem>
-              <CListGroupItem>Dapibus ac facilisis in</CListGroupItem>
-              <CListGroupItem>Morbi leo risus</CListGroupItem>
-              <CListGroupItem>Porta ac consectetur ac</CListGroupItem>
-              <CListGroupItem>Vestibulum at eros</CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Horizontal</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add <code>layout=&#34;horizontal&#34;</code> to change the layout of
-            list group items from vertical to horizontal across all breakpoints.
-            Alternatively, choose a responsive variant
-            <code
-              >.layout=&#34;horizontal-&#123;sm | md | lg | xl |
-              xxl&#125;&#34;</code
-            >
-            to make a list group horizontal starting at that breakpoint&#39;s
-            <code>min-width</code>. Currently
-            <strong
-              >horizontal list groups cannot be combined with flush list
-              groups.</strong
-            >
-          </p>
-          <DocsExample href="components/list-group.html#flush">
-            <template
-              v-for="item in ['', '-sm', '-md', '-lg', '-xl', '-xxl']"
-              :key="item"
-            >
-              <CListGroup class="mb-2" :layout="'horizontal' + item">
-                <CListGroupItem>Cras justo odio</CListGroupItem>
-                <CListGroupItem>Dapibus ac facilisis in</CListGroupItem>
-                <CListGroupItem>Morbi leo risus</CListGroupItem>
-              </CListGroup>
-            </template>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Contextual classes</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Use contextual classes to style list items with a stateful
-            background and color.
-          </p>
-          <DocsExample href="components/list-group.html#contextual-classes">
-            <CListGroup>
-              <CListGroupItem>Dapibus ac facilisis in</CListGroupItem>
-              <CListGroupItem
-                v-for="item in [
-                  'primary',
-                  'secondary',
-                  'success',
-                  'danger',
-                  'warning',
-                  'info',
-                  'light',
-                  'dark',
-                ]"
-                :key="item"
-                :color="item"
-                >A simple {{ item }} list group item</CListGroupItem
-              >
-            </CListGroup>
-          </DocsExample>
-          <p class="text-body-secondary small">
-            Contextual classes also work with <code>&lt;a&gt;</code>s or
-            <code>&lt;button&gt;</code>s. Note the addition of the hover styles
-            here not present in the previous example. Also supported is the
-            <code>active</code> state; apply it to indicate an active selection
-            on a contextual list group item.
-          </p>
-          <DocsExample href="components/list-group.html#contextual-classes">
-            <CListGroup>
-              <CListGroupItem component="a" href="#"
-                >Dapibus ac facilisis in</CListGroupItem
-              >
-              <CListGroupItem
-                v-for="item in [
-                  'primary',
-                  'secondary',
-                  'success',
-                  'danger',
-                  'warning',
-                  'info',
-                  'light',
-                  'dark',
-                ]"
-                :key="item"
-                component="a"
-                href="#"
-                :color="item"
-                >A simple {{ item }} list group item</CListGroupItem
-              >
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>With badges</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add badges to any list group item to show unread counts, activity,
-            and more.
-          </p>
-          <DocsExample href="components/list-group.html#with-badges">
-            <CListGroup>
-              <CListGroupItem
-                class="d-flex justify-content-between align-items-center"
-              >
-                Cras justo odio
-                <CBadge color="primary" shape="rounded-pill"> 14 </CBadge>
-              </CListGroupItem>
-              <CListGroupItem
-                class="d-flex justify-content-between align-items-center"
-              >
-                Dapibus ac facilisis in
-                <CBadge color="primary" shape="rounded-pill"> 2 </CBadge>
-              </CListGroupItem>
-              <CListGroupItem
-                class="d-flex justify-content-between align-items-center"
-              >
-                Morbi leo risus
-                <CBadge color="primary" shape="rounded-pill"> 1 </CBadge>
-              </CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Custom content</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Add nearly any HTML within, even for linked list groups like the one
-            below, with the help of
-            <a href="https://coreui.io/docs/utilities/flex/"
-              >flexbox utilities</a
-            >.
-          </p>
-          <DocsExample href="components/list-group.html#custom-content">
-            <CListGroup>
-              <CListGroupItem component="a" href="#" active>
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small>3 days ago</small>
-                </div>
-                <p class="mb-1">
-                  Donec id elit non mi porta gravida at eget metus. Maecenas sed
-                  diam eget risus varius blandit.
-                </p>
-                <small>Donec id elit non mi porta.</small>
-              </CListGroupItem>
-              <CListGroupItem component="a" href="#">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-body-secondary">3 days ago</small>
-                </div>
-                <p class="mb-1">
-                  Donec id elit non mi porta gravida at eget metus. Maecenas sed
-                  diam eget risus varius blandit.
-                </p>
-                <small class="text-body-secondary"
-                  >Donec id elit non mi porta.</small
-                >
-              </CListGroupItem>
-              <CListGroupItem component="a" href="#">
-                <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">List group item heading</h5>
-                  <small class="text-body-secondary">3 days ago</small>
-                </div>
-                <p class="mb-1">
-                  Donec id elit non mi porta gravida at eget metus. Maecenas sed
-                  diam eget risus varius blandit.
-                </p>
-                <small class="text-body-secondary"
-                  >Donec id elit non mi porta.</small
-                >
-              </CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue List Group</strong> <small>Checkboxes and radios</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Place CoreUI&#39;s checkboxes and radios within list group items and
-            customize as needed.
-          </p>
-          <DocsExample href="components/list-group.html#checkboxes-and-radios">
-            <CListGroup>
-              <CListGroupItem>
-                <CFormCheck label="Cras justo odio" />
-              </CListGroupItem>
-              <CListGroupItem>
-                <CFormCheck label="Dapibus ac facilisis in" checked />
-              </CListGroupItem>
-              <CListGroupItem>
-                <CFormCheck label="Morbi leo risus" checked />
-              </CListGroupItem>
-              <CListGroupItem>
-                <CFormCheck label="orta ac consectetur ac" />
-              </CListGroupItem>
-              <CListGroupItem>
-                <CFormCheck label="Vestibulum at eros" />
-              </CListGroupItem>
-            </CListGroup>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
+  <div>
+    <div class="division-container">
+      <div class="nombre-fecha-container">
+        <div class="id-inputs">
+          <label>Período de informe</label>
+          <select v-model="selectedPeriodo" @change="actualizarMeses">
+            <option v-for="periodo in periodos" :key="periodo" :value="periodo">{{ periodo }}</option>
+          </select>
+          <label>Mes</label>
+          <select v-model="selectedMes">
+            <option v-for="mes in meses" :key="mes" :value="mes">{{ mes }}</option>
+          </select>
+        </div>
+        <div class="nombre-inputs">
+          <label>Contador</label>
+          <div class="numero-input">
+            <input type="text" v-model="contador">
+          </div>
+        </div>
+        <div class="nombre-inputs">
+          <label>Responsable de proyecto Agrícola</label>
+          <div class="numero-input">
+            <input type="text" v-model="responsableAgricola">
+          </div>
+        </div>
+        <div class="nombre-inputs">
+          <label>Economa provincial</label>
+          <div class="numero-input">
+            <input type="text" v-model="economaProvincial">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;"></div>
+
+    <button @click="generarPDF">Generar PDF</button>
+    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
+  </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { ref } from 'vue';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 export default {
-  name: 'ListGroups',
-}
+  name: 'ReporteAG',
+  setup() {
+    const contador = ref('');
+    const responsableAgricola = ref('');
+    const economaProvincial = ref('');
+    const selectedPeriodo = ref('');
+    const selectedMes = ref('');
+    const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
+    const meses = ref([]);
+
+    const actualizarMeses = () => {
+      switch (selectedPeriodo.value) {
+        case 'Mensual':
+          meses.value = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+          break;
+        case 'Trimestral':
+          meses.value = ['Enero', 'Abril', 'Julio', 'Octubre'];
+          break;
+        case 'Semestral':
+          meses.value = ['Enero', 'Julio'];
+          break;
+        case 'Anual':
+          meses.value = ['Enero'];
+          selectedMes.value = 'Enero';
+          break;
+      }
+    };
+
+    const limpiar = () => {
+      selectedPeriodo.value = '';
+      selectedMes.value = '';
+      contador.value = '';
+      responsableAgricola.value = '';
+      economaProvincial.value = '';
+    };
+
+    const generarPDF = async () => {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/reporteFinalCA', {
+          tipo: selectedPeriodo.value.toLowerCase(),
+          mes: selectedMes.value.toLowerCase(),
+          contador: contador.value,
+          responsable: responsableAgricola.value,
+          economa: economaProvincial.value
+        });
+        const data = response.data;
+
+        const doc = new jsPDF();
+        let yOffset = 20; // Start position for text
+        const pageHeight = doc.internal.pageSize.height; // Height of a page
+        const pageMargin = 20; // Margin from the edge of the page
+
+        const addPageIfNeeded = () => {
+          if (yOffset > pageHeight - pageMargin) { // Check if there's enough space left
+            doc.addPage();
+            yOffset = 20; // Reset yOffset to top of the page
+          }
+        };
+
+        const addText = (text, x, y) => {
+          addPageIfNeeded();
+          doc.text(text, x, yOffset);
+          yOffset += 10; // Line height
+        };
+
+        const addTable = (head, body) => {
+          doc.autoTable({
+            head: [head],
+            body: body,
+            startY: yOffset,
+            theme: 'grid',
+            styles: {
+              cellPadding: 2.5,
+              fontSize: 8,
+              halign: 'center',
+              valign: 'middle',
+              overflow: 'linebreak'
+            },
+            headStyles: {
+              fillColor: [41, 128, 185],
+              textColor: [255, 255, 255]
+            }
+          });
+          yOffset = doc.autoTable.previous.finalY + 10; // Update yOffset after table
+        };
+
+        // Obtener año actual
+        const currentYear = new Date().getFullYear();
+
+        // Obtener mes actual
+        const currentMonth = new Date().toLocaleDateString('es-ES', { month: 'long' });
+
+        // Determinar título del informe
+        let periodoTexto;
+        if (selectedPeriodo.value === 'Mensual') {
+          periodoTexto = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
+        } else if (selectedPeriodo.value === 'Trimestral') {
+          const trimestre = {
+            'Enero': 'PRIMER TRIMESTRE',
+            'Abril': 'SEGUNDO TRIMESTRE',
+            'Julio': 'TERCER TRIMESTRE',
+            'Octubre': 'CUARTO TRIMESTRE'
+          };
+          periodoTexto = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
+        } else if (selectedPeriodo.value === 'Semestral') {
+          periodoTexto = selectedMes.value === 'Enero' ? 'RESUMEN PRIMER SEMESTRE' : 'RESUMEN SEGUNDO SEMESTRE';
+        } else if (selectedPeriodo.value === 'Anual') {
+          periodoTexto = 'RESUMEN ANUAL';
+        }
+
+        // Agregar encabezado al PDF
+        doc.setFontSize(16);
+        doc.text(`REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`, 105, 27, { align: 'center' });
+        doc.setLineWidth(0.5);
+        doc.line(60, 32, 150, 32); // Línea horizontal
+
+        doc.setFontSize(12);
+        yOffset = 40;
+        doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
+        doc.text(periodoTexto, 91, 40);
+        doc.text(`DE`, 165, 40);
+        doc.text(`${currentYear}`, 175, 40);
+        doc.text(`PROYECTO AGRÍCOLA HOGAR SANTA LUISA`, 20, 50);
+        doc.text(`LUGAR:`, 130, 50);
+        doc.text(`QUETZALTENANGO`, 155, 50);
+        doc.text(`GUATEMALA`, 20, 60);
+        doc.text(`FECHA:`, 130, 60);
+        doc.text(new Date().toLocaleDateString('es-ES'), 160, 60);
+        
+        // Añadir espacio antes de la tabla
+        yOffset = 75; // Ajusta la posición Y después del encabezado
+
+        // Crear los datos para la tabla
+        const tableData = [
+          ['SALDO INICIAL', '', '', 'Q ' + data.saldo_inicial.toFixed(2)],
+          ['SALDO INICIAL EN CAJA GENERAL', '', 'Q ' + data.saldo_inicial_caja.toFixed(2), ''],
+          ['SALDO INICIAL EN BANCO', '', 'Q ' + data.saldo_inicial_bancos.toFixed(2), ''],
+          ['INGRESOS', '', '', 'Q ' + data.total_general_ingresos.toFixed(2)],
+          ['CAJA GENERAL', '', 'Q ' + data.total_ingresos_caja.toFixed(2), ''],
+          ...data.data_caja.filter(item => item.ingresos && parseFloat(item.ingresos) > 0).map(ingreso => [
+            ingreso.cuenta, 'Q ' + ingreso.ingresos, '', ''
+          ]),
+          ['BANCO', '', 'Q ' + data.total_ingresos_bancos.toFixed(2), ''],
+          ...data.data_bancos.filter(item => item.ingresos && parseFloat(item.ingresos) > 0).map(ingreso => [
+            ingreso.cuenta, 'Q ' + ingreso.ingresos, '', ''
+          ]),
+          ['EGRESOS', '', '', 'Q ' + data.total_general_egresos.toFixed(2)],
+          ['CAJA GENERAL', '', 'Q ' + data.total_egresos_caja.toFixed(2), ''],
+          ...data.data_caja.filter(item => item.egresos && parseFloat(item.egresos) > 0).map(egreso => [
+            egreso.cuenta, 'Q ' + egreso.egresos, '', ''
+          ]),
+          ['BANCO', '', 'Q ' + data.total_egresos_bancos.toFixed(2), ''],
+          ...data.data_bancos.filter(item => item.egresos && parseFloat(item.egresos) > 0).map(egreso => [
+            egreso.cuenta, 'Q ' + egreso.egresos, '', ''
+          ]),
+          ['SALDO FINAL', '', '', 'Q ' + data.total_saldo_final.toFixed(2)],
+          ['SALDO FINAL EN CAJA GENERAL', '', 'Q ' + data.total_saldo_final_caja.toFixed(2), ''],
+          ['SALDO FINAL EN BANCO', '', 'Q ' + data.total_saldo_final_bancos.toFixed(2), ''],
+          ['SUMAS IGUALES', '', 'Q ' + data.total_saldo_final.toFixed(2), 'Q ' + data.total_saldo_final.toFixed(2)]
+        ];
+
+        // Encabezado de la Tabla
+        const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
+
+        addTable(tableHeaders, tableData);
+        // Datos Finales
+        addText('Hecho por:', 20, yOffset);
+        addText('Contador: ' + data.contador, 20, yOffset);
+        addText('Responsable: ' + data.responsable, 20, yOffset);
+        addText('Economa: ' + data.economa, 20, yOffset);
+
+        doc.save('Reporte ingresos y egresos.pdf');
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    return {
+      contador,
+      responsableAgricola,
+      economaProvincial,
+      selectedPeriodo,
+      selectedMes,
+      periodos,
+      meses,
+      limpiar,
+      actualizarMeses,
+      generarPDF
+    };
+  },
+};
+
+
+
+
 </script>
+
+
+<style scoped>
+.division-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.id-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.nombre-inputs {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.numero-input {
+  flex: 1;
+}
+</style>
