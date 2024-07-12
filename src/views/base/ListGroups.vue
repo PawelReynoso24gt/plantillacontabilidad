@@ -13,15 +13,15 @@
           </select>
         </div>
         <div class="nombre-inputs">
-          <label>Contador</label>
+          <label>Responsable de Capilla</label>
           <div class="numero-input">
-            <input type="text" v-model="contador">
+            <input type="text" v-model="responsable">
           </div>
         </div>
         <div class="nombre-inputs">
-          <label>Responsable de proyecto Agrícola</label>
+          <label>Hermana Sirviente</label>
           <div class="numero-input">
-            <input type="text" v-model="responsableAgricola">
+            <input type="text" v-model="hermanaSirviente">
           </div>
         </div>
         <div class="nombre-inputs">
@@ -49,8 +49,8 @@ import 'jspdf-autotable';
 export default {
   name: 'ReporteAG',
   setup() {
-    const contador = ref('');
-    const responsableAgricola = ref('');
+    const responsable = ref('');
+    const hermanaSirviente = ref('');
     const economaProvincial = ref('');
     const selectedPeriodo = ref('');
     const selectedMes = ref('');
@@ -78,8 +78,8 @@ export default {
     const limpiar = () => {
       selectedPeriodo.value = '';
       selectedMes.value = '';
-      contador.value = '';
-      responsableAgricola.value = '';
+      responsable.value = '';
+      hermanaSirviente.value = '';
       economaProvincial.value = '';
     };
 
@@ -88,8 +88,8 @@ export default {
         const response = await axios.post('http://127.0.0.1:8000/in_eg/reporteFinalCA', {
           tipo: selectedPeriodo.value.toLowerCase(),
           mes: selectedMes.value.toLowerCase(),
-          contador: contador.value,
-          responsable: responsableAgricola.value,
+          responsable: responsable.value,
+          sirviente: hermanaSirviente.value,
           economa: economaProvincial.value
         });
         const data = response.data;
@@ -212,11 +212,33 @@ export default {
         const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
 
         addTable(tableHeaders, tableData);
+
         // Datos Finales
-        addText('Hecho por:', 20, yOffset);
-        addText('Contador: ' + data.contador, 20, yOffset);
-        addText('Responsable: ' + data.responsable, 20, yOffset);
-        addText('Economa: ' + data.economa, 20, yOffset);
+        yOffset += 5; // Añadir un espacio antes de los datos finales
+        doc.setFontSize(10);
+
+        // Comprobar si hay suficiente espacio para los datos finales
+        const espacioNecesario = 60; // Aproximadamente la cantidad de espacio necesario para los datos finales
+        if (yOffset + espacioNecesario > pageHeight - pageMargin) {
+          doc.addPage();
+          yOffset = 20;
+        }
+
+        doc.text('Hecho por:', 20, yOffset);
+        doc.text('Revisado por:', 140, yOffset);
+        yOffset += 15; // Ajustar la posición vertical
+        doc.text('(f)_____________________________', 20, yOffset);
+        doc.text('(f)_____________________________', 120, yOffset);
+        yOffset += 5; // Ajustar la posición vertical
+        doc.text(data.responsable, 25, yOffset);
+        doc.text('Responsable de Capilla', 30, yOffset + 5); // Añadir "Responsable"
+        doc.text('Vo.Bo. ' + data.sirviente, 130, yOffset);
+        doc.text('Hermana Sirviente', 135, yOffset + 5); // Añadir "sirviente"
+        yOffset += 40; // Añadir espacio antes de economa
+        doc.text('(f)__________________________________', 65, yOffset);
+        yOffset += 4; // Ajustar la posición vertical
+        doc.text(data.economa, 75, yOffset);
+        doc.text('Economa Provincial', 85, yOffset + 5);
 
         doc.save('Reporte ingresos y egresos.pdf');
       } catch (error) {
@@ -225,8 +247,8 @@ export default {
     };
 
     return {
-      contador,
-      responsableAgricola,
+      responsable,
+      hermanaSirviente,
       economaProvincial,
       selectedPeriodo,
       selectedMes,
@@ -238,12 +260,7 @@ export default {
     };
   },
 };
-
-
-
-
 </script>
-
 
 <style scoped>
 .division-container {

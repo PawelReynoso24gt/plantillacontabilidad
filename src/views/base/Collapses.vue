@@ -142,19 +142,19 @@ export default {
       // Determinar título del informe
       let periodoTexto;
       if (selectedPeriodo.value === 'Mensual') {
-        periodoTexto = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
+          periodoTexto = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
       } else if (selectedPeriodo.value === 'Trimestral') {
-        const trimestre = {
-          'Enero': 'PRIMER TRIMESTRE',
-          'Abril': 'SEGUNDO TRIMESTRE',
-          'Julio': 'TERCER TRIMESTRE',
-          'Octubre': 'CUARTO TRIMESTRE'
-        };
-        periodoTexto = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
+          const trimestre = {
+            'Enero': 'PRIMER TRIMESTRE',
+            'Abril': 'SEGUNDO TRIMESTRE',
+            'Julio': 'TERCER TRIMESTRE',
+            'Octubre': 'CUARTO TRIMESTRE'
+          };
+          periodoTexto = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
       } else if (selectedPeriodo.value === 'Semestral') {
-        periodoTexto = selectedMes.value === 'Enero' ? 'RESUMEN PRIMER SEMESTRE' : 'RESUMEN SEGUNDO SEMESTRE';
+          periodoTexto = selectedMes.value === 'Enero' ? 'RESUMEN PRIMER SEMESTRE' : 'RESUMEN SEGUNDO SEMESTRE';
       } else if (selectedPeriodo.value === 'Anual') {
-        periodoTexto = 'RESUMEN ANUAL';
+          periodoTexto = 'RESUMEN ANUAL';
       }
 
       // Agregar encabezado al PDF
@@ -215,22 +215,26 @@ export default {
       // Datos Finales
       yOffset += 5; // Añadir un espacio antes de los datos finales
       doc.setFontSize(10);
+      addPageIfNeeded();
       doc.text('Hecho por:', 20, yOffset);
       doc.text('Revisado por:', 140, yOffset);
       yOffset += 15; // Ajustar la posición vertical
+      addPageIfNeeded();
       doc.text('(f)_____________________________', 20, yOffset);
       doc.text('(f)_____________________________', 120, yOffset);
       yOffset += 5; // Ajustar la posición vertical
+      addPageIfNeeded();
       doc.text(data.contador, 25, yOffset);
       doc.text('Contador', 40, yOffset + 5); // Añadir "Contador"
       doc.text('Vo.Bo. ' + data.responsable, 125, yOffset);
-      doc.text('Responsable', 140, yOffset + 5); // Añadir "Responsable"
+      doc.text('Responsable de Proyecto Agricola', 125, yOffset + 5); // Añadir "Responsable"
       yOffset += 40; // Añadir espacio antes de economa
+      addPageIfNeeded();
       doc.text('(f)__________________________________', 65, yOffset);
-      yOffset += 5; // Ajustar la posición vertical
+      yOffset += 4; // Ajustar la posición vertical
+      addPageIfNeeded();
       doc.text(data.economa, 75, yOffset);
       doc.text('Economa provincial', 85, yOffset + 5);
-
 
       doc.save('Reporte ingresos y egresos.pdf');
     } catch (error) {
