@@ -48,12 +48,12 @@ export default {
         });
         const ingresosEgresos = response.data;
 
-        const doc = new jsPDF();
+        const doc = new jsPDF({ orientation: 'landscape' });
 
         // Agregar encabezado al PDF
         doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 105, 27, { align: 'center' });
-        doc.rect(60, 17, 90, 15); // Dibujar el cuadro alrededor del nombre del proyecto
+        doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
+        doc.rect(60, 17, 170, 15); // Dibujar el cuadro alrededor del nombre del proyecto
 
         doc.setFontSize(12);
         doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
@@ -77,8 +77,7 @@ export default {
         ];
 
         // Construir la tabla
-        const filas = ingresosEgresos.map((ingresoEgreso, index) => {
-          // Aquí se ajusta la variable 'total' para evitar truncar los números
+        const filas = ingresosEgresos.map((ingresoEgreso) => {
           const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
@@ -149,7 +148,9 @@ export default {
               minCellWidth: 20,
               halign: 'right'
             }
-          }
+          },
+          tableWidth: 'auto', // Ajustar el ancho de la tabla automáticamente
+          margin: { left: 10, right: 10 } // Margen para que la tabla ocupe todo el ancho posible
         });
 
         // Guardar el PDF

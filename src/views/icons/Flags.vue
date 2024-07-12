@@ -48,8 +48,8 @@ export default {
 
         // Agregar encabezado al PDF
         doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 148.5, 30, { align: 'center' });
-        doc.rect(108.5, 15, 80, 20); // Dibujar el cuadro alrededor del nombre del proyecto
+        doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
+        doc.rect(60, 17, 170, 15); // Dibujar el cuadro alrededor del nombre del proyecto
 
         doc.setFontSize(12);
         doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);

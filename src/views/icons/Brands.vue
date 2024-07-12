@@ -78,12 +78,12 @@ export default {
         });
         const ingresosEgresos = response.data;
 
-        const doc = new jsPDF();
+        const doc = new jsPDF('landscape');
 
         // Agregar encabezado al PDF
         doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 105, 30, { align: 'center' });
-        doc.rect(60, 15, 90, 20); // Dibujar el cuadro alrededor del nombre del proyecto
+        doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
+        doc.rect(60, 17, 170, 15); // Dibujar el cuadro alrededor del nombre del proyecto
 
         doc.setFontSize(12);
         doc.text(`Dirección del Proyecto: ${'8va calle 5-21 zona 10, Quetzaltenango'}`, 20, 40);
@@ -112,8 +112,7 @@ export default {
 
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso, index) => {
-          // Aquí se ajusta la variable 'total' para evitar truncar los números
-          const total = ingresoEgreso.total ? ingresoEgreso.total : '';
+          const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total bancos') {
             return {
@@ -123,7 +122,7 @@ export default {
               descripcion: ingresoEgreso.descripcion,
               acredita: '', // Acredita vacío
               debita: '', // Debita vacío
-              total: total
+              total: { content: total, styles: { fontStyle: 'bold' } }
             };
           } else {
             return {
@@ -131,8 +130,8 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? ingresoEgreso.acredita : '',
-              debita: ingresoEgreso.debita ? ingresoEgreso.debita : '',
+              acredita: ingresoEgreso.acredita ? `Q. ${ingresoEgreso.acredita}` : '',
+              debita: ingresoEgreso.debita ? `Q. ${ingresoEgreso.debita}` : '',
               total: total
             };
           }
@@ -153,9 +152,14 @@ export default {
             fillColor: [41, 128, 185],
             textColor: [255, 255, 255]
           },
-          footStyles: {
-            fillColor: [41, 128, 185],
-            textColor: [255, 255, 255]
+          columnStyles: {
+            nomenclatura: { minCellWidth: 20, overflow: 'visible' },
+            fecha: { minCellWidth: 20, overflow: 'visible' },
+            cuenta: { minCellWidth: 40, overflow: 'linebreak' },
+            descripcion: { minCellWidth: 40, overflow: 'linebreak' },
+            acredita: { minCellWidth: 20, halign: 'right' },
+            debita: { minCellWidth: 20, halign: 'right' },
+            total: { minCellWidth: 20, halign: 'right' }
           }
         });
 
@@ -186,7 +190,6 @@ export default {
   },
 }
 </script>
-
 
 <style scoped>
 /* Estilos para el contenedor principal */
