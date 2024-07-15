@@ -123,6 +123,12 @@ export default function useNavAgricola() {
         },
       ],
     },
+    {
+      component: 'CNavItem',
+      name: 'Desarrolladores',
+      to: '/widgets',
+      icon: 'cil-bell',
+    }
   ];
 
   console.log('Nav Config Agrícola:', navConfig);

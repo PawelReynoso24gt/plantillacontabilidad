@@ -123,6 +123,12 @@ export default function useNavCapilla() {
         },
       ],
     },
+    {
+      component: 'CNavItem',
+      name: 'Desarrolladores',
+      to: '/widgets',
+      icon: 'cil-bell',
+    }
   ];
 
   console.log('Nav Config Capilla:', navConfig);
