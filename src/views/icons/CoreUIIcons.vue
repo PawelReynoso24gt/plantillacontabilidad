@@ -40,6 +40,14 @@ export default {
     const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
     const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango')
 
+
+    const formatCurrency = (value) => {
+    if (value === null || value === undefined || isNaN(value)) {
+      return '';
+    }
+    return `Q. ${parseFloat(value).toFixed(2)}`;
+  };
+
     const generarPDF = async () => {
       try {
         const response = await axios.post('http://127.0.0.1:8000/in_eg/fecha', {
