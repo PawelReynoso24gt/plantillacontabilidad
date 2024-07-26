@@ -23,18 +23,25 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import jsPDF from 'jspdf'
 import axios from 'axios'
 import 'jspdf-autotable'
 
 export default {
-  name: 'Accordion',
+  name: 'LibroDiario',
   setup() {
     const fechaInicial = ref('')
     const fechaFinal = ref('')
     const nombreEncabezado = ref('PROYECTO CAPILLA')
     const direccionProyecto = ref('15 avenida, entre 3a y 4a calle zona 3, Quetzaltenango')
+
+    const formatNumber = (value) => {
+      if (typeof value === 'number') {
+        return value.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      return value;
+    };
 
     const generarPDF = async () => {
       try {
@@ -75,7 +82,7 @@ export default {
 
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso) => {
-          const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
+          const total = ingresoEgreso.total ? `Q. ${formatNumber(parseFloat(ingresoEgreso.total))}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total') {
             return {
@@ -86,7 +93,7 @@ export default {
               acredita: '',
               debita: '',
               total: { content: total, styles: { fontStyle: 'bold' } },
-              numero_documento: ingresoEgreso.numero_documento || '-' 
+              numero_documento: ingresoEgreso.numero_documento || '-'
             };
           } else {
             return {
@@ -94,10 +101,10 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? `Q. ${ingresoEgreso.acredita}` : '',
-              debita: ingresoEgreso.debita ? `Q. ${ingresoEgreso.debita}` : '',
+              acredita: ingresoEgreso.acredita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.acredita))}` : '',
+              debita: ingresoEgreso.debita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.debita))}` : '',
               total: total,
-              numero_documento: ingresoEgreso.numero_documento || '-' 
+              numero_documento: ingresoEgreso.numero_documento || '-'
             };
           }
         });
@@ -118,11 +125,11 @@ export default {
             textColor: [255, 255, 255]
           },
           columnStyles: {
-            nomenclatura: { minCellWidth: 20, overflow: 'visible' },
-            numero_documento: { minCellWidth: 30, overflow: 'visible' },
-            fecha: { minCellWidth: 20, overflow: 'visible' },
-            cuenta: { minCellWidth: 40, overflow: 'linebreak' },
-            descripcion: { minCellWidth: 40, overflow: 'linebreak' },
+            nomenclatura: { minCellWidth: 20, overflow: 'visible', halign: 'left' },
+            numero_documento: { minCellWidth: 30, overflow: 'visible', halign: 'left' },
+            fecha: { minCellWidth: 20, overflow: 'visible', halign: 'left' },
+            cuenta: { minCellWidth: 40, overflow: 'linebreak', halign: 'left' },
+            descripcion: { minCellWidth: 40, overflow: 'linebreak' , halign: 'left'},
             acredita: { minCellWidth: 20, halign: 'right' },
             debita: { minCellWidth: 20, halign: 'right' },
             total: { minCellWidth: 20, halign: 'right' }

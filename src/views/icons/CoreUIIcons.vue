@@ -32,21 +32,11 @@ import 'jspdf-autotable'
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
     const fechaInicial = ref('')
     const fechaFinal = ref('')
 
     const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
     const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango')
-
-
-    const formatCurrency = (value) => {
-    if (value === null || value === undefined || isNaN(value)) {
-      return '';
-    }
-    return `Q. ${parseFloat(value).toFixed(2)}`;
-  };
 
     const generarPDF = async () => {
       try {
@@ -86,7 +76,7 @@ export default {
 
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso) => {
-          const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
+          const total = ingresoEgreso.total ? `Q. ${formatNumber(parseFloat(ingresoEgreso.total))}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
             return {
@@ -105,8 +95,8 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? `Q. ${ingresoEgreso.acredita}` : '',
-              debita: ingresoEgreso.debita ? `Q. ${ingresoEgreso.debita}` : '',
+              acredita: ingresoEgreso.acredita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.acredita))}` : '',
+              debita: ingresoEgreso.debita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.debita))}` : '',
               total: total
             };
           }
@@ -121,7 +111,8 @@ export default {
             cellPadding: 2.5,
             fontSize: 7,
             halign: 'center',
-            valign: 'middle'
+            valign: 'middle',
+            overflow: 'linebreak'
           },
           headStyles: {
             fillColor: [41, 128, 185],
@@ -129,31 +120,35 @@ export default {
           },
           columnStyles: {
             nomenclatura: {
-              minCellWidth: 20,
-              overflow: 'visible' // Asegurar que la columna "Nomenclatura" sea de una sola línea
+              minCellWidth: 30, // Aumentar ancho mínimo de columna si es necesario
+              halign: 'left',
+              overflow: 'visible'
             },
             fecha: {
-              minCellWidth: 20,
-              overflow: 'visible' // Asegurar que la columna "Fecha" sea de una sola línea
+              minCellWidth: 30, // Aumentar ancho mínimo de columna si es necesario
+              halign: 'left',
+              overflow: 'visible'
             },
             descripcion: {
-              minCellWidth: 40,
-              overflow: 'linebreak' // Ajustar el texto en los límites del cuadro solo para la descripción
+              minCellWidth: 50, // Aumentar ancho mínimo para descripciones largas
+              halign: 'left',
+              overflow: 'linebreak'
             },
             cuenta: {
-              minCellWidth: 40,
-              overflow: 'linebreak' // Ajustar el texto en los límites del cuadro solo para la cuenta
+              minCellWidth: 50, // Aumentar ancho mínimo para cuentas largas
+              halign: 'left',
+              overflow: 'linebreak'
             },
             acredita: {
-              minCellWidth: 20,
+              minCellWidth: 30, // Asegúrate de que haya suficiente espacio
               halign: 'right'
             },
             debita: {
-              minCellWidth: 20,
+              minCellWidth: 30, // Asegúrate de que haya suficiente espacio
               halign: 'right'
             },
             total: {
-              minCellWidth: 20,
+              minCellWidth: 40, // Asegúrate de que haya suficiente espacio para montos grandes
               halign: 'right'
             }
           },
@@ -168,9 +163,15 @@ export default {
       }
     };
 
+    // Función para formatear números con dos decimales
+    const formatNumber = (value) => {
+      if (typeof value === 'number') {
+        return value.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      return value;
+    };
+
     return {
-      activeKey,
-      flushActiveKey,
       fechaInicial,
       fechaFinal,
       nombreEncabezado,

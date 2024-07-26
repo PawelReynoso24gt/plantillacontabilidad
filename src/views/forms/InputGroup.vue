@@ -32,13 +32,18 @@ import 'jspdf-autotable'
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
     const fechaInicial = ref('')
     const fechaFinal = ref('')
 
     const nombreEncabezado = ref('PROYECTO CAPILLA')
     const direccionProyecto = ref('15 avenida, entre 3a y 4a calle zona 3, Quetzaltenango')
+
+    const formatNumber = (value) => {
+      if (typeof value === 'number') {
+        return value.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      return value;
+    };
 
     const generarPDF = async () => {
       try {
@@ -78,7 +83,7 @@ export default {
 
         // Construir la tabla
         const filas = ingresosEgresos.map((ingresoEgreso) => {
-          const total = ingresoEgreso.total ? `Q. ${ingresoEgreso.total}` : '';
+          const total = ingresoEgreso.total ? `Q. ${formatNumber(parseFloat(ingresoEgreso.total))}` : '';
 
           if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
             return {
@@ -97,8 +102,8 @@ export default {
               fecha: ingresoEgreso.fecha,
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: ingresoEgreso.acredita ? `Q. ${ingresoEgreso.acredita}` : '',
-              debita: ingresoEgreso.debita ? `Q. ${ingresoEgreso.debita}` : '',
+              acredita: ingresoEgreso.acredita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.acredita))}` : '',
+              debita: ingresoEgreso.debita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.debita))}` : '',
               total: total
             };
           }
@@ -122,19 +127,23 @@ export default {
           columnStyles: {
             nomenclatura: {
               minCellWidth: 20,
-              overflow: 'visible' // Asegurar que la columna "Nomenclatura" sea de una sola línea
+              overflow: 'visible', // Asegurar que la columna "Nomenclatura" sea de una sola línea
+              halign: 'left'
             },
             fecha: {
               minCellWidth: 20,
-              overflow: 'visible' // Asegurar que la columna "Fecha" sea de una sola línea
+              overflow: 'visible', // Asegurar que la columna "Fecha" sea de una sola línea
+              halign: 'left'
             },
             descripcion: {
               minCellWidth: 40,
-              overflow: 'linebreak' // Ajustar el texto en los límites del cuadro solo para la descripción
+              overflow: 'linebreak', // Ajustar el texto en los límites del cuadro solo para la descripción
+              halign: 'left'
             },
             cuenta: {
               minCellWidth: 40,
-              overflow: 'linebreak' // Ajustar el texto en los límites del cuadro solo para la cuenta
+              overflow: 'linebreak', // Ajustar el texto en los límites del cuadro solo para la cuenta
+              halign: 'left'
             },
             acredita: {
               minCellWidth: 20,
@@ -161,13 +170,11 @@ export default {
     };
 
     return {
-      activeKey,
-      flushActiveKey,
       fechaInicial,
       fechaFinal,
       nombreEncabezado,
       direccionProyecto,
-      generarPDF,
+      generarPDF
     }
   },
 }
@@ -191,6 +198,7 @@ export default {
   margin-top: 10px;
   border-color: rgb(19, 19, 75);
 }
+
 /* Estilos para las etiquetas */
 label {
   display: block;
