@@ -4,7 +4,7 @@
       <img src="@/assets/brand/logoComp.png" class="large-image"/>
     </div>
     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <div style="text-align: center; color: black; font-size: 50px; margin-bottom: 20px;">
+      <div style="text-align: center; color: gray; font-size: 50px; margin-bottom: 20px;">
         PROYECTO AGRÍCOLA
       </div>
       <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
