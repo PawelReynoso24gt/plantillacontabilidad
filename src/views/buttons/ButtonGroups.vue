@@ -76,6 +76,13 @@
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
+    <!-- Mensaje de error -->
+    <p v-if="error" class="text-danger">{{ error }}</p>
+    
+    <!-- Mensaje de éxito -->
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+
+
     <!-- Botón Agregar -->
     <button @click="enviarDatos">Guardar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
@@ -107,45 +114,45 @@ export default {
     const cuentas = reactive([]);
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
+    const error = ref(''); // Estado para errores
+    const successMessage = ref(''); // Estado para mensajes de éxito
+
+    const limpiar = () => {
+      fecha.value = '';
+      identificacion.value = '';
+      descripcion.value = '';
+      nombre.value = '';
+      monto.value = '';
+      cuenta_bancaria.value = '';
+      cuenta.value = '';
+      documento.value = '';
+      numero_documento.value = '';
+      fecha_emision.value = '';
+      tipo.value = '';
+      cuentaCMB.value = '';
+      bancos_b.value = '';
+      cuentas.value = [];
+      cuentaBName.value = '';
+      cuentas_bancarias.value = [];
+      error.value = ''; // Limpiar el mensaje de error
+      successMessage.value = ''; // Limpiar el mensaje de éxito
+    };
 
     const agregarDivision = () => {
       // Lógica para agregar una nueva división
-    }
+    };
 
     const seleccionar = () => {
-    mostrarDivisionCuatro.value = tipo.value === 'bancos'; // Muestra la división 4 solo si se selecciona la opción de bancos
-    if (tipo.value === 'caja') {
-      mostrarDivisionCuatro.value = false; // Oculta la división 4 si se selecciona la opción de caja
-    }
-    fecha.value = '';
-    identificacion.value = '';
-    nombre.value = '';
-    descripcion.value = '';
-    monto.value = '';
-   }
+      mostrarDivisionCuatro.value = tipo.value === 'bancos'; // Muestra la división 4 solo si se selecciona la opción de bancos
+      if (tipo.value === 'caja') {
+        mostrarDivisionCuatro.value = false; // Oculta la división 4 si se selecciona la opción de caja
+      }
+      limpiar(); // Limpia los campos cuando se selecciona un tipo
+    };
 
-   const limpiar = () => {
-     fecha.value = '',
-     identificacion.value = '';
-     descripcion.value = '';
-     nombre.value = '';
-     monto.value = '';
-     cuenta_bancaria.value = '';
-     cuenta.value = '';
-     documento.value = '';
-     numero_documento.value = '';
-     fecha_emision.value = '';
-     tipo.value = '';
-     cuentaCMB.value = '';
-     bancos_b.value = '';
-     cuentas.value = '';
-     cuentaBName.value = '';
-     cuentas_bancarias.value = '';
-    }
-
-   const controlarVisibilidadDivisionCuatro = () => {
+    const controlarVisibilidadDivisionCuatro = () => {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
-    }
+    };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
 
@@ -159,6 +166,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Error al cargar cuentas.';
         });
     };
 
@@ -170,6 +178,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Error al cargar bancos sin cuenta.';
         });
     };
 
@@ -181,60 +190,62 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Error al cargar bancos.';
         });
     };
 
-
     const enviarDatos = () => {
-  if (tipo.value === 'caja') { 
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
-      fecha: fecha.value,
-      identificacion: identificacion.value,
-      nombre: nombre.value,
-      descripcion: descripcion.value,
-      monto: monto.value,
-      tipo: tipo.value,
-      cuenta: cuentaCMB.value,
-    })
-    .then(response => {
-      console.log(response.data); 
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  } else {
-    // Si no es "caja", enviar los datos como lo estás haciendo actualmente
-    const data = {
-      fecha: fecha.value,
-      identificacion: identificacion.value,
-      nombre: nombre.value,
-      descripcion: descripcion.value,
-      monto: monto.value,
-      tipo: tipo.value,
-      cuenta: cuentaCMB.value,
-      cuenta_bancaria: bancos_b.value,
-      documento: documento.value,
-      numero_documento: numero_documento.value,
-      fecha_emision: fecha_emision.value,
-      cuenta_bancaria: cuentaBName.value,
+      error.value = ''; // Resetea el mensaje de error antes de enviar datos
+      successMessage.value = ''; // Resetea el mensaje de éxito antes de enviar datos
+
+      if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value || !cuentaCMB.value || (tipo.value === 'bancos' && (!documento.value || !cuentaBName.value || !numero_documento.value || !fecha_emision.value))) {
+        error.value = 'Por favor, complete todos los campos.';
+        return;
+      }
+
+      const data = {
+        fecha: fecha.value,
+        identificacion: identificacion.value,
+        nombre: nombre.value,
+        descripcion: descripcion.value,
+        monto: monto.value,
+        tipo: tipo.value,
+        cuenta: cuentaCMB.value,
+        cuenta_bancaria: bancos_b.value,
+        documento: documento.value,
+        numero_documento: numero_documento.value,
+        fecha_emision: fecha_emision.value,
+        cuenta_bancaria: cuentaBName.value,
+      };
+
+      if (tipo.value === 'caja') { 
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', data)
+        .then(response => {
+          successMessage.value = 'Datos enviados correctamente';
+          console.log(response.data); 
+        })
+        .catch(error => {
+          console.error(error);
+          error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+        });
+      } else {
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINCA', data)
+          .then(response => {
+            successMessage.value = 'Datos enviados correctamente';
+            console.log(response.data); 
+          })
+          .catch(error => {
+            console.error(error);
+            error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+          });
+      }
     };
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINCA', data)
-      .then(response => {
-        console.log(response.data); 
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-};
-
-
 
     onMounted(() => {
-  cargarCuentas();
-  cargarBancos();
-  cargarBancosNoCuenta();
-});
+      cargarCuentas();
+      cargarBancos();
+      cargarBancosNoCuenta();
+    });
 
     return {
       limpiar,
@@ -261,11 +272,14 @@ export default {
       enviarDatos,
       cargarCuentas,
       cargarBancos,
-      cargarBancosNoCuenta
+      cargarBancosNoCuenta,
+      error, // Retornar el estado de error
+      successMessage // Retornar el estado de éxito
     }
   },
 }
 </script>
+
 
 <style scoped>
 /* Estilos para el contenedor principal */

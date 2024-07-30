@@ -75,6 +75,12 @@
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
+    <!-- Mensaje de error -->
+    <p v-if="error" class="text-danger">{{ error }}</p>
+    
+    <!-- Mensaje de éxito -->
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+
     <!-- Botón Agregar -->
     <button @click="enviarDatos">Guardar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
@@ -106,19 +112,23 @@ export default {
     const cuentas = reactive([]);
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
+    const error = ref(''); // Estado para errores
+    const successMessage = ref(''); // Estado para mensajes de éxito
 
     const limpiar = () => {
-      tipo.value = '',
-      fecha.value = '',
-      identificacion.value = '',
-      nombre.value = '',
-      descripcion.value = '',
-      cuentaCMB.value = '',
-      monto.value = '',
-      documento.value = '',
-      cuentaBName.value = '',
-      numero_documento.value = '',
-      fecha_emision.value = ''
+      tipo.value = '';
+      fecha.value = '';
+      identificacion.value = '';
+      nombre.value = '';
+      descripcion.value = '';
+      cuentaCMB.value = '';
+      monto.value = '';
+      documento.value = '';
+      cuentaBName.value = '';
+      numero_documento.value = '';
+      fecha_emision.value = '';
+      error.value = ''; // Limpiar el mensaje de error
+      successMessage.value = ''; // Limpiar el mensaje de éxito
     };
 
     const agregarDivision = () => {
@@ -141,6 +151,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Error al cargar cuentas. Por favor, inténtelo de nuevo.';
         });
     };
 
@@ -152,6 +163,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Error al cargar bancos sin cuenta. Por favor, inténtelo de nuevo.';
         });
     };
 
@@ -163,53 +175,62 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Error al cargar bancos. Por favor, inténtelo de nuevo.';
         });
     };
 
-
     const enviarDatos = () => {
-  if (tipo.value === 'caja') { 
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
-      fecha: fecha.value,
-      identificacion: identificacion.value,
-      nombre: nombre.value,
-      descripcion: descripcion.value,
-      monto: monto.value,
-      tipo: tipo.value,
-      cuenta: cuentaCMB.value,
-    })
-    .then(response => {
-      console.log(response.data); 
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  } else {
-    // Si no es "caja", enviar los datos como lo estás haciendo actualmente
-    const data = {
-      fecha: fecha.value,
-      identificacion: identificacion.value,
-      nombre: nombre.value,
-      descripcion: descripcion.value,
-      monto: monto.value,
-      tipo: tipo.value,
-      cuenta: cuentaCMB.value,
-      documento: documento.value,
-      numero_documento: numero_documento.value,
-      fecha_emision: fecha_emision.value,
-      cuenta_bancaria: cuentaBName.value,
+      error.value = ''; // Resetea el mensaje de error antes de enviar datos
+      successMessage.value = ''; // Resetea el mensaje de éxito antes de enviar datos
+
+      if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value || !cuentaCMB.value || (tipo.value === 'bancos' && (!documento.value || !cuentaBName.value || !numero_documento.value || !fecha_emision.value))) {
+        error.value = 'Por favor, complete todos los campos.';
+        return;
+      }
+
+      if (tipo.value === 'caja') { 
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
+          fecha: fecha.value,
+          identificacion: identificacion.value,
+          nombre: nombre.value,
+          descripcion: descripcion.value,
+          monto: monto.value,
+          tipo: tipo.value,
+          cuenta: cuentaCMB.value,
+        })
+        .then(response => {
+          successMessage.value = 'Datos enviados correctamente';
+          console.log(response.data); 
+        })
+        .catch(error => {
+          console.error(error);
+          error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+        });
+      } else {
+        const data = {
+          fecha: fecha.value,
+          identificacion: identificacion.value,
+          nombre: nombre.value,
+          descripcion: descripcion.value,
+          monto: monto.value,
+          tipo: tipo.value,
+          cuenta: cuentaCMB.value,
+          documento: documento.value,
+          numero_documento: numero_documento.value,
+          fecha_emision: fecha_emision.value,
+          cuenta_bancaria: cuentaBName.value,
+        };
+        axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
+          .then(response => {
+            successMessage.value = 'Datos enviados correctamente';
+            console.log(response.data); 
+          })
+          .catch(error => {
+            console.error(error);
+            error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+          });
+      }
     };
-    axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
-      .then(response => {
-        console.log(response.data); 
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-};
-
-
 
     onMounted(() => {
       cargarCuentas();
@@ -237,7 +258,8 @@ export default {
       cuentaCMB,
       cuentaBName,
       bancos_b,
-      cuentaBName,
+      error,
+      successMessage,
       enviarDatos,
       cargarCuentas,
       cargarBancos,
