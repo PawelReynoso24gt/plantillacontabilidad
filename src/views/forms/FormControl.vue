@@ -7,7 +7,7 @@
         <div class="numero-inputs">
           <label>Cuenta bancaria:</label>
             <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
+              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> ``
             </select>
           <label>Numero de documento:</label>
               <input type="text" v-model="numero_documento">  

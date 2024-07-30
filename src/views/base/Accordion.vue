@@ -2,19 +2,19 @@
   <div>
     <div class="division-container">
       <div class="fecha-inputs">
-            <label>Egreso para:</label>
-            <select v-model="tipo">   
-              <option value="caja">caja</option>
-              <option value="bancos">bancos</option>  
-            </select>
-        </div>
+        <label>Egreso para:</label>
+        <select v-model="tipo">   
+          <option value="caja">caja</option>
+          <option value="bancos">bancos</option>  
+        </select>
+      </div>
     </div>
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
         <div class="fecha-inputs">
-            <label>Fecha</label>
-            <input type="date" v-model="fecha">
+          <label>Fecha</label>
+          <input type="date" v-model="fecha">
         </div>
       </div>
     </div>
@@ -59,7 +59,7 @@
       <div class="input-container">
         <label>Cuenta Bancaria:</label>
         <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
+          <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
         </select>
       </div>
       <div class="input-container">
@@ -74,6 +74,12 @@
 
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
+
+    <!-- Mensaje de error -->
+    <p v-if="error" class="text-danger">{{ error }}</p>
+    
+    <!-- Mensaje de éxito -->
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
 
     <!-- Botón Agregar -->
     <button @click="enviarDatos">Guardar</button>
@@ -106,26 +112,25 @@ export default {
     const cuentas = reactive([]);
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
+    const error = ref(''); // Estado para errores
+    const successMessage = ref(''); // Estado para mensajes de éxito
 
     const limpiar = () => {
-      tipo.value = '',
-      fecha.value = '',
-      identificacion.value = '',
-      nombre.value = '',
-      descripcion.value = '',
-      cuentaCMB.value = '',
-      monto.value = '',
-      documento.value = '',
-      cuentaBName.value = '',
-      numero_documento.value = '',
-      fecha_emision.value = ''
+      tipo.value = '';
+      fecha.value = '';
+      identificacion.value = '';
+      nombre.value = '';
+      descripcion.value = '';
+      cuentaCMB.value = '';
+      monto.value = '';
+      documento.value = '';
+      cuentaBName.value = '';
+      numero_documento.value = '';
+      fecha_emision.value = '';
+      error.value = ''; // Limpiar el mensaje de error
+      successMessage.value = ''; // Limpiar el mensaje de éxito
     };
 
-    const agregarDivision = () => {
-      // Lógica para agregar una nueva división
-    }
-
-    
     const controlarVisibilidadDivisionCuatro = () => {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
     }
@@ -167,50 +172,59 @@ export default {
         });
     };
 
-
     const enviarDatos = () => {
-  if (tipo.value === 'caja') { 
-    axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaAG', {
-      fecha: fecha.value,
-      identificacion: identificacion.value,
-      nombre: nombre.value,
-      descripcion: descripcion.value,
-      monto: monto.value,
-      tipo: tipo.value,
-      cuenta: cuentaCMB.value,
-    })
-    .then(response => {
-      console.log(response.data); 
-    })
-    .catch(error => {
-      console.error(error);
-    });
-  } else {
-    // Si no es "caja", enviar los datos como lo estás haciendo actualmente
-    const data = {
-      fecha: fecha.value,
-      identificacion: identificacion.value,
-      nombre: nombre.value,
-      descripcion: descripcion.value,
-      monto: monto.value,
-      tipo: tipo.value,
-      cuenta: cuentaCMB.value,
-      documento: documento.value,
-      numero_documento: numero_documento.value,
-      fecha_emision: fecha_emision.value,
-      cuenta_bancaria: cuentaBName.value,
+      error.value = ''; // Resetea el mensaje de error antes de enviar datos
+      successMessage.value = ''; // Resetea el mensaje de éxito antes de enviar datos
+
+      if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value || !cuentaCMB.value || (tipo.value === 'bancos' && (!documento.value || !cuentaBName.value || !numero_documento.value || !fecha_emision.value))) {
+        error.value = 'Por favor, complete todos los campos.';
+        return;
+      }
+
+      if (tipo.value === 'caja') { 
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaAG', {
+          fecha: fecha.value,
+          identificacion: identificacion.value,
+          nombre: nombre.value,
+          descripcion: descripcion.value,
+          monto: monto.value,
+          tipo: tipo.value,
+          cuenta: cuentaCMB.value,
+        })
+        .then(response => {
+          successMessage.value = 'Datos enviados correctamente';
+          console.log(response.data); 
+        })
+        .catch(error => {
+          console.error(error);
+          error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+        });
+      } else {
+        // Si no es "caja", enviar los datos como lo estás haciendo actualmente
+        const data = {
+          fecha: fecha.value,
+          identificacion: identificacion.value,
+          nombre: nombre.value,
+          descripcion: descripcion.value,
+          monto: monto.value,
+          tipo: tipo.value,
+          cuenta: cuentaCMB.value,
+          documento: documento.value,
+          numero_documento: numero_documento.value,
+          fecha_emision: fecha_emision.value,
+          cuenta_bancaria: cuentaBName.value,
+        };
+        axios.post('http://127.0.0.1:8000/in_eg/createALLEGAG', data)
+          .then(response => {
+            successMessage.value = 'Datos enviados correctamente';
+            console.log(response.data); 
+          })
+          .catch(error => {
+            console.error(error);
+            error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+          });
+      }
     };
-    axios.post('http://127.0.0.1:8000/in_eg/createALLEGAG', data)
-      .then(response => {
-        console.log(response.data); 
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }
-};
-
-
 
     onMounted(() => {
       cargarCuentas();
@@ -219,7 +233,6 @@ export default {
     });
 
     return {
-      agregarDivision,
       otroValor,
       mostrarDivisionCuatro,
       fecha,
@@ -238,7 +251,8 @@ export default {
       cuentaCMB,
       cuentaBName,
       bancos_b,
-      cuentaBName,
+      error,
+      successMessage,
       enviarDatos,
       cargarCuentas,
       cargarBancos,
@@ -249,6 +263,8 @@ export default {
   },
 }
 </script>
+
+
 
 <style scoped>
 /* Estilos para el contenedor principal */
@@ -357,5 +373,11 @@ button:hover {
 .input-container select,
 .input-container input {
   flex: 1;
+}
+
+/* Estilo para el mensaje de error */
+.text-danger {
+  color: red;
+  font-weight: bold;
 }
 </style>

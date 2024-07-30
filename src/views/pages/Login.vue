@@ -11,7 +11,7 @@
                   <p class="text-body-secondary">Inicia sesión con tu usuario!</p>
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
-                      <CIcon icon="cil-user" />
+                      <font-awesome-icon :icon="['fas', 'user']" />
                     </CInputGroupText>
                     <CFormInput
                       v-model="usuarios"
@@ -21,7 +21,7 @@
                   </CInputGroup>
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
-                      <CIcon icon="cil-lock-locked" />
+                      <font-awesome-icon :icon="['fas', 'lock']" />
                     </CInputGroupText>
                     <CFormInput
                       v-model="contrasenias"
@@ -32,7 +32,7 @@
                   </CInputGroup>
                   <CInputGroup class="mb-4">
                     <CInputGroupText>
-                      <CIcon icon="cil-project" />
+                      <font-awesome-icon :icon="['fas', 'project-diagram']" />
                     </CInputGroupText>
                     <select v-model="tipoProyecto" class="form-select">
                       <option :value="null" disabled>Seleccionar tipo de proyecto</option>
@@ -88,6 +88,7 @@ export default {
           contrasenias: contrasenias.value,
           tipoProyecto: tipoProyecto.value,
         });
+
         if (response.status === 200) {
           console.log('Autenticación exitosa');
           localStorage.setItem('token', response.data.token);
@@ -103,9 +104,15 @@ export default {
           }
         } else {
           console.error('Error de inicio de sesión: Datos de autenticación no válidos');
+          error.value = 'Datos de autenticación no válidos';
         }
-      } catch (error) {
-        console.error('Error de inicio de sesión:', error);
+      } catch (err) {
+        console.error('Error de inicio de sesión:', err);
+        if (err.response && err.response.status === 403) {
+          error.value = 'Este usuario no está habilitado';
+        } else {
+          error.value = 'Error de inicio de sesión. Por favor, inténtelo de nuevo.';
+        }
       }
     };
 
