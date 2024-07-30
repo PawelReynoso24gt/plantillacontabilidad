@@ -18,10 +18,16 @@
       </div>
     </div>
 
+    <!-- Mensaje de error -->
+    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+    
+    <!-- Mensaje de éxito -->
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
-    <!-- Botón Agregar -->
+    <!-- Botones -->
     <button @click="insertar">Guardar</button>
     <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
@@ -38,11 +44,17 @@ export default {
     const tipo = ref('');
     const selectedProject = ref('');
     const projects = reactive([]);
-    
+    const errorMessage = ref(''); // Estado para errores
+    const successMessage = ref(''); // Estado para mensajes de éxito
+
     const cargarProyectos = () => {
-      axios.get('http://127.0.0.1:8000/clasificacion/get').then((response) => {
-        projects.splice(0, projects.length, ...response.data);
-      });
+      axios.get('http://127.0.0.1:8000/clasificacion/get')
+        .then((response) => {
+          projects.splice(0, projects.length, ...response.data);
+        })
+        .catch(() => {
+          errorMessage.value = 'Error al cargar los tipos de cuenta.';
+        });
     };
 
     const cargarDatosProyecto = () => {
@@ -52,56 +64,69 @@ export default {
           const proyecto = response.data;
           tipo.value = proyecto.tipo;
         })
-        .catch(error => {
-          console.error(error);
+        .catch(() => {
+          errorMessage.value = 'Error al cargar datos del tipo de cuenta.';
         });
     };
 
     const insertar = () => {
+      errorMessage.value = ''; // Limpiar errores previos
+      successMessage.value = ''; // Limpiar mensajes de éxito previos
+
+      if (!tipo.value) {
+        errorMessage.value = 'Por favor, completa el campo del tipo.';
+        return;
+      }
+
       const datos = {
         tipo: tipo.value,
       };
 
       axios.post('http://127.0.0.1:8000/clasificacion/create', datos)
-        .then(response => {
-          console.log(response.data);
+        .then(() => {
+          successMessage.value = 'Tipo de cuenta guardado correctamente.';
           cargarProyectos();
         })
-        .catch(error => {
-          console.error(error);
+        .catch(() => {
+          errorMessage.value = 'Error al guardar el tipo de cuenta.';
         });
     };
 
     const actualizar = () => {
+      errorMessage.value = ''; // Limpiar errores previos
+      successMessage.value = ''; // Limpiar mensajes de éxito previos
+
       if (!selectedProject.value) {
-        console.log('Por favor, selecciona un tipo de cuenta.');
+        errorMessage.value = 'Por favor, selecciona un tipo de cuenta.';
         return;
       }
 
       const datos = {};
-      
+
       if (tipo.value.trim() !== '') {
         datos.tipo = tipo.value;
       }
 
       if (Object.keys(datos).length === 0) {
-        console.log('No hay campos para actualizar');
+        errorMessage.value = 'No hay campos para actualizar.';
         return;
       }
 
       axios.put(`http://127.0.0.1:8000/clasificacion/updateTipo/${selectedProject.value}`, datos)
-        .then(response => {
-          console.log(response.data);
+        .then(() => {
+          successMessage.value = 'Tipo de cuenta actualizado correctamente.';
           cargarProyectos();
         })
-        .catch(error => {
-          console.error(error);
+        .catch(() => {
+          errorMessage.value = 'Error al actualizar el tipo de cuenta.';
         });
     };
 
     const limpiar = () => {
       tipo.value = '';
       selectedProject.value = '';
+      errorMessage.value = ''; // Limpiar mensaje de error
+      successMessage.value = ''; // Limpiar mensaje de éxito
     };
 
     cargarProyectos();
@@ -113,7 +138,9 @@ export default {
       insertar,
       actualizar,
       limpiar,
-      cargarDatosProyecto
+      cargarDatosProyecto,
+      errorMessage,
+      successMessage
     };
   },
 };
@@ -226,5 +253,17 @@ button:hover {
 .input-container select,
 .input-container input {
   flex: 1;
+}
+
+/* Estilos para el mensaje de error */
+.text-danger {
+  color: red;
+  font-weight: bold;
+}
+
+/* Estilos para el mensaje de éxito */
+.text-success {
+  color: green;
+  font-weight: bold;
 }
 </style>

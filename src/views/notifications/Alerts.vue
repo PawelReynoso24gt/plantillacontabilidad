@@ -28,10 +28,16 @@
       </div>
     </div>
 
+    <!-- Mensaje de error -->
+    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+    
+    <!-- Mensaje de éxito -->
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
-    <!-- Botón Agregar -->
+    <!-- Botones -->
     <button @click="insertar">Guardar</button>
     <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
@@ -50,10 +56,14 @@ export default {
     const estado = ref('');
     const selectedProject = ref('');
     const projects = reactive([]);
-    
+    const errorMessage = ref(''); // Estado para errores
+    const successMessage = ref(''); // Estado para mensajes de éxito
+
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/logins/getLogins').then((response) => {
         projects.splice(0, projects.length, ...response.data);
+      }).catch(error => {
+        errorMessage.value = 'Error al cargar proyectos.';
       });
     };
 
@@ -67,11 +77,19 @@ export default {
           estado.value = proyecto.estado.toString();
         })
         .catch(error => {
-          console.error(error);
+          errorMessage.value = 'Error al cargar datos del proyecto.';
         });
     };
 
     const insertar = () => {
+      errorMessage.value = ''; // Limpiar errores previos
+      successMessage.value = ''; // Limpiar mensajes de éxito previos
+
+      if (!usuarios.value || !contrasenias.value || !estado.value) {
+        errorMessage.value = 'Por favor, completa todos los campos.';
+        return;
+      }
+
       const datos = {
         usuarios: usuarios.value,
         contrasenias: contrasenias.value,
@@ -80,21 +98,25 @@ export default {
 
       axios.post('http://127.0.0.1:8000/logins/create', datos)
         .then(response => {
-          console.log(response.data);
+          successMessage.value = 'Datos guardados correctamente.';
           cargarProyectos();
         })
         .catch(error => {
-          console.error(error);
+          errorMessage.value = 'Error al guardar los datos.';
         });
     };
 
     const actualizar = () => {
+      errorMessage.value = ''; // Limpiar errores previos
+      successMessage.value = ''; // Limpiar mensajes de éxito previos
+
       if (!selectedProject.value) {
-        console.log('Por favor, selecciona un proyecto.');
+        errorMessage.value = 'Por favor, selecciona un proyecto.';
         return;
       }
+
       const datos = {};
-      
+
       if (usuarios.value.trim() !== '') {
         datos.usuarios = usuarios.value;
       }
@@ -108,17 +130,17 @@ export default {
       }
 
       if (Object.keys(datos).length === 0) {
-        console.log('No hay campos para actualizar');
+        errorMessage.value = 'No hay campos para actualizar.';
         return;
       }
 
       axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value}`, datos)
         .then(response => {
-          console.log(response.data);
+          successMessage.value = 'Datos actualizados correctamente.';
           cargarProyectos();
         })
         .catch(error => {
-          console.error(error);
+          errorMessage.value = 'Error al actualizar los datos.';
         });
     };
 
@@ -127,6 +149,8 @@ export default {
       contrasenias.value = '';
       estado.value = '';
       selectedProject.value = '';
+      errorMessage.value = ''; // Limpiar mensaje de error
+      successMessage.value = ''; // Limpiar mensaje de éxito
     };
 
     cargarProyectos();
@@ -140,7 +164,9 @@ export default {
       insertar,
       actualizar,
       limpiar,
-      cargarDatosProyecto
+      cargarDatosProyecto,
+      errorMessage,
+      successMessage
     };
   },
 };
@@ -253,5 +279,17 @@ button:hover {
 .input-container select,
 .input-container input {
   flex: 1;
+}
+
+/* Estilos para el mensaje de error */
+.text-danger {
+  color: red;
+  font-weight: bold;
+}
+
+/* Estilos para el mensaje de éxito */
+.text-success {
+  color: green;
+  font-weight: bold;
 }
 </style>
