@@ -9,14 +9,14 @@
           <div class="numero-input">
             <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
               <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
-        </select>
+            </select>
           </div>
           <label>Numero de documento:</label>
-              <input type="text" v-model="numero_documento">  
+          <input type="text" v-model="numero_documento">  
         </div>     
         <div class="fecha-inputs">
-            <label>Fecha</label>
-            <input type="date" v-model="fecha">
+          <label>Fecha</label>
+          <input type="date" v-model="fecha">
         </div>
       </div>
     </div>
@@ -33,6 +33,12 @@
     <!-- Espacio entre la división 3 y el botón -->
     <div style="margin-top: 20px;"></div>
 
+    <!-- Mensaje de error -->
+    <p v-if="error" class="text-danger">{{ error }}</p>
+
+    <!-- Mensaje de éxito -->
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+
     <!-- Botón Agregar -->
     <button @click="insertar">Guardar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
@@ -41,12 +47,11 @@
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+
 export default {
   name: 'Accordion',
   setup() {
-    const activeKey = ref(1)
-    const flushActiveKey = ref(1)
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
     const cuenta_bancaria = ref('');
@@ -54,19 +59,8 @@ export default {
     const descripcion = ref('');
     const monto = ref('');
     const numero_documento = ref('');
-
-    const agregarDivision = () => {
-      // Lógica para agregar una nueva división
-    }
-
-    const limpiar = () => {
-      cuentaBName.value = '',
-      numero_documento.value = '',
-      fecha.value = '',
-      monto.value = '',
-      descripcion.value = '',
-      descripcion.value = ''
-    };
+    const error = ref(''); // Estado para errores
+    const successMessage = ref(''); // Estado para mensajes de éxito
 
     const cargarBancosNoCuenta = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
@@ -80,6 +74,14 @@ export default {
     };
 
     const insertar = () => {
+      error.value = ''; // Resetea el mensaje de error antes de enviar datos
+      successMessage.value = ''; // Resetea el mensaje de éxito antes de enviar datos
+
+      if (!fecha.value || !descripcion.value || !monto.value || !numero_documento.value || !cuentaBName.value) {
+        error.value = 'Por favor, complete todos los campos.';
+        return;
+      }
+
       const datos = {
         fecha: fecha.value,
         descripcion: descripcion.value,
@@ -90,21 +92,30 @@ export default {
 
       axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaCA', datos)
         .then(response => {
+          successMessage.value = 'Datos enviados correctamente';
           console.log(response.data);
         })
         .catch(error => {
           console.error(error);
+          error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
         });
     };
 
+    const limpiar = () => {
+      cuentaBName.value = '';
+      numero_documento.value = '';
+      fecha.value = '';
+      monto.value = '';
+      descripcion.value = '';
+      error.value = ''; // Limpiar el mensaje de error
+      successMessage.value = ''; // Limpiar el mensaje de éxito
+    };
 
     onMounted(() => {
       cargarBancosNoCuenta();
     });
 
     return {
-      activeKey,
-      flushActiveKey,
       cuentaBName,
       cuentas_bancarias,
       cuenta_bancaria,
@@ -112,10 +123,11 @@ export default {
       descripcion,
       monto,
       numero_documento,
-      agregarDivision,
       cargarBancosNoCuenta,
       insertar,
-      limpiar
+      limpiar,
+      error,
+      successMessage
     }
   },
 }
@@ -228,5 +240,17 @@ button:hover {
 .input-container select,
 .input-container input {
   flex: 1;
+}
+
+/* Estilo para el mensaje de error */
+.text-danger {
+  color: red;
+  font-weight: bold;
+}
+
+/* Estilo para el mensaje de éxito */
+.text-success {
+  color: green;
+  font-weight: bold;
 }
 </style>
