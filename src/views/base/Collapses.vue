@@ -84,163 +84,175 @@ export default {
     };
 
     const generarPDF = async () => {
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/in_eg/reporteFinalAG', {
-        tipo: selectedPeriodo.value.toLowerCase(),
-        mes: selectedMes.value.toLowerCase(),
-        contador: contador.value,
-        responsable: responsableAgricola.value,
-        economa: economaProvincial.value
-      });
-      const data = response.data;
-
-      const doc = new jsPDF();
-      let yOffset = 20; // Start position for text
-      const pageHeight = doc.internal.pageSize.height; // Height of a page
-      const pageMargin = 20; // Margin from the edge of the page
-
-      const addPageIfNeeded = () => {
-        if (yOffset > pageHeight - pageMargin) { // Check if there's enough space left
-          doc.addPage();
-          yOffset = 20; // Reset yOffset to top of the page
-        }
-      };
-
-      const addText = (text, x, y) => {
-        addPageIfNeeded();
-        doc.text(text, x, yOffset);
-        yOffset += 10; // Line height
-      };
-
-      const addTable = (head, body) => {
-        doc.autoTable({
-          head: [head],
-          body: body,
-          startY: yOffset,
-          theme: 'grid',
-          styles: {
-            cellPadding: 2.5,
-            fontSize: 8,
-            halign: 'center',
-            valign: 'middle',
-            overflow: 'linebreak'
-          },
-          headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: [255, 255, 255]
-          }
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/reporteFinalAG', {
+          tipo: selectedPeriodo.value.toLowerCase(),
+          mes: selectedMes.value.toLowerCase(),
+          contador: contador.value,
+          responsable: responsableAgricola.value,
+          economa: economaProvincial.value
         });
-        yOffset = doc.autoTable.previous.finalY + 10; // Update yOffset after table
-      };
+        const data = response.data;
 
-      // Obtener año actual
-      const currentYear = new Date().getFullYear();
+        const doc = new jsPDF();
+        let yOffset = 20; // Start position for text
+        const pageHeight = doc.internal.pageSize.height; // Height of a page
+        const pageMargin = 20; // Margin from the edge of the page
 
-      // Obtener mes actual
-      const currentMonth = new Date().toLocaleDateString('es-ES', { month: 'long' });
+        const addPageIfNeeded = () => {
+          if (yOffset > pageHeight - pageMargin) { // Check if there's enough space left
+            doc.addPage();
+            yOffset = 20; // Reset yOffset to top of the page
+          }
+        };
 
-      // Determinar título del informe
-      let periodoTexto;
-      if (selectedPeriodo.value === 'Mensual') {
-          periodoTexto = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
-      } else if (selectedPeriodo.value === 'Trimestral') {
-          const trimestre = {
-            'Enero': 'PRIMER TRIMESTRE',
-            'Abril': 'SEGUNDO TRIMESTRE',
-            'Julio': 'TERCER TRIMESTRE',
-            'Octubre': 'CUARTO TRIMESTRE'
-          };
-          periodoTexto = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
-      } else if (selectedPeriodo.value === 'Semestral') {
-          periodoTexto = selectedMes.value === 'Enero' ? 'RESUMEN PRIMER SEMESTRE' : 'RESUMEN SEGUNDO SEMESTRE';
-      } else if (selectedPeriodo.value === 'Anual') {
-          periodoTexto = 'RESUMEN ANUAL';
+        const addText = (text, x, y) => {
+          addPageIfNeeded();
+          doc.text(text, x, yOffset);
+          yOffset += 10; // Line height
+        };
+
+        const addTable = (head, body) => {
+          doc.autoTable({
+            head: [head],
+            body: body,
+            startY: yOffset,
+            theme: 'grid',
+            styles: {
+              cellPadding: 2.5,
+              fontSize: 8,
+              halign: 'center',
+              valign: 'middle',
+              overflow: 'linebreak'
+            },
+            headStyles: {
+              fillColor: [41, 128, 185],
+              textColor: [255, 255, 255]
+            }
+          });
+          yOffset = doc.autoTable.previous.finalY + 10; // Update yOffset after table
+        };
+
+        // Obtener año actual
+        const currentYear = new Date().getFullYear();
+
+        // Obtener mes actual
+        const currentMonth = new Date().toLocaleDateString('es-ES', { month: 'long' });
+
+        // Determinar título del informe
+        let periodoTexto;
+        if (selectedPeriodo.value === 'Mensual') {
+            periodoTexto = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
+        } else if (selectedPeriodo.value === 'Trimestral') {
+            const trimestre = {
+              'Enero': 'PRIMER TRIMESTRE',
+              'Abril': 'SEGUNDO TRIMESTRE',
+              'Julio': 'TERCER TRIMESTRE',
+              'Octubre': 'CUARTO TRIMESTRE'
+            };
+            periodoTexto = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
+        } else if (selectedPeriodo.value === 'Semestral') {
+            periodoTexto = selectedMes.value === 'Enero' ? 'RESUMEN PRIMER SEMESTRE' : 'RESUMEN SEGUNDO SEMESTRE';
+        } else if (selectedPeriodo.value === 'Anual') {
+            periodoTexto = 'RESUMEN ANUAL';
+        }
+
+        // Agregar encabezado al PDF
+        doc.setFontSize(16);
+        doc.text(`REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`, 105, 27, { align: 'center' });
+        doc.setLineWidth(0.5);
+        doc.line(60, 32, 150, 32); // Línea horizontal
+
+        doc.setFontSize(12);
+        yOffset = 40;
+        doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
+        doc.text(periodoTexto, 91, 40);
+        doc.text(`DE`, 165, 40);
+        doc.text(`${currentYear}`, 175, 40);
+        doc.text(`PROYECTO AGRÍCOLA HOGAR SANTA LUISA`, 20, 50);
+        doc.text(`LUGAR:`, 130, 50);
+        doc.text(`QUETZALTENANGO`, 155, 50);
+        doc.text(`GUATEMALA`, 20, 60);
+        doc.text(`FECHA:`, 130, 60);
+        doc.text(new Date().toLocaleDateString('es-ES'), 160, 60);
+        
+        // Añadir espacio antes de la tabla
+        yOffset = 75; // Ajusta la posición Y después del encabezado
+
+        // Crear los datos para la tabla
+        const tableData = [
+          ['SALDO INICIAL', '', '', 'Q ' + data.saldo_inicial.toFixed(2)],
+          ['SALDO INICIAL EN CAJA GENERAL', '', 'Q ' + data.saldo_inicial_caja.toFixed(2), ''],
+          ['SALDO INICIAL EN BANCO', '', 'Q ' + data.saldo_inicial_bancos.toFixed(2), ''],
+          ['INGRESOS', '', '', 'Q ' + data.total_general_ingresos.toFixed(2)],
+          ['CAJA GENERAL', '', 'Q ' + data.total_ingresos_caja.toFixed(2), ''],
+          ...data.data_caja.filter(item => item.ingresos && parseFloat(item.ingresos) > 0).map(ingreso => [
+            ingreso.cuenta, 'Q ' + ingreso.ingresos, '', ''
+          ]),
+          ['BANCO', '', 'Q ' + data.total_ingresos_bancos.toFixed(2), ''],
+          ...data.data_bancos.filter(item => item.ingresos && parseFloat(item.ingresos) > 0).map(ingreso => [
+            ingreso.cuenta, 'Q ' + ingreso.ingresos, '', ''
+          ]),
+          ['EGRESOS', '', '', 'Q ' + data.total_general_egresos.toFixed(2)],
+          ['CAJA GENERAL', '', 'Q ' + data.total_egresos_caja.toFixed(2), ''],
+          ...data.data_caja.filter(item => item.egresos && parseFloat(item.egresos) > 0).map(egreso => [
+            egreso.cuenta, 'Q ' + egreso.egresos, '', ''
+          ]),
+          ['BANCO', '', 'Q ' + data.total_egresos_bancos.toFixed(2), ''],
+          ...data.data_bancos.filter(item => item.egresos && parseFloat(item.egresos) > 0).map(egreso => [
+            egreso.cuenta, 'Q ' + egreso.egresos, '', ''
+          ]),
+          ['SALDO FINAL', '', '', 'Q ' + data.total_saldo_final.toFixed(2)],
+          ['SALDO FINAL EN CAJA GENERAL', '', 'Q ' + data.total_saldo_final_caja.toFixed(2), ''],
+          ['SALDO FINAL EN BANCO', '', 'Q ' + data.total_saldo_final_bancos.toFixed(2), ''],
+          ['SUMAS IGUALES', '', 'Q ' + data.total_saldo_final.toFixed(2), 'Q ' + data.total_saldo_final.toFixed(2)]
+        ];
+
+        // Encabezado de la Tabla
+        const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
+
+        addTable(tableHeaders, tableData);
+        // Datos Finales
+        yOffset += 5; // Añadir un espacio antes de los datos finales
+        doc.setFontSize(10);
+        addPageIfNeeded();
+        doc.text('Hecho por:', 20, yOffset);
+        doc.text('Revisado por:', 140, yOffset);
+        yOffset += 15; // Ajustar la posición vertical
+        addPageIfNeeded();
+        doc.text('(f)_____________________________', 20, yOffset);
+        doc.text('(f)_____________________________', 120, yOffset);
+        yOffset += 5; // Ajustar la posición vertical
+        addPageIfNeeded();
+        doc.text(data.contador, 25, yOffset);
+        doc.text('Contador', 40, yOffset + 5); // Añadir "Contador"
+        doc.text('Vo.Bo. ' + data.responsable, 125, yOffset);
+        doc.text('Responsable de Proyecto Agricola', 125, yOffset + 5); // Añadir "Responsable"
+        yOffset += 40; // Añadir espacio antes de economa
+        addPageIfNeeded();
+        doc.text('(f)__________________________________', 65, yOffset);
+        yOffset += 4; // Ajustar la posición vertical
+        addPageIfNeeded();
+        doc.text(data.economa, 75, yOffset);
+        doc.text('Economa provincial', 85, yOffset + 5);
+
+        // Guardar el PDF
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'Reporte_ingresos_y_egresos.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
+
+      } catch (error) {
+        console.error('Error al generar el PDF:', error);
       }
-
-      // Agregar encabezado al PDF
-      doc.setFontSize(16);
-      doc.text(`REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`, 105, 27, { align: 'center' });
-      doc.setLineWidth(0.5);
-      doc.line(60, 32, 150, 32); // Línea horizontal
-
-      doc.setFontSize(12);
-      yOffset = 40;
-      doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
-      doc.text(periodoTexto, 91, 40);
-      doc.text(`DE`, 165, 40);
-      doc.text(`${currentYear}`, 175, 40);
-      doc.text(`PROYECTO AGRÍCOLA HOGAR SANTA LUISA`, 20, 50);
-      doc.text(`LUGAR:`, 130, 50);
-      doc.text(`QUETZALTENANGO`, 155, 50);
-      doc.text(`GUATEMALA`, 20, 60);
-      doc.text(`FECHA:`, 130, 60);
-      doc.text(new Date().toLocaleDateString('es-ES'), 160, 60);
-      
-      // Añadir espacio antes de la tabla
-      yOffset = 75; // Ajusta la posición Y después del encabezado
-
-      // Crear los datos para la tabla
-      const tableData = [
-        ['SALDO INICIAL', '', '', 'Q ' + data.saldo_inicial.toFixed(2)],
-        ['SALDO INICIAL EN CAJA GENERAL', '', 'Q ' + data.saldo_inicial_caja.toFixed(2), ''],
-        ['SALDO INICIAL EN BANCO', '', 'Q ' + data.saldo_inicial_bancos.toFixed(2), ''],
-        ['INGRESOS', '', '', 'Q ' + data.total_general_ingresos.toFixed(2)],
-        ['CAJA GENERAL', '', 'Q ' + data.total_ingresos_caja.toFixed(2), ''],
-        ...data.data_caja.filter(item => item.ingresos && parseFloat(item.ingresos) > 0).map(ingreso => [
-          ingreso.cuenta, 'Q ' + ingreso.ingresos, '', ''
-        ]),
-        ['BANCO', '', 'Q ' + data.total_ingresos_bancos.toFixed(2), ''],
-        ...data.data_bancos.filter(item => item.ingresos && parseFloat(item.ingresos) > 0).map(ingreso => [
-          ingreso.cuenta, 'Q ' + ingreso.ingresos, '', ''
-        ]),
-        ['EGRESOS', '', '', 'Q ' + data.total_general_egresos.toFixed(2)],
-        ['CAJA GENERAL', '', 'Q ' + data.total_egresos_caja.toFixed(2), ''],
-        ...data.data_caja.filter(item => item.egresos && parseFloat(item.egresos) > 0).map(egreso => [
-          egreso.cuenta, 'Q ' + egreso.egresos, '', ''
-        ]),
-        ['BANCO', '', 'Q ' + data.total_egresos_bancos.toFixed(2), ''],
-        ...data.data_bancos.filter(item => item.egresos && parseFloat(item.egresos) > 0).map(egreso => [
-          egreso.cuenta, 'Q ' + egreso.egresos, '', ''
-        ]),
-        ['SALDO FINAL', '', '', 'Q ' + data.total_saldo_final.toFixed(2)],
-        ['SALDO FINAL EN CAJA GENERAL', '', 'Q ' + data.total_saldo_final_caja.toFixed(2), ''],
-        ['SALDO FINAL EN BANCO', '', 'Q ' + data.total_saldo_final_bancos.toFixed(2), ''],
-        ['SUMAS IGUALES', '', 'Q ' + data.total_saldo_final.toFixed(2), 'Q ' + data.total_saldo_final.toFixed(2)]
-      ];
-
-      // Encabezado de la Tabla
-      const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
-
-      addTable(tableHeaders, tableData);
-      // Datos Finales
-      yOffset += 5; // Añadir un espacio antes de los datos finales
-      doc.setFontSize(10);
-      addPageIfNeeded();
-      doc.text('Hecho por:', 20, yOffset);
-      doc.text('Revisado por:', 140, yOffset);
-      yOffset += 15; // Ajustar la posición vertical
-      addPageIfNeeded();
-      doc.text('(f)_____________________________', 20, yOffset);
-      doc.text('(f)_____________________________', 120, yOffset);
-      yOffset += 5; // Ajustar la posición vertical
-      addPageIfNeeded();
-      doc.text(data.contador, 25, yOffset);
-      doc.text('Contador', 40, yOffset + 5); // Añadir "Contador"
-      doc.text('Vo.Bo. ' + data.responsable, 125, yOffset);
-      doc.text('Responsable de Proyecto Agricola', 125, yOffset + 5); // Añadir "Responsable"
-      yOffset += 40; // Añadir espacio antes de economa
-      addPageIfNeeded();
-      doc.text('(f)__________________________________', 65, yOffset);
-      yOffset += 4; // Ajustar la posición vertical
-      addPageIfNeeded();
-      doc.text(data.economa, 75, yOffset);
-      doc.text('Economa provincial', 85, yOffset + 5);
-
-      doc.save('Reporte ingresos y egresos.pdf');
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    };
 
     return {
       contador,
@@ -257,11 +269,7 @@ export default {
   },
 };
 
-
-
-
 </script>
-
 
 <style scoped>
 .division-container {

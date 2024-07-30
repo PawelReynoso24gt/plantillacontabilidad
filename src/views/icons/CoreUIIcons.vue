@@ -24,19 +24,19 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import jsPDF from 'jspdf'
-import axios from 'axios'
-import 'jspdf-autotable'
+import { ref } from 'vue';
+import jsPDF from 'jspdf';
+import axios from 'axios';
+import 'jspdf-autotable';
 
 export default {
   name: 'Accordion',
   setup() {
-    const fechaInicial = ref('')
-    const fechaFinal = ref('')
+    const fechaInicial = ref('');
+    const fechaFinal = ref('');
 
-    const nombreEncabezado = ref('PROYECTO AGRÍCOLA')
-    const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango')
+    const nombreEncabezado = ref('PROYECTO AGRÍCOLA');
+    const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango');
 
     const generarPDF = async () => {
       try {
@@ -156,8 +156,21 @@ export default {
           margin: { left: 10, right: 10 } // Margen para que la tabla ocupe todo el ancho posible
         });
 
-        // Guardar el PDF
-        doc.save('libro_de_caja.pdf');
+        // Guardar el PDF usando la API File System Access
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'libro_de_caja.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: {
+              'application/pdf': ['.pdf']
+            }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
+
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
@@ -181,6 +194,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 /* Estilos para el contenedor principal */

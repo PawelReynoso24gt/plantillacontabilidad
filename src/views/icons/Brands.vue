@@ -168,7 +168,17 @@ export default {
         });
 
         // Guardar el PDF
-        doc.save('libro_de_bancos.pdf');
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'libro_de_bancos.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
@@ -192,6 +202,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 /* Estilos para el contenedor principal */

@@ -93,7 +93,7 @@ export default {
               acredita: '',
               debita: '',
               total: { content: total, styles: { fontStyle: 'bold' } },
-              numero_documento: ingresoEgreso.numero_documento || '-' 
+              numero_documento: ingresoEgreso.numero_documento || '-'
             };
           } else {
             return {
@@ -104,7 +104,7 @@ export default {
               acredita: ingresoEgreso.acredita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.acredita))}` : '',
               debita: ingresoEgreso.debita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.debita))}` : '',
               total: total,
-              numero_documento: ingresoEgreso.numero_documento || '-' 
+              numero_documento: ingresoEgreso.numero_documento || '-'
             };
           }
         });
@@ -125,9 +125,9 @@ export default {
             textColor: [255, 255, 255]
           },
           columnStyles: {
-            nomenclatura: { minCellWidth: 20, overflow: 'visible',  halign: 'left',},
-            numero_documento: { minCellWidth: 30, overflow: 'visible',  halign: 'left', },
-            fecha: { minCellWidth: 20, overflow: 'visible', halign: 'left',},
+            nomenclatura: { minCellWidth: 20, overflow: 'visible', halign: 'left', },
+            numero_documento: { minCellWidth: 30, overflow: 'visible', halign: 'left', },
+            fecha: { minCellWidth: 20, overflow: 'visible', halign: 'left', },
             cuenta: { minCellWidth: 40, overflow: 'linebreak', halign: 'left', },
             descripcion: { minCellWidth: 40, overflow: 'linebreak', halign: 'left', },
             acredita: { minCellWidth: 20, halign: 'right' },
@@ -137,7 +137,17 @@ export default {
         });
 
         // Guardar el PDF
-        doc.save('libro_diario.pdf');
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'libro_diario.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
@@ -153,6 +163,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 /* Estilos para el contenedor principal */
