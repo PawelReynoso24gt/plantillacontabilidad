@@ -21,7 +21,6 @@
     <button @click="generarPDF">Generar PDF</button>
   </div>
 </template>
-
 <script>
 import { ref } from 'vue'
 import jsPDF from 'jspdf'
@@ -29,12 +28,12 @@ import axios from 'axios'
 import 'jspdf-autotable'
 
 export default {
-  name: 'LibroDiario',
+  name: 'Accordion',
   setup() {
     const fechaInicial = ref('')
     const fechaFinal = ref('')
     const nombreEncabezado = ref('PROYECTO CAPILLA')
-    const direccionProyecto = ref('15 avenida, entre 3a y 4a calle zona 3, Quetzaltenango')
+    const direccionProyecto = ref('Dirección del Proyecto')
 
     const formatNumber = (value) => {
       if (typeof value === 'number') {
@@ -45,7 +44,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/libroDiarioCA', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/fechaCA', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
@@ -61,7 +60,7 @@ export default {
         doc.setFontSize(12);
         doc.text(`Dirección del Proyecto: ${direccionProyecto.value}`, 20, 40);
 
-        const textoAdicional = 'REPORTE: LIBRO DIARIO';
+        const textoAdicional = 'REPORTE FINANCIERO';
         doc.setFontSize(10);
         doc.text(textoAdicional, 20, 50);
 
@@ -71,7 +70,6 @@ export default {
         // Obtener las columnas
         const columnas = [
           { title: 'Conteo', dataKey: 'nomenclatura' },
-          { title: 'Número de Documento', dataKey: 'numero_documento' },
           { title: 'Fecha', dataKey: 'fecha' },
           { title: 'Cuenta', dataKey: 'cuenta' },
           { title: 'Descripción', dataKey: 'descripcion' },
@@ -84,16 +82,16 @@ export default {
         const filas = ingresosEgresos.map((ingresoEgreso) => {
           const total = ingresoEgreso.total ? `Q. ${formatNumber(parseFloat(ingresoEgreso.total))}` : '';
 
-          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total') {
+          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
             return {
               nomenclatura: ingresoEgreso.nomenclatura,
               fecha: ingresoEgreso.fecha || '',
               cuenta: ingresoEgreso.cuenta,
               descripcion: ingresoEgreso.descripcion,
-              acredita: '',
-              debita: '',
-              total: { content: total, styles: { fontStyle: 'bold' } },
-              numero_documento: ingresoEgreso.numero_documento || '-'
+              acredita: '', // Acredita vacío
+              debita: '', // Debita vacío
+              total: { content: total, styles: { fontStyle: 'bold' }},
+              borderBottom: { width: 4, color: [0, 0, 0], double: true } // Hacer el total en negrita y agregar doble línea en el borde inferior
             };
           } else {
             return {
@@ -103,8 +101,7 @@ export default {
               descripcion: ingresoEgreso.descripcion,
               acredita: ingresoEgreso.acredita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.acredita))}` : '',
               debita: ingresoEgreso.debita ? `Q. ${formatNumber(parseFloat(ingresoEgreso.debita))}` : '',
-              total: total,
-              numero_documento: ingresoEgreso.numero_documento || '-'
+              total: total
             };
           }
         });
@@ -112,11 +109,11 @@ export default {
         doc.autoTable({
           columns: columnas,
           body: filas,
-          startY: 80,
+          startY: 65,
           theme: 'grid',
           styles: {
-            cellPadding: 3,
-            fontSize: 8,
+            cellPadding: 2.5,
+            fontSize: 7,
             halign: 'center',
             valign: 'middle'
           },
@@ -125,19 +122,56 @@ export default {
             textColor: [255, 255, 255]
           },
           columnStyles: {
-            nomenclatura: { minCellWidth: 20, overflow: 'visible', halign: 'left' },
-            numero_documento: { minCellWidth: 30, overflow: 'visible', halign: 'left' },
-            fecha: { minCellWidth: 20, overflow: 'visible', halign: 'left' },
-            cuenta: { minCellWidth: 40, overflow: 'linebreak', halign: 'left' },
-            descripcion: { minCellWidth: 40, overflow: 'linebreak' , halign: 'left'},
-            acredita: { minCellWidth: 20, halign: 'right' },
-            debita: { minCellWidth: 20, halign: 'right' },
-            total: { minCellWidth: 20, halign: 'right' }
-          }
+            nomenclatura: {
+              minCellWidth: 20,
+              overflow: 'visible', // Asegurar que la columna "Nomenclatura" sea de una sola línea
+              halign: 'left'
+            },
+            fecha: {
+              minCellWidth: 20,
+              overflow: 'visible', // Asegurar que la columna "Fecha" sea de una sola línea
+              halign: 'left'
+            },
+            descripcion: {
+              minCellWidth: 40,
+              overflow: 'linebreak', // Ajustar el texto en los límites del cuadro solo para la descripción
+              halign: 'left'
+            },
+            cuenta: {
+              minCellWidth: 40,
+              overflow: 'linebreak', // Ajustar el texto en los límites del cuadro solo para la cuenta
+              halign: 'left'
+            },
+            acredita: {
+              minCellWidth: 20,
+              halign: 'right'
+            },
+            debita: {
+              minCellWidth: 20,
+              halign: 'right'
+            },
+            total: {
+              minCellWidth: 20,
+              halign: 'right'
+            }
+          },
+          tableWidth: 'auto', // Ajustar el ancho de la tabla automáticamente
+          margin: { left: 10, right: 10 } // Margen para que la tabla ocupe todo el ancho posible
         });
 
         // Guardar el PDF
-        doc.save('libro_diario.pdf');
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'libro_diario_capilla.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
+
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
@@ -153,6 +187,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 /* Estilos para el contenedor principal */

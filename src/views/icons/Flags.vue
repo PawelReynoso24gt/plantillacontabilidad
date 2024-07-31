@@ -138,7 +138,7 @@ export default {
 
         // Guardar el PDF
         const handle = await window.showSaveFilePicker({
-          suggestedName: 'libro_diario.pdf',
+          suggestedName: 'libro_diario_agricola.pdf',
           types: [{
             description: 'PDF Files',
             accept: { 'application/pdf': ['.pdf'] }

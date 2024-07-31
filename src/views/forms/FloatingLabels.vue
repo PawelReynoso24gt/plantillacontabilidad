@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import jsPDF from 'jspdf'
 import axios from 'axios'
 import 'jspdf-autotable'
@@ -101,7 +101,7 @@ export default {
         doc.text(especificacionFechas, 20, 60);
 
         // Agregar la cuenta bancaria seleccionada
-        const cuentaBancariaTexto = `CUENTA BANCARIA: ${cuentaBancariaSeleccionada.value ? cuentaBancariaSeleccionada.value.banco_y_cuenta : ''}`;
+        const cuentaBancariaTexto = `CUENTA BANCARIA: ${cuentaBancariaSeleccionada.value?.nombre_cuenta || ''}`;
         doc.text(cuentaBancariaTexto, 20, 70);
 
         // Obtener las columnas
@@ -119,7 +119,7 @@ export default {
         const filas = ingresosEgresos.map((ingresoEgreso) => {
           const total = ingresoEgreso.total ? `Q. ${formatNumber(parseFloat(ingresoEgreso.total))}` : '';
 
-          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total bancos') {
+          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Banco') {
             return {
               nomenclatura: ingresoEgreso.nomenclatura,
               fecha: ingresoEgreso.fecha || '',
@@ -146,11 +146,11 @@ export default {
         doc.autoTable({
           columns: columnas,
           body: filas,
-          startY: 80,
+          startY: 75,
           theme: 'grid',
           styles: {
-            cellPadding: 3,
-            fontSize: 8,
+            cellPadding: 2.5,
+            fontSize: 7,
             halign: 'center',
             valign: 'middle'
           },
@@ -159,41 +159,78 @@ export default {
             textColor: [255, 255, 255]
           },
           columnStyles: {
-            nomenclatura: { minCellWidth: 20, overflow: 'visible', halign: 'left' },
-            fecha: { minCellWidth: 20, overflow: 'visible', halign: 'left' },
-            cuenta: { minCellWidth: 40, overflow: 'linebreak', halign: 'left' },
-            descripcion: { minCellWidth: 40, overflow: 'linebreak' , halign: 'left'},
-            acredita: { minCellWidth: 20, halign: 'right' },
-            debita: { minCellWidth: 20, halign: 'right' },
-            total: { minCellWidth: 20, halign: 'right' }
-          }
+            nomenclatura: {
+              minCellWidth: 20,
+              overflow: 'visible', // Asegurar que la columna "Nomenclatura" sea de una sola línea
+              halign: 'left'
+            },
+            fecha: {
+              minCellWidth: 20,
+              overflow: 'visible', // Asegurar que la columna "Fecha" sea de una sola línea
+              halign: 'left'
+            },
+            descripcion: {
+              minCellWidth: 40,
+              overflow: 'linebreak', // Ajustar el texto en los límites del cuadro solo para la descripción
+              halign: 'left'
+            },
+            cuenta: {
+              minCellWidth: 40,
+              overflow: 'linebreak', // Ajustar el texto en los límites del cuadro solo para la cuenta
+              halign: 'left'
+            },
+            acredita: {
+              minCellWidth: 20,
+              halign: 'right'
+            },
+            debita: {
+              minCellWidth: 20,
+              halign: 'right'
+            },
+            total: {
+              minCellWidth: 20,
+              halign: 'right'
+            }
+          },
+          tableWidth: 'auto', // Ajustar el ancho de la tabla automáticamente
+          margin: { left: 10, right: 10 } // Margen para que la tabla ocupe todo el ancho posible
         });
 
         // Guardar el PDF
-        doc.save('libro_de_bancos.pdf');
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'libro_bancos_capilla.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
+
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
     };
 
     onMounted(() => {
-      cargarBancosNoCuenta();
-    });
+      cargarBancosNoCuenta()
+    })
 
     return {
       fechaInicial,
       fechaFinal,
       nombreEncabezado,
       direccionProyecto,
-      generarPDF,
-      cargarBancosNoCuenta,
-      cuentaBName,
       cuentas_bancarias,
-      cuentaBancariaSeleccionada
+      cuentaBName,
+      generarPDF
     }
   },
 }
 </script>
+
 
 <style scoped>
 /* Estilos para el contenedor principal */

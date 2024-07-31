@@ -169,7 +169,7 @@ export default {
 
         // Guardar el PDF
         const handle = await window.showSaveFilePicker({
-          suggestedName: 'libro_de_bancos.pdf',
+          suggestedName: 'libro_bancos_agricola.pdf',
           types: [{
             description: 'PDF Files',
             accept: { 'application/pdf': ['.pdf'] }

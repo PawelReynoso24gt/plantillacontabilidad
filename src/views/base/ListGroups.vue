@@ -169,7 +169,7 @@ export default {
         doc.text(periodoTexto, 91, 40);
         doc.text(`DE`, 165, 40);
         doc.text(`${currentYear}`, 175, 40);
-        doc.text(`PROYECTO AGRÍCOLA HOGAR SANTA LUISA`, 20, 50);
+        doc.text(`PROYECTO CAPILLA HOGAR SANTA LUISA`, 20, 50);
         doc.text(`LUGAR:`, 130, 50);
         doc.text(`QUETZALTENANGO`, 155, 50);
         doc.text(`GUATEMALA`, 20, 60);
@@ -240,9 +240,21 @@ export default {
         doc.text(data.economa, 75, yOffset);
         doc.text('Economa Provincial', 85, yOffset + 5);
 
-        doc.save('Reporte ingresos y egresos.pdf');
+        // Guardar el PDF
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'Reporte_ingresos_egresos_capilla.pdf',
+          types: [{
+            description: 'PDF Files',
+            accept: { 'application/pdf': ['.pdf'] }
+          }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(doc.output('blob'));
+        await writable.close();
+
       } catch (error) {
-        console.error(error);
+        console.error('Error al generar el PDF:', error);
       }
     };
 
