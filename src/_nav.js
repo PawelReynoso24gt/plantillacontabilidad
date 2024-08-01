@@ -131,6 +131,6 @@ export default function useNavAgricola() {
     }
   ];
 
-  console.log('Nav Config Agrícola:', navConfig);
+  //console.log('Nav Config Agrícola:', navConfig);
   return navConfig;
 }

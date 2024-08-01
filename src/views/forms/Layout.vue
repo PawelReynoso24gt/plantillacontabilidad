@@ -44,7 +44,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/fechaCA', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/libroDiarioCA', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value
         });
@@ -82,7 +82,7 @@ export default {
         const filas = ingresosEgresos.map((ingresoEgreso) => {
           const total = ingresoEgreso.total ? `Q. ${formatNumber(parseFloat(ingresoEgreso.total))}` : '';
 
-          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total Caja') {
+          if (ingresoEgreso.cuenta === 'Saldo inicial' || ingresoEgreso.cuenta === 'Suma total ') {
             return {
               nomenclatura: ingresoEgreso.nomenclatura,
               fecha: ingresoEgreso.fecha || '',
