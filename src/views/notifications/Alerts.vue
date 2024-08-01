@@ -66,7 +66,7 @@ export default {
           projects.value = response.data;
         })
         .catch(() => {
-          errorMessage.value = 'Error al cargar proyectos.';
+          errorMessage.value = 'Error al cargar usuarios.';
         });
     };
 
@@ -80,15 +80,46 @@ export default {
           estado.value = proyecto.estado.toString();
         })
         .catch(() => {
-          errorMessage.value = 'Error al cargar datos del proyecto.';
+          errorMessage.value = 'Error al cargar datos del usuario.';
         });
+    };
+
+    const validarContrasenia = (contrasenia) => {
+      if (contrasenia.length < 8) {
+        return 'La contraseña no puede ser menor a 8 dígitos';
+      }
+      if (!/[A-Z]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos una letra mayúscula';
+      }
+      if (!/[a-z]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos una letra minúscula';
+      }
+      if (!/[0-9]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos un número';
+      }
+      if (/^[0-9]|[0-9]$/.test(contrasenia)) {
+        return 'El número en la contraseña no puede estar ni al principio ni al final';
+      }
+      if (!/[!@#$]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos uno de estos caracteres especiales: !@#$';
+      }
+      if (/^[!@#$]|[!@#$]$/.test(contrasenia)) {
+        return 'Los caracteres especiales no pueden ir ni al principio ni al final';
+      }
+      return '';
     };
 
     const insertar = () => {
       errorMessage.value = '';
       successMessage.value = '';
 
-      if (!usuarios.value || !contrasenias.value || !estado.value) {
+      const error = validarContrasenia(contrasenias.value);
+      if (error) {
+        errorMessage.value = error;
+        return;
+      }
+
+      if (!usuarios.value || !contrasenias.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
@@ -114,7 +145,7 @@ export default {
       successMessage.value = '';
 
       if (!selectedProject.value) {
-        errorMessage.value = 'Por favor, selecciona un proyecto.';
+        errorMessage.value = 'Por favor, selecciona un usuario.';
         return;
       }
 
@@ -125,6 +156,11 @@ export default {
       }
 
       if (contrasenias.value.trim() !== '') {
+        const error = validarContrasenia(contrasenias.value);
+        if (error) {
+          errorMessage.value = error;
+          return;
+        }
         datos.contrasenias = contrasenias.value;
       }
 
@@ -137,7 +173,7 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value}`, datos)
+      axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value.usuarios}`, datos)
         .then(() => {
           successMessage.value = 'Datos actualizados correctamente.';
           cargarProyectos();
