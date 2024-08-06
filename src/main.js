@@ -10,11 +10,11 @@ import DocsExample from '@/components/DocsExample'
 
 // Importaciones de Font Awesome
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faLock, faProjectDiagram } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faLock, faEye, faEyeSlash, faProjectDiagram } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // Añade los iconos que usarás a la librería de Font Awesome
-library.add(faUser, faLock, faProjectDiagram)
+library.add(faUser, faLock, faEye, faEyeSlash, faProjectDiagram)
 
 const app = createApp(App)
 app.use(store)

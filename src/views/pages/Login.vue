@@ -24,11 +24,14 @@
                       <font-awesome-icon :icon="['fas', 'lock']" />
                     </CInputGroupText>
                     <CFormInput
+                      :type="showPassword ? 'text' : 'password'"
                       v-model="contrasenias"
-                      type="password"
                       placeholder="Contraseña"
                       autocomplete="contrasenias"
                     />
+                    <CInputGroupText @click="togglePasswordVisibility">
+                      <font-awesome-icon :icon="['fas', showPassword ? 'eye-slash' : 'eye']" />
+                    </CInputGroupText>
                   </CInputGroup>
                   <CInputGroup class="mb-4">
                     <CInputGroupText>
@@ -68,9 +71,14 @@ export default {
     const usuarios = ref('');
     const contrasenias = ref('');
     const tipoProyecto = ref(null);
+    const showPassword = ref(false);
     const error = ref('');
     const router = useRouter();
     const store = useStore();
+
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
 
     const login = async () => {
       if (!tipoProyecto.value) {
@@ -116,7 +124,7 @@ export default {
       }
     };
 
-    return { usuarios, contrasenias, tipoProyecto, error, login };
+    return { usuarios, contrasenias, tipoProyecto, showPassword, error, togglePasswordVisibility, login };
   },
 };
 </script>

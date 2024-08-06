@@ -96,21 +96,21 @@ export default function useNavCapilla() {
           name: 'Login',
           to: '/notifications/alerts',
         },
-        {
+        /*{
           component: 'CNavItem',
           name: 'Proyectos',
           to: '/notifications/badges',
-        },
+        },*/
         {
           component: 'CNavItem',
           name: 'Bancos',
           to: '/notifications/modals',
         },
-        {
+       /* {
           component: 'CNavItem',
           name: 'Clasificacion',
           to: '/notifications/toasts',
-        },
+        },*/
         {
           component: 'CNavItem',
           name: 'Cuentas',
