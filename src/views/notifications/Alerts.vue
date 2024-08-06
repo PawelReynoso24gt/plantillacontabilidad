@@ -18,7 +18,8 @@
         <div class="nombre-inputs">
           <label>Contraseñas</label>
           <div class="numero-input">
-            <input type="text" v-model="contrasenias" placeholder="Ingrese la contraseña">
+            <input :type="showPassword ? 'text' : 'password'" v-model="contrasenias" placeholder="Ingrese la contraseña">
+            <button @click="togglePasswordVisibility">{{ showPassword ? 'Ocultar' : 'Mostrar' }}</button>
           </div>
         </div>
         <div class="fecha-inputs">
@@ -58,7 +59,12 @@ export default {
     const projects = ref([]);
     const errorMessage = ref('');
     const successMessage = ref('');
+    const showPassword = ref(false);
     const estadoenabled = computed(() => !!selectedProject.value);
+
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
 
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/logins/getLogins')
@@ -82,42 +88,11 @@ export default {
         .catch(() => {
           errorMessage.value = 'Error al cargar datos del usuario.';
         });
-    };
-
-    const validarContrasenia = (contrasenia) => {
-      if (contrasenia.length < 8) {
-        return 'La contraseña no puede ser menor a 8 dígitos';
-      }
-      if (!/[A-Z]/.test(contrasenia)) {
-        return 'La contraseña debe contener al menos una letra mayúscula';
-      }
-      if (!/[a-z]/.test(contrasenia)) {
-        return 'La contraseña debe contener al menos una letra minúscula';
-      }
-      if (!/[0-9]/.test(contrasenia)) {
-        return 'La contraseña debe contener al menos un número';
-      }
-      if (/^[0-9]|[0-9]$/.test(contrasenia)) {
-        return 'El número en la contraseña no puede estar ni al principio ni al final';
-      }
-      if (!/[!@#$]/.test(contrasenia)) {
-        return 'La contraseña debe contener al menos uno de estos caracteres especiales: !@#$';
-      }
-      if (/^[!@#$]|[!@#$]$/.test(contrasenia)) {
-        return 'Los caracteres especiales no pueden ir ni al principio ni al final';
-      }
-      return '';
-    };
+    }
 
     const insertar = () => {
       errorMessage.value = '';
       successMessage.value = '';
-
-      const error = validarContrasenia(contrasenias.value);
-      if (error) {
-        errorMessage.value = error;
-        return;
-      }
 
       if (!usuarios.value || !contrasenias.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
@@ -134,6 +109,7 @@ export default {
         .then(() => {
           successMessage.value = 'Datos guardados correctamente.';
           cargarProyectos();
+          limpiar(); // Limpiar los campos después de guardar
         })
         .catch(() => {
           errorMessage.value = 'Error al guardar los datos.';
@@ -156,11 +132,6 @@ export default {
       }
 
       if (contrasenias.value.trim() !== '') {
-        const error = validarContrasenia(contrasenias.value);
-        if (error) {
-          errorMessage.value = error;
-          return;
-        }
         datos.contrasenias = contrasenias.value;
       }
 
@@ -177,6 +148,7 @@ export default {
         .then(() => {
           successMessage.value = 'Datos actualizados correctamente.';
           cargarProyectos();
+          limpiar(); // Limpiar los campos después de actualizar
         })
         .catch(() => {
           errorMessage.value = 'Error al actualizar los datos.';
@@ -206,7 +178,9 @@ export default {
       cargarDatosProyecto,
       errorMessage,
       successMessage,
-      estadoenabled
+      estadoenabled,
+      togglePasswordVisibility,
+      showPassword
     };
   },
 };
