@@ -15,6 +15,10 @@
             <input type="text" v-model="banco">
           </div>
         </div>
+        <div class="fecha-inputs">
+          <label>Estado</label>
+          <input type="text" v-model="estado" :disabled="isDisabled">
+        </div>
       </div>
     </div>
 
@@ -42,10 +46,12 @@ export default {
   name: 'Modals',
   setup() {
     const banco = ref('');
+    const estado = ref('');
     const selectedBancos = ref('');
     const bancos = reactive([]);
     const errorMessage = ref(''); // Estado para errores
     const successMessage = ref(''); // Estado para mensajes de éxito
+    const isDisabled = ref(true); // Estado para controlar el atributo disabled
 
     const cargarBancos = () => {
       axios.get('http://127.0.0.1:8000/bancos/get')
@@ -63,6 +69,8 @@ export default {
         .then(response => {
           const bancoData = response.data;
           banco.value = bancoData.banco;
+          estado.value = bancoData.estado; // Actualizar el estado del banco
+          isDisabled.value = false; // Habilitar el campo Estado
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar datos del banco.';
@@ -81,6 +89,10 @@ export default {
       const datos = {
         banco: banco.value,
       };
+
+      if (estado.value.trim() !== '') {
+        datos.estado = estado.value.trim();
+      }
 
       axios.post('http://127.0.0.1:8000/bancos/create', datos)
         .then(() => {
@@ -107,6 +119,10 @@ export default {
         datos.banco = banco.value;
       }
 
+      if (estado.value.trim() !== '') {
+        datos.estado = estado.value.trim();
+      }
+
       if (Object.keys(datos).length === 0) {
         errorMessage.value = 'No hay campos para actualizar.';
         return;
@@ -124,15 +140,18 @@ export default {
 
     const limpiar = () => {
       banco.value = '';
+      estado.value = '';
       selectedBancos.value = '';
       errorMessage.value = ''; // Limpiar mensaje de error
       successMessage.value = ''; // Limpiar mensaje de éxito
+      isDisabled.value = true; // Deshabilitar el campo Estado
     };
 
     cargarBancos();
 
     return {
       banco,
+      estado,
       selectedBancos,
       bancos,
       insertar,
@@ -140,7 +159,8 @@ export default {
       limpiar,
       cargarDatosBanco,
       errorMessage,
-      successMessage
+      successMessage,
+      isDisabled // Incluir la propiedad isDisabled
     };
   },
 };
