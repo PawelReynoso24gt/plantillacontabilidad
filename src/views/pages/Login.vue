@@ -122,7 +122,7 @@ export default {
           error.value = 'Error de inicio de sesión. Por favor, inténtelo de nuevo.';
         }
       }
-    };
+    };//añañin
 
     return { usuarios, contrasenias, tipoProyecto, showPassword, error, togglePasswordVisibility, login };
   },
