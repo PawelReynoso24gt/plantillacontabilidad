@@ -15,11 +15,7 @@
         </div>
         <div class="fecha-inputs">
           <label>Estado</label>
-          <input type="text" v-model="estado">
-        </div>
-        <div class="fecha-inputs">
-          <label>Nombre Banco</label>
-          <input type="text" v-model="banco">
+          <input type="text" v-model="estado" :disabled="isDisabled">
         </div>
         <div class="nombre-inputs">
           <label>Bancos a editar</label>
@@ -63,6 +59,7 @@ export default {
     const bancos = reactive([]);
     const errorMessage = ref(''); // Estado para errores
     const successMessage = ref(''); // Estado para mensajes de éxito
+    const isDisabled = ref(true); // Estado para controlar el atributo disabled
 
     const cargarCuentas = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/get')
@@ -74,8 +71,8 @@ export default {
         });
     };
 
-    const cargarDatosBanco = () => {
-      axios.get('http://127.0.0.1:8000/cuentasB/getWithBancos')
+    const cargarBancos = () => {
+      axios.get('http://127.0.0.1:8000/bancos/get')
         .then((response) => {
           bancos.splice(0, bancos.length, ...response.data);
         })
@@ -91,7 +88,8 @@ export default {
           const proyecto = response.data;
           numero_cuenta.value = proyecto.numero_cuenta;
           estado.value = proyecto.estado;
-          banco.value = proyecto.banco;
+          banco.value = proyecto.banco; // Actualizamos el valor del banco seleccionado
+          isDisabled.value = false; // Habilitamos el campo Estado
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos de la cuenta.';
@@ -102,16 +100,19 @@ export default {
       errorMessage.value = ''; // Limpiar errores previos
       successMessage.value = ''; // Limpiar mensajes de éxito previos
 
-      if (!numero_cuenta.value || !estado.value || !banco.value) {
+      if (!numero_cuenta.value || !banco.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
 
       const datos = {
         numero_cuenta: numero_cuenta.value,
-        estado: estado.value,
         banco: banco.value,
       };
+
+      if (estado.value.trim() !== '') {
+        datos.estado = estado.value.trim();
+      }
 
       axios.post('http://127.0.0.1:8000/cuentasB/create', datos)
         .then(() => {
@@ -168,11 +169,12 @@ export default {
       selectedProject.value = '';
       errorMessage.value = ''; // Limpiar mensaje de error
       successMessage.value = ''; // Limpiar mensaje de éxito
+      isDisabled.value = true; // Deshabilitar el campo Estado
     };
 
     onMounted(() => {
       cargarCuentas();
-      cargarDatosBanco();
+      cargarBancos(); // Cargar los bancos al montar el componente
     });
 
     return {
@@ -187,7 +189,8 @@ export default {
       limpiar,
       cargarDatosCuenta,
       errorMessage,
-      successMessage
+      successMessage,
+      isDisabled // Incluir la propiedad isDisabled
     };
   },
 };
