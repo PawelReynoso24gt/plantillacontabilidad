@@ -86,12 +86,12 @@ export default {
 
     const cargarDatosCuenta = () => {
       if (!selectedProject.value) return;
-      axios.post(`http://127.0.0.1:8000/cuentasB/getNumeroCuenta/${selectedProject.value}`)
+      axios.get(`http://127.0.0.1:8000/cuentasB/cuentas_bancarias/${selectedProject.value}`)
         .then(response => {
           const proyecto = response.data;
           numero_cuenta.value = proyecto.numero_cuenta;
           estado.value = proyecto.estado;
-          banco.value = proyecto.nombre_banco;
+          banco.value = proyecto.banco;
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos de la cuenta.';

@@ -6,24 +6,24 @@
         <div class="id-inputs">
           <label>Usuarios</label>
           <select v-model="selectedProject" @change="cargarDatosProyecto">
-            <option v-for="project in projects" :value="project.usuarios">{{ project.usuarios }}</option>
+            <option v-for="project in projects" :key="project.id" :value="project">{{ project.usuarios }}</option>
           </select>
         </div>
         <div class="nombre-inputs">
           <label>Usuario</label>
           <div class="numero-input">
-            <input type="text" v-model="usuarios">
+            <input type="text" v-model="usuarios" placeholder="Ingrese el nombre de usuario">
           </div>
         </div>
         <div class="nombre-inputs">
           <label>Contraseñas</label>
           <div class="numero-input">
-            <input type="text" v-model="contrasenias">
+            <input type="text" v-model="contrasenias" placeholder="Ingrese la contraseña">
           </div>
         </div>
         <div class="fecha-inputs">
           <label>Estado</label>
-          <input type="text" v-model="estado">
+          <input type="text" v-model="estado" :disabled="!estadoenabled">
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 
 export default {
   name: 'Badges',
@@ -54,38 +54,72 @@ export default {
     const usuarios = ref('');
     const contrasenias = ref('');
     const estado = ref('');
-    const selectedProject = ref('');
-    const projects = reactive([]);
-    const errorMessage = ref(''); // Estado para errores
-    const successMessage = ref(''); // Estado para mensajes de éxito
+    const selectedProject = ref(null);
+    const projects = ref([]);
+    const errorMessage = ref('');
+    const successMessage = ref('');
+    const estadoenabled = computed(() => !!selectedProject.value);
 
     const cargarProyectos = () => {
-      axios.get('http://127.0.0.1:8000/logins/getLogins').then((response) => {
-        projects.splice(0, projects.length, ...response.data);
-      }).catch(error => {
-        errorMessage.value = 'Error al cargar proyectos.';
-      });
+      axios.get('http://127.0.0.1:8000/logins/getLogins')
+        .then(response => {
+          projects.value = response.data;
+        })
+        .catch(() => {
+          errorMessage.value = 'Error al cargar usuarios.';
+        });
     };
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://127.0.0.1:8000/logins/getProjectName/${selectedProject.value}`)
+      axios.get(`http://127.0.0.1:8000/logins/getProjectName/${selectedProject.value.usuarios}`)
         .then(response => {
           const proyecto = response.data;
           usuarios.value = proyecto.usuarios;
           contrasenias.value = proyecto.contrasenias;
           estado.value = proyecto.estado.toString();
         })
-        .catch(error => {
-          errorMessage.value = 'Error al cargar datos del proyecto.';
+        .catch(() => {
+          errorMessage.value = 'Error al cargar datos del usuario.';
         });
     };
 
-    const insertar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+    const validarContrasenia = (contrasenia) => {
+      if (contrasenia.length < 8) {
+        return 'La contraseña no puede ser menor a 8 dígitos';
+      }
+      if (!/[A-Z]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos una letra mayúscula';
+      }
+      if (!/[a-z]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos una letra minúscula';
+      }
+      if (!/[0-9]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos un número';
+      }
+      if (/^[0-9]|[0-9]$/.test(contrasenia)) {
+        return 'El número en la contraseña no puede estar ni al principio ni al final';
+      }
+      if (!/[!@#$]/.test(contrasenia)) {
+        return 'La contraseña debe contener al menos uno de estos caracteres especiales: !@#$';
+      }
+      if (/^[!@#$]|[!@#$]$/.test(contrasenia)) {
+        return 'Los caracteres especiales no pueden ir ni al principio ni al final';
+      }
+      return '';
+    };
 
-      if (!usuarios.value || !contrasenias.value || !estado.value) {
+    const insertar = () => {
+      errorMessage.value = '';
+      successMessage.value = '';
+
+      const error = validarContrasenia(contrasenias.value);
+      if (error) {
+        errorMessage.value = error;
+        return;
+      }
+
+      if (!usuarios.value || !contrasenias.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
@@ -97,21 +131,21 @@ export default {
       };
 
       axios.post('http://127.0.0.1:8000/logins/create', datos)
-        .then(response => {
+        .then(() => {
           successMessage.value = 'Datos guardados correctamente.';
           cargarProyectos();
         })
-        .catch(error => {
+        .catch(() => {
           errorMessage.value = 'Error al guardar los datos.';
         });
     };
 
     const actualizar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+      errorMessage.value = '';
+      successMessage.value = '';
 
       if (!selectedProject.value) {
-        errorMessage.value = 'Por favor, selecciona un proyecto.';
+        errorMessage.value = 'Por favor, selecciona un usuario.';
         return;
       }
 
@@ -122,6 +156,11 @@ export default {
       }
 
       if (contrasenias.value.trim() !== '') {
+        const error = validarContrasenia(contrasenias.value);
+        if (error) {
+          errorMessage.value = error;
+          return;
+        }
         datos.contrasenias = contrasenias.value;
       }
 
@@ -134,12 +173,12 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value}`, datos)
-        .then(response => {
+      axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value.usuarios}`, datos)
+        .then(() => {
           successMessage.value = 'Datos actualizados correctamente.';
           cargarProyectos();
         })
-        .catch(error => {
+        .catch(() => {
           errorMessage.value = 'Error al actualizar los datos.';
         });
     };
@@ -148,9 +187,9 @@ export default {
       usuarios.value = '';
       contrasenias.value = '';
       estado.value = '';
-      selectedProject.value = '';
-      errorMessage.value = ''; // Limpiar mensaje de error
-      successMessage.value = ''; // Limpiar mensaje de éxito
+      selectedProject.value = null;
+      errorMessage.value = '';
+      successMessage.value = '';
     };
 
     cargarProyectos();
@@ -166,7 +205,8 @@ export default {
       limpiar,
       cargarDatosProyecto,
       errorMessage,
-      successMessage
+      successMessage,
+      estadoenabled
     };
   },
 };

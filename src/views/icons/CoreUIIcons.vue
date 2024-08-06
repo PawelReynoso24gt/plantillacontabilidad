@@ -158,7 +158,7 @@ export default {
 
         // Guardar el PDF usando la API File System Access
         const handle = await window.showSaveFilePicker({
-          suggestedName: 'libro_de_caja.pdf',
+          suggestedName: 'libro_caja_agricola.pdf',
           types: [{
             description: 'PDF Files',
             accept: {

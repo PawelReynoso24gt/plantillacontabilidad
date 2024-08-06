@@ -12,7 +12,7 @@
         <div class="nombre-inputs">
           <label>Tipos</label>
           <div class="numero-input">
-            <input type="text" v-model="tipo" placeholder="tipo...">
+            <input type="text" v-model="tipo" placeholder="Escribe el tipo de cuenta que desees agregar">
           </div>
         </div>
       </div>

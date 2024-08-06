@@ -238,7 +238,7 @@ export default {
 
         // Guardar el PDF
         const handle = await window.showSaveFilePicker({
-          suggestedName: 'Reporte_ingresos_y_egresos.pdf',
+          suggestedName: 'Reporte_ingresos_egresos_agricola.pdf',
           types: [{
             description: 'PDF Files',
             accept: { 'application/pdf': ['.pdf'] }
