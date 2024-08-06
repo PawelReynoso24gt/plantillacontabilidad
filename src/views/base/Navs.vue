@@ -18,7 +18,7 @@
           <input type="text" v-model="estado" :disabled="isDisabled">
         </div>
         <div class="nombre-inputs">
-          <label>Bancos a editar</label>
+          <label>Bancos a asignar/editar</label>
           <div class="numero-input">
             <select v-model="banco">
               <option v-for="banco in bancos" :key="banco.id" :value="banco.banco">{{ banco.banco }}</option>
