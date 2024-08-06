@@ -91,6 +91,7 @@ export default {
     }
 
     const insertar = () => {
+      // Limpiar mensajes antes de intentar guardar
       errorMessage.value = '';
       successMessage.value = '';
 
@@ -109,7 +110,8 @@ export default {
         .then(() => {
           successMessage.value = 'Datos guardados correctamente.';
           cargarProyectos();
-          limpiar(); // Limpiar los campos después de guardar
+          // Limpiar los campos después de guardar (comentar si no se necesita)
+          // limpiar(); 
         })
         .catch(() => {
           errorMessage.value = 'Error al guardar los datos.';
@@ -117,6 +119,7 @@ export default {
     };
 
     const actualizar = () => {
+      // Limpiar mensajes antes de intentar actualizar
       errorMessage.value = '';
       successMessage.value = '';
 
@@ -148,7 +151,8 @@ export default {
         .then(() => {
           successMessage.value = 'Datos actualizados correctamente.';
           cargarProyectos();
-          limpiar(); // Limpiar los campos después de actualizar
+          // Limpiar los campos después de actualizar (comentar si no se necesita)
+          // limpiar(); 
         })
         .catch(() => {
           errorMessage.value = 'Error al actualizar los datos.';
@@ -160,6 +164,7 @@ export default {
       contrasenias.value = '';
       estado.value = '';
       selectedProject.value = null;
+      // Limpiar mensajes también al limpiar los campos
       errorMessage.value = '';
       successMessage.value = '';
     };
