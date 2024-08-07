@@ -17,7 +17,7 @@
         </div>
         <div class="fecha-inputs">
           <label>Estado</label>
-          <input type="text" v-model="estado">
+          <input type="text" v-model="estado" :disabled="isDisabled">
         </div>
         <div class="fecha-inputs">
           <label>Código</label>
@@ -73,6 +73,7 @@ export default {
     const tiposProyecto = reactive([]);
     const errorMessage = ref(''); // Estado para errores
     const successMessage = ref(''); // Estado para mensajes de éxito
+    const isDisabled = ref(true);
 
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/cuentas/get')
@@ -115,6 +116,8 @@ export default {
           codigo.value = proyecto.codigo;
           selectedClasificacion.value = proyecto.id_clasificacion;
           selectedTipoProyecto.value = proyecto.id_proyectos;
+          isDisabled.value = false;
+
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos del proyecto.';
@@ -144,7 +147,7 @@ export default {
 
       const datos = {
         cuenta: cuenta.value,
-        estado: estado.value,
+        estado: estado.value, 
         codigo: codigo.value,
         id_clasificacion: selectedClasificacion.value,
         id_proyectos: selectedTipoProyecto.value
@@ -172,9 +175,9 @@ export default {
         datos.cuenta = cuenta.value;
       }
 
-      if (estado.value.trim() !== '') {
-        datos.estado = estado.value;
-      }
+      if (estado.value.trim() !== '') {  // Verifica que el estado no está vacío
+       datos.estado = estado.value.trim();
+        }
 
       if (codigo.value.trim() !== '') {
         datos.codigo = codigo.value;
@@ -192,6 +195,8 @@ export default {
         errorMessage.value = 'No hay campos para actualizar.';
         return;
       }
+
+      console.log('Datos a actualizar:', datos);
 
       axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
         .then(() => {
@@ -213,6 +218,7 @@ export default {
       tipo.value = '';
       errorMessage.value = ''; // Limpiar mensaje de error
       successMessage.value = ''; // Limpiar mensaje de éxito
+      isDisabled.value = true; 
     };
 
     onMounted(() => {
@@ -239,10 +245,12 @@ export default {
       cargarDatosClasificacion,
       cargarDatosTiposProyecto,
       errorMessage,
-      successMessage
+      successMessage,
+      isDisabled 
     };
   },
 };
+
 </script>
 
 <style scoped>
