@@ -17,7 +17,7 @@
         </div>
         <div class="fecha-inputs">
           <label>Estado</label>
-          <input type="text" v-model="estado" :disabled="isDisabled">
+          <input type="number" v-model="estado" :disabled="isDisabled">
         </div>
       </div>
     </div>
@@ -46,12 +46,12 @@ export default {
   name: 'Modals',
   setup() {
     const banco = ref('');
-    const estado = ref('');
+    const estado = ref(null); // Inicializado como null
     const selectedBancos = ref('');
     const bancos = reactive([]);
-    const errorMessage = ref(''); // Estado para errores
-    const successMessage = ref(''); // Estado para mensajes de éxito
-    const isDisabled = ref(true); // Estado para controlar el atributo disabled
+    const errorMessage = ref('');
+    const successMessage = ref('');
+    const isDisabled = ref(true);
 
     const cargarBancos = () => {
       axios.get('http://127.0.0.1:8000/bancos/get')
@@ -69,8 +69,8 @@ export default {
         .then(response => {
           const bancoData = response.data;
           banco.value = bancoData.banco;
-          estado.value = bancoData.estado; // Actualizar el estado del banco
-          isDisabled.value = false; // Habilitar el campo Estado
+          estado.value = bancoData.estado;
+          isDisabled.value = false;
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar datos del banco.';
@@ -78,20 +78,18 @@ export default {
     };
 
     const insertar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+      errorMessage.value = '';
+      successMessage.value = '';
 
       if (!banco.value) {
         errorMessage.value = 'Por favor, completa el campo del nombre del banco.';
         return;
       }
 
-      const datos = {
-        banco: banco.value,
-      };
+      const datos = { banco: banco.value };
 
-      if (estado.value.trim() !== '') {
-        datos.estado = estado.value.trim();
+      if (estado.value !== null) {
+        datos.estado = estado.value;
       }
 
       axios.post('http://127.0.0.1:8000/bancos/create', datos)
@@ -105,8 +103,8 @@ export default {
     };
 
     const actualizar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+      errorMessage.value = '';
+      successMessage.value = '';
 
       if (!selectedBancos.value) {
         errorMessage.value = 'Por favor, selecciona un banco.';
@@ -116,11 +114,11 @@ export default {
       const datos = {};
 
       if (banco.value.trim() !== '') {
-        datos.banco = banco.value;
+        datos.banco = banco.value.trim();
       }
 
-      if (estado.value.trim() !== '') {
-        datos.estado = estado.value.trim();
+      if (estado.value !== null) {
+        datos.estado = estado.value;
       }
 
       if (Object.keys(datos).length === 0) {
@@ -140,11 +138,11 @@ export default {
 
     const limpiar = () => {
       banco.value = '';
-      estado.value = '';
+      estado.value = null;
       selectedBancos.value = '';
-      errorMessage.value = ''; // Limpiar mensaje de error
-      successMessage.value = ''; // Limpiar mensaje de éxito
-      isDisabled.value = true; // Deshabilitar el campo Estado
+      errorMessage.value = '';
+      successMessage.value = '';
+      isDisabled.value = true;
     };
 
     cargarBancos();
@@ -160,7 +158,7 @@ export default {
       cargarDatosBanco,
       errorMessage,
       successMessage,
-      isDisabled // Incluir la propiedad isDisabled
+      isDisabled
     };
   },
 };
