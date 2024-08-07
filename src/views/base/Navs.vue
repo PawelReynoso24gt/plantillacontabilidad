@@ -87,7 +87,7 @@ export default {
         .then(response => {
           const proyecto = response.data;
           numero_cuenta.value = proyecto.numero_cuenta;
-          estado.value = proyecto.estado;
+          estado.value = proyecto.estado.toString(); // Aseguramos que estado sea una cadena de texto
           banco.value = proyecto.banco; // Actualizamos el valor del banco seleccionado
           isDisabled.value = false; // Habilitamos el campo Estado
         })
@@ -108,11 +108,8 @@ export default {
       const datos = {
         numero_cuenta: numero_cuenta.value,
         banco: banco.value,
+        estado: estado.value.trim() !== '' ? estado.value.trim() : '1', // Valor por defecto para estado
       };
-
-      if (estado.value.trim() !== '') {
-        datos.estado = estado.value.trim();
-      }
 
       axios.post('http://127.0.0.1:8000/cuentasB/create', datos)
         .then(() => {
@@ -139,12 +136,12 @@ export default {
         datos.numero_cuenta = numero_cuenta.value;
       }
 
-      if (estado.value.trim() !== '') {
+      if (typeof estado.value === 'string' && estado.value.trim() !== '') {
         datos.estado = estado.value.trim();
       }
 
       if (banco.value.trim() !== '') {
-        datos.nombre_banco = banco.value;
+        datos.banco = banco.value;
       }
 
       if (Object.keys(datos).length === 0) {
