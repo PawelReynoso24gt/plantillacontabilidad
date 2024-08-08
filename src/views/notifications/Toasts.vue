@@ -59,7 +59,7 @@ export default {
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://localhost:8000/clasificacion/getTipo/${selectedProject.value}`)
+      axios.get(`http://127.0.0.1:8000/clasificacion/getTipo/${selectedProject.value}`)
         .then(response => {
           const proyecto = response.data;
           tipo.value = proyecto.tipo;

@@ -162,7 +162,7 @@ export default {
 
         // Guardar el PDF
         const blob = doc.output('blob');
-        saveAs(blob, 'libro_caja_capilla.pdf');
+        saveAs(blob, 'libro_diario_capilla.pdf');
 
       } catch (error) {
         console.error('Error al generar el PDF:', error);

@@ -40,6 +40,8 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import jsPDF from 'jspdf'
 import axios from 'axios'
 import 'jspdf-autotable'
+import { saveAs } from 'file-saver';
+
 
 export default {
   name: 'Accordion',
@@ -168,17 +170,9 @@ export default {
         });
 
         // Guardar el PDF
-        const handle = await window.showSaveFilePicker({
-          suggestedName: 'libro_bancos_agricola.pdf',
-          types: [{
-            description: 'PDF Files',
-            accept: { 'application/pdf': ['.pdf'] }
-          }]
-        });
+        const blob = doc.output('blob');
+        saveAs(blob, 'libro_bancos_agrícola.pdf');
 
-        const writable = await handle.createWritable();
-        await writable.write(doc.output('blob'));
-        await writable.close();
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }

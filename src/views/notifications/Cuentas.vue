@@ -6,7 +6,7 @@
         <div class="id-inputs">
           <label>Cuentas</label>
           <select v-model="selectedProject" @change="cargarDatosProyecto">
-            <option v-for="project in projects" :value="project.cuenta" :key="project.cuenta">{{ project.cuenta }}</option>
+            <option v-for="project in projects" :value="project.cuenta" :key="project.id_cuentas">{{ project.cuenta }}</option>
           </select>
         </div>
         <div class="nombre-inputs">
@@ -17,7 +17,7 @@
         </div>
         <div class="fecha-inputs">
           <label>Estado</label>
-          <input type="text" v-model="estado" :disabled="isDisabled">
+          <input type="text" v-model="estado" :disabled="!isEstadoEnabled">
         </div>
         <div class="fecha-inputs">
           <label>Código</label>
@@ -25,14 +25,14 @@
         </div>
         <div class="id-inputs">
           <label>Clasificación</label>
-          <select v-model="selectedClasificacion" @change="cargarDatosClasificacion">
-            <option v-for="clasificacion in clasificaciones" :value="clasificacion.id" :key="clasificacion.id">{{ clasificacion.tipo }}</option>
+          <select v-model="selectedClasificacion">
+            <option v-for="clasificacion in clasificaciones" :value="clasificacion.tipo" :key="clasificacion.id_clasificacion">{{ clasificacion.tipo }}</option>
           </select>
         </div>
         <div class="id-inputs">
           <label>Proyecto</label>
           <select v-model="selectedTipoProyecto">
-            <option v-for="tipo in tiposProyecto" :value="tipo.id" :key="tipo.id">{{ tipo.nombre }}</option>
+            <option v-for="proyecto in proyectos" :value="proyecto.nombre" :key="proyecto.id_proyectos">{{ proyecto.nombre }}</option>
           </select>
         </div>
       </div>
@@ -56,7 +56,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 
 
 export default {
@@ -65,16 +65,15 @@ export default {
     const cuenta = ref('');
     const estado = ref('');
     const codigo = ref('');
-    const tipo = ref('');
-    const selectedProject = ref('');
     const selectedClasificacion = ref('');
     const selectedTipoProyecto = ref('');
+    const selectedProject = ref('');
     const projects = reactive([]);
     const clasificaciones = reactive([]);
-    const tiposProyecto = reactive([]);
-    const errorMessage = ref(''); // Estado para errores
-    const successMessage = ref(''); // Estado para mensajes de éxito
-    const isDisabled = ref(true);
+    const proyectos = reactive([]);
+    const errorMessage = ref('');
+    const successMessage = ref('');
+    const isEstadoEnabled = ref(false);
 
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/cuentas/get')
@@ -96,34 +95,42 @@ export default {
         });
     };
 
-    const cargarDatosTiposProyecto = () => {
+    const cargarProyectosTipos = () => {
       axios.get('http://127.0.0.1:8000/proyectos/get')
         .then(response => {
-          tiposProyecto.splice(0, tiposProyecto.length, ...response.data);
+          proyectos.splice(0, proyectos.length, ...response.data);
         })
         .catch(() => {
-          errorMessage.value = 'Error al cargar los tipos de proyecto.';
+          errorMessage.value = 'Error al cargar los tipos de proyectos.';
         });
     };
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-
-      axios.get(`http://127.0.0.1:8000/cuentas/getCuentaName/${selectedProject.value}`)
+      axios.get(`http://127.0.0.1:8000/cuentas/getCrud/${selectedProject.value}`)
         .then(response => {
-          const proyecto = response.data;
+          const proyecto = response.data[0];
           cuenta.value = proyecto.cuenta;
+<<<<<<< HEAD
           estado.value = proyecto.estado.toString();
           codigo.value = proyecto.codigo;
           selectedClasificacion.value = proyecto.id_clasificacion;
           selectedTipoProyecto.value = proyecto.id_proyectos;
           isDisabled.value = false;
+=======
+          estado.value = proyecto.estado ? proyecto.estado.toString() : '';
+          codigo.value = proyecto.codigo;
+          selectedClasificacion.value = proyecto.clasificacion;
+          selectedTipoProyecto.value = proyecto.proyecto;
+          isEstadoEnabled.value = true;
+>>>>>>> 599049b80dea2198531f8d3457788fe25d492947
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos del proyecto.';
         });
     };
 
+<<<<<<< HEAD
     const cargarDatosClasificacion = () => {
       if (!selectedClasificacion.value) return;
       axios.get(`http://127.0.0.1:8000/clasificacion/getTipo/${selectedClasificacion.value}`)
@@ -136,30 +143,48 @@ export default {
         });
     };
 
+=======
+>>>>>>> 599049b80dea2198531f8d3457788fe25d492947
     const insertar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+      errorMessage.value = '';
+      successMessage.value = '';
 
+<<<<<<< HEAD
       if (!cuenta.value.trim() || !codigo.value.trim() || !selectedClasificacion.value || !selectedTipoProyecto.value) {
+=======
+      if (!cuenta.value || !codigo.value || !selectedClasificacion.value || !selectedTipoProyecto.value) {
+>>>>>>> 599049b80dea2198531f8d3457788fe25d492947
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
 
       const datos = {
+<<<<<<< HEAD
         cuenta: cuenta.value.trim(),
         codigo: codigo.value.trim(),
         id_clasificacion: selectedClasificacion.value,
         id_proyectos: selectedTipoProyecto.value
+=======
+        cuenta: cuenta.value,
+        codigo: codigo.value,
+        clasificacion: selectedClasificacion.value,
+        proyecto: selectedTipoProyecto.value
+>>>>>>> 599049b80dea2198531f8d3457788fe25d492947
       };
 
       axios.post('http://127.0.0.1:8000/cuentas/create', datos)
-        .then(() => {
+        .then(response => {
           successMessage.value = 'Cuenta guardada correctamente.';
+          //limpiar();
           cargarProyectos();
           limpiar();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al guardar la cuenta.';
+        .catch(error => {
+          if (error.response && error.response.data) {
+            errorMessage.value = 'Error al guardar la cuenta: ' + JSON.stringify(error.response.data.errors);
+          } else {
+            errorMessage.value = 'Error al guardar la cuenta.';
+          }
         });
     };
 
@@ -175,8 +200,13 @@ export default {
         datos.cuenta = cuenta.value.trim();
       }
 
+<<<<<<< HEAD
       if (estado.value.trim() !== '') {  // Verifica que el estado no está vacío
         datos.estado = String(estado.value).trim();
+=======
+      if (estado.value.trim() !== '') {
+        datos.estado = estado.value;
+>>>>>>> 599049b80dea2198531f8d3457788fe25d492947
       }
 
       if (codigo.value.trim() !== '') {
@@ -184,11 +214,11 @@ export default {
       }
 
       if (selectedClasificacion.value) {
-        datos.id_clasificacion = selectedClasificacion.value;
+        datos.clasificacion = selectedClasificacion.value;
       }
 
       if (selectedTipoProyecto.value) {
-        datos.id_proyectos = selectedTipoProyecto.value;
+        datos.proyecto = selectedTipoProyecto.value;
       }
 
       if (Object.keys(datos).length === 0) {
@@ -197,12 +227,13 @@ export default {
       }
 
       axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
-        .then(() => {
+        .then(response => {
           successMessage.value = 'Cuenta actualizada correctamente.';
+          //limpiar();
           cargarProyectos();
           limpiar();
         })
-        .catch(() => {
+        .catch(error => {
           errorMessage.value = 'Error al actualizar la cuenta.';
         });
     };
@@ -214,16 +245,19 @@ export default {
       selectedClasificacion.value = '';
       selectedTipoProyecto.value = '';
       selectedProject.value = '';
-      tipo.value = '';
-      errorMessage.value = ''; // Limpiar mensaje de error
-      successMessage.value = ''; // Limpiar mensaje de éxito
-      isDisabled.value = true; 
+      errorMessage.value = '';
+      successMessage.value = '';
+      isEstadoEnabled.value = false;
     };
 
     onMounted(() => {
       cargarProyectos();
       cargarClasificaciones();
-      cargarDatosTiposProyecto();
+      cargarProyectosTipos();
+    });
+
+    watch(selectedProject, () => {
+      isEstadoEnabled.value = !!selectedProject.value;
     });
 
     return {
@@ -235,17 +269,14 @@ export default {
       selectedProject,
       projects,
       clasificaciones,
-      tiposProyecto,
+      proyectos,
       insertar,
       actualizar,
       limpiar,
       cargarDatosProyecto,
-      tipo,
-      cargarDatosClasificacion,
-      cargarDatosTiposProyecto,
       errorMessage,
       successMessage,
-      isDisabled 
+      isEstadoEnabled
     };
   },
 };
@@ -277,6 +308,7 @@ label {
 
 /* Estilos para los campos de entrada */
 input[type="text"],
+input[type="date"],
 select {
   width: 100%;
   padding: 8px;

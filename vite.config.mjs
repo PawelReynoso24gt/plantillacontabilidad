@@ -46,9 +46,13 @@ export default defineConfig(({ mode }) => {
       ],
     },
     server: {
-      port: 8080,
+      port: 3000,
       proxy: {
-        // https://vitejs.dev/config/server-options.html
+        '/api': {
+          target: 'http://hogarsantaluisa.test', 
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
       },
     },
     define: {

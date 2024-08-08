@@ -27,6 +27,8 @@ import { ref } from 'vue'
 import jsPDF from 'jspdf'
 import axios from 'axios'
 import 'jspdf-autotable'
+import { saveAs } from 'file-saver';
+
 
 export default {
   name: 'Accordion',
@@ -137,17 +139,9 @@ export default {
         });
 
         // Guardar el PDF
-        const handle = await window.showSaveFilePicker({
-          suggestedName: 'libro_diario_agricola.pdf',
-          types: [{
-            description: 'PDF Files',
-            accept: { 'application/pdf': ['.pdf'] }
-          }]
-        });
+        const blob = doc.output('blob');
+        saveAs(blob, 'libro_diario_agrícola.pdf');
 
-        const writable = await handle.createWritable();
-        await writable.write(doc.output('blob'));
-        await writable.close();
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
