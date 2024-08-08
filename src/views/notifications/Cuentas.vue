@@ -58,7 +58,6 @@
 import axios from 'axios';
 import { ref, reactive, onMounted, watch } from 'vue';
 
-
 export default {
   name: 'Cuentas',
   setup() {
@@ -111,65 +110,31 @@ export default {
         .then(response => {
           const proyecto = response.data[0];
           cuenta.value = proyecto.cuenta;
-<<<<<<< HEAD
-          estado.value = proyecto.estado.toString();
-          codigo.value = proyecto.codigo;
-          selectedClasificacion.value = proyecto.id_clasificacion;
-          selectedTipoProyecto.value = proyecto.id_proyectos;
-          isDisabled.value = false;
-=======
           estado.value = proyecto.estado ? proyecto.estado.toString() : '';
           codigo.value = proyecto.codigo;
           selectedClasificacion.value = proyecto.clasificacion;
           selectedTipoProyecto.value = proyecto.proyecto;
           isEstadoEnabled.value = true;
->>>>>>> 599049b80dea2198531f8d3457788fe25d492947
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos del proyecto.';
         });
     };
 
-<<<<<<< HEAD
-    const cargarDatosClasificacion = () => {
-      if (!selectedClasificacion.value) return;
-      axios.get(`http://127.0.0.1:8000/clasificacion/getTipo/${selectedClasificacion.value}`)
-        .then(response => {
-          const clasificacion = response.data;
-          tipo.value = clasificacion.tipo;
-        })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar los datos de clasificación.';
-        });
-    };
-
-=======
->>>>>>> 599049b80dea2198531f8d3457788fe25d492947
     const insertar = () => {
       errorMessage.value = '';
       successMessage.value = '';
 
-<<<<<<< HEAD
-      if (!cuenta.value.trim() || !codigo.value.trim() || !selectedClasificacion.value || !selectedTipoProyecto.value) {
-=======
       if (!cuenta.value || !codigo.value || !selectedClasificacion.value || !selectedTipoProyecto.value) {
->>>>>>> 599049b80dea2198531f8d3457788fe25d492947
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
 
       const datos = {
-<<<<<<< HEAD
-        cuenta: cuenta.value.trim(),
-        codigo: codigo.value.trim(),
-        id_clasificacion: selectedClasificacion.value,
-        id_proyectos: selectedTipoProyecto.value
-=======
         cuenta: cuenta.value,
         codigo: codigo.value,
         clasificacion: selectedClasificacion.value,
         proyecto: selectedTipoProyecto.value
->>>>>>> 599049b80dea2198531f8d3457788fe25d492947
       };
 
       axios.post('http://127.0.0.1:8000/cuentas/create', datos)
@@ -177,7 +142,6 @@ export default {
           successMessage.value = 'Cuenta guardada correctamente.';
           //limpiar();
           cargarProyectos();
-          limpiar();
         })
         .catch(error => {
           if (error.response && error.response.data) {
@@ -197,20 +161,15 @@ export default {
       const datos = {};
 
       if (cuenta.value.trim() !== '') {
-        datos.cuenta = cuenta.value.trim();
+        datos.cuenta = cuenta.value;
       }
 
-<<<<<<< HEAD
-      if (estado.value.trim() !== '') {  // Verifica que el estado no está vacío
-        datos.estado = String(estado.value).trim();
-=======
       if (estado.value.trim() !== '') {
         datos.estado = estado.value;
->>>>>>> 599049b80dea2198531f8d3457788fe25d492947
       }
 
       if (codigo.value.trim() !== '') {
-        datos.codigo = codigo.value.trim();
+        datos.codigo = codigo.value;
       }
 
       if (selectedClasificacion.value) {
@@ -231,7 +190,6 @@ export default {
           successMessage.value = 'Cuenta actualizada correctamente.';
           //limpiar();
           cargarProyectos();
-          limpiar();
         })
         .catch(error => {
           errorMessage.value = 'Error al actualizar la cuenta.';
