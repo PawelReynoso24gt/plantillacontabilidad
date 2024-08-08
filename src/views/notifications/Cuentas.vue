@@ -173,11 +173,11 @@ export default {
       }
 
       if (selectedClasificacion.value) {
-        datos.id_clasificacion = selectedClasificacion.value;
+        datos.clasificacion = selectedClasificacion.value;
       }
 
       if (selectedTipoProyecto.value) {
-        datos.id_proyectos = selectedTipoProyecto.value;
+        datos.proyecto = selectedTipoProyecto.value;
       }
 
       if (Object.keys(datos).length === 0) {
