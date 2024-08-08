@@ -45,6 +45,8 @@ import axios from 'axios';
 import { ref } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { saveAs } from 'file-saver';
+
 
 export default {
   name: 'ReporteAG',
@@ -85,7 +87,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/reporteFinalCA', {
+        const response = await axios.post('http://hogarsantaluisa.test/in_eg/reporteFinalCA', {
           tipo: selectedPeriodo.value.toLowerCase(),
           mes: selectedMes.value.toLowerCase(),
           responsable: responsable.value,
@@ -241,17 +243,9 @@ export default {
         doc.text('Economa Provincial', 85, yOffset + 5);
 
         // Guardar el PDF
-        const handle = await window.showSaveFilePicker({
-          suggestedName: 'Reporte_ingresos_egresos_capilla.pdf',
-          types: [{
-            description: 'PDF Files',
-            accept: { 'application/pdf': ['.pdf'] }
-          }]
-        });
+        const blob = doc.output('blob');
+        saveAs(blob, 'informe_final_capilla.pdf');
 
-        const writable = await handle.createWritable();
-        await writable.write(doc.output('blob'));
-        await writable.close();
 
       } catch (error) {
         console.error('Error al generar el PDF:', error);

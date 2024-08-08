@@ -40,6 +40,8 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import jsPDF from 'jspdf'
 import axios from 'axios'
 import 'jspdf-autotable'
+import { saveAs } from 'file-saver';
+
 
 export default {
   name: 'Accordion',
@@ -60,7 +62,7 @@ export default {
     };
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
+      axios.get('http://hogarsantaluisa.test/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data)
           console.log(response.data); 
@@ -76,7 +78,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:8000/in_eg/fechaBancoCA', {
+        const response = await axios.post('http://hogarsantaluisa.test/in_eg/fechaBancoCA', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value,
           banco_y_cuenta: cuentaBName.value
@@ -197,17 +199,8 @@ export default {
         });
 
         // Guardar el PDF
-        const handle = await window.showSaveFilePicker({
-          suggestedName: 'libro_bancos_capilla.pdf',
-          types: [{
-            description: 'PDF Files',
-            accept: { 'application/pdf': ['.pdf'] }
-          }]
-        });
-
-        const writable = await handle.createWritable();
-        await writable.write(doc.output('blob'));
-        await writable.close();
+        const blob = doc.output('blob');
+        saveAs(blob, 'libro_bancos_capilla.pdf');
 
       } catch (error) {
         console.error('Error al generar el PDF:', error);

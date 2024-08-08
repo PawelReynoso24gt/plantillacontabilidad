@@ -62,7 +62,7 @@ export default {
     const isDisabled = ref(true); // Estado para controlar el atributo disabled
 
     const cargarCuentas = () => {
-      axios.get('http://127.0.0.1:8000/cuentasB/get')
+      axios.get('http://hogarsantaluisa.test/cuentasB/get')
         .then((response) => {
           projects.splice(0, projects.length, ...response.data);
         })
@@ -72,7 +72,7 @@ export default {
     };
 
     const cargarBancos = () => {
-      axios.get('http://127.0.0.1:8000/bancos/get')
+      axios.get('http://hogarsantaluisa.test/bancos/get')
         .then((response) => {
           bancos.splice(0, bancos.length, ...response.data);
         })
@@ -83,7 +83,7 @@ export default {
 
     const cargarDatosCuenta = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://127.0.0.1:8000/cuentasB/cuentas_bancarias/${selectedProject.value}`)
+      axios.get(`http://hogarsantaluisa.test/cuentasB/cuentas_bancarias/${selectedProject.value}`)
         .then(response => {
           const proyecto = response.data;
           numero_cuenta.value = proyecto.numero_cuenta;
@@ -111,7 +111,7 @@ export default {
         estado: estado.value.trim() !== '' ? estado.value.trim() : '1', // Valor por defecto para estado
       };
 
-      axios.post('http://127.0.0.1:8000/cuentasB/create', datos)
+      axios.post('http://hogarsantaluisa.test/cuentasB/create', datos)
         .then(() => {
           successMessage.value = 'Cuenta bancaria guardada correctamente.';
           cargarCuentas();
@@ -149,7 +149,7 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/cuentasB/update/${selectedProject.value}`, datos)
+      axios.put(`http://hogarsantaluisa.test/cuentasB/update/${selectedProject.value}`, datos)
         .then(() => {
           successMessage.value = 'Cuenta bancaria actualizada correctamente.';
           cargarCuentas();

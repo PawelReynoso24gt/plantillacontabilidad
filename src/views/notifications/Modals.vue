@@ -54,7 +54,7 @@ export default {
     const isDisabled = ref(true);
 
     const cargarBancos = () => {
-      axios.get('http://127.0.0.1:8000/bancos/get')
+      axios.get('http://hogarsantaluisa.test/bancos/get')
         .then((response) => {
           bancos.splice(0, bancos.length, ...response.data);
         })
@@ -65,7 +65,7 @@ export default {
 
     const cargarDatosBanco = () => {
       if (!selectedBancos.value) return;
-      axios.get(`http://127.0.0.1:8000/bancos/getBancoName/${selectedBancos.value}`)
+      axios.get(`http://hogarsantaluisa.test/bancos/getBancoName/${selectedBancos.value}`)
         .then(response => {
           const bancoData = response.data;
           banco.value = bancoData.banco;
@@ -92,7 +92,7 @@ export default {
         datos.estado = estado.value;
       }
 
-      axios.post('http://127.0.0.1:8000/bancos/create', datos)
+      axios.post('http://hogarsantaluisa.test/bancos/create', datos)
         .then(() => {
           successMessage.value = 'Banco guardado correctamente.';
           cargarBancos();
@@ -126,7 +126,7 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/bancos/updatebyname/${selectedBancos.value}`, datos)
+      axios.put(`http://hogarsantaluisa.test/bancos/updatebyname/${selectedBancos.value}`, datos)
         .then(() => {
           successMessage.value = 'Banco actualizado correctamente.';
           cargarBancos();

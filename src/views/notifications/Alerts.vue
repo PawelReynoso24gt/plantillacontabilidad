@@ -67,7 +67,7 @@ export default {
     };
 
     const cargarProyectos = () => {
-      axios.get('http://127.0.0.1:8000/logins/getLogins')
+      axios.get('http://hogarsantaluisa.test/logins/getLogins')
         .then(response => {
           projects.value = response.data;
         })
@@ -78,7 +78,7 @@ export default {
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://127.0.0.1:8000/logins/getProjectName/${selectedProject.value.usuarios}`)
+      axios.get(`http://hogarsantaluisa.test/logins/getProjectName/${selectedProject.value.usuarios}`)
         .then(response => {
           const proyecto = response.data;
           usuarios.value = proyecto.usuarios;
@@ -106,7 +106,7 @@ export default {
         estado: estado.value,
       };
 
-      axios.post('http://127.0.0.1:8000/logins/create', datos)
+      axios.post('http://hogarsantaluisa.test/logins/create', datos)
         .then(() => {
           successMessage.value = 'Datos guardados correctamente.';
           cargarProyectos();
@@ -147,7 +147,7 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/logins/update/${selectedProject.value.usuarios}`, datos)
+      axios.put(`http://hogarsantaluisa.test/logins/update/${selectedProject.value.usuarios}`, datos)
         .then(() => {
           successMessage.value = 'Datos actualizados correctamente.';
           cargarProyectos();
