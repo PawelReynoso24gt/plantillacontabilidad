@@ -48,7 +48,7 @@ export default {
     const successMessage = ref(''); // Estado para mensajes de éxito
 
     const cargarProyectos = () => {
-      axios.get('http://hogarsantaluisa.test/clasificacion/get')
+      axios.get('http://127.0.0.1:8000/clasificacion/get')
         .then((response) => {
           projects.splice(0, projects.length, ...response.data);
         })
@@ -59,7 +59,7 @@ export default {
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://hogarsantaluisa.test/clasificacion/getTipo/${selectedProject.value}`)
+      axios.get(`http://127.0.0.1:8000/clasificacion/getTipo/${selectedProject.value}`)
         .then(response => {
           const proyecto = response.data;
           tipo.value = proyecto.tipo;
@@ -82,7 +82,7 @@ export default {
         tipo: tipo.value,
       };
 
-      axios.post('http://hogarsantaluisa.test/clasificacion/create', datos)
+      axios.post('http://127.0.0.1:8000/clasificacion/create', datos)
         .then(() => {
           successMessage.value = 'Tipo de cuenta guardado correctamente.';
           cargarProyectos();
@@ -112,7 +112,7 @@ export default {
         return;
       }
 
-      axios.put(`http://hogarsantaluisa.test/clasificacion/updateTipo/${selectedProject.value}`, datos)
+      axios.put(`http://127.0.0.1:8000/clasificacion/updateTipo/${selectedProject.value}`, datos)
         .then(() => {
           successMessage.value = 'Tipo de cuenta actualizado correctamente.';
           cargarProyectos();

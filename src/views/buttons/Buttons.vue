@@ -141,7 +141,7 @@ export default {
     });
 
     const cargarCuentas = () => {
-      axios.get('http://hogarsantaluisa.test/in_eg/getAllCuentasIngresoAG')
+      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasIngresoAG')
         .then(response => {
           cuentas.splice(0, cuentas.length, ...response.data);
         })
@@ -151,7 +151,7 @@ export default {
     };
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://hogarsantaluisa.test/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then(response => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
         })
@@ -186,8 +186,8 @@ export default {
       };
 
       const url = tipo.value === 'caja'
-        ? 'http://hogarsantaluisa.test/in_eg/createALLINEGCajaAG'
-        : 'http://hogarsantaluisa.test/in_eg/createALLINAG';
+        ? 'http://127.0.0.1:8000/in_eg/createALLINEGCajaAG'
+        : 'http://127.0.0.1:8000/in_eg/createALLINAG';
 
       axios.post(url, data)
         .then(response => {

@@ -55,7 +55,7 @@ export default {
     const cuentaBName = ref('')
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://hogarsantaluisa.test/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data)
         })
@@ -77,7 +77,7 @@ export default {
 
     const generarPDF = async () => {
       try {
-        const response = await axios.post('http://hogarsantaluisa.test/in_eg/fechaBanco', {
+        const response = await axios.post('http://127.0.0.1:8000/in_eg/fechaBanco', {
           fechaInicial: fechaInicial.value,
           fechaFinal: fechaFinal.value,
           banco_y_cuenta: cuentaBName.value

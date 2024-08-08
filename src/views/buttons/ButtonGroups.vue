@@ -159,7 +159,7 @@ export default {
     controlarVisibilidadDivisionCuatro();
 
     const cargarCuentas = () => {
-      axios.get('http://hogarsantaluisa.test/in_eg/getAllCuentasIngresoCA')
+      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasIngresoCA')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
@@ -171,7 +171,7 @@ export default {
     };
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://hogarsantaluisa.test/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -183,7 +183,7 @@ export default {
     };
 
     const cargarBancos = () => {
-      axios.get('http://hogarsantaluisa.test/in_eg/getByNombreB')
+      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -219,7 +219,7 @@ export default {
       };
 
       if (tipo.value === 'caja') { 
-        axios.post('http://hogarsantaluisa.test/in_eg/createALLINEGCajaCA', data)
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', data)
         .then(response => {
           successMessage.value = 'Datos enviados correctamente';
           console.log(response.data); 
@@ -229,7 +229,7 @@ export default {
           error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
         });
       } else {
-        axios.post('http://hogarsantaluisa.test/in_eg/createALLINCA', data)
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINCA', data)
           .then(response => {
             successMessage.value = 'Datos enviados correctamente';
             console.log(response.data); 
