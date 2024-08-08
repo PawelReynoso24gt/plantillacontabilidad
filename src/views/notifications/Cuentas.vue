@@ -58,6 +58,7 @@
 import axios from 'axios';
 import { ref, reactive, onMounted } from 'vue';
 
+
 export default {
   name: 'Cuentas',
   setup() {
@@ -86,7 +87,7 @@ export default {
     };
 
     const cargarClasificaciones = () => {
-      axios.get('http://localhost:8000/clasificacion/get')
+      axios.get('http://127.0.0.1:8000/clasificacion/get')
         .then(response => {
           clasificaciones.splice(0, clasificaciones.length, ...response.data);
         })
@@ -112,12 +113,11 @@ export default {
         .then(response => {
           const proyecto = response.data;
           cuenta.value = proyecto.cuenta;
-          estado.value = proyecto.estado;
+          estado.value = proyecto.estado.toString();
           codigo.value = proyecto.codigo;
           selectedClasificacion.value = proyecto.id_clasificacion;
           selectedTipoProyecto.value = proyecto.id_proyectos;
           isDisabled.value = false;
-
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos del proyecto.';
@@ -126,7 +126,7 @@ export default {
 
     const cargarDatosClasificacion = () => {
       if (!selectedClasificacion.value) return;
-      axios.get(`http://localhost:8000/clasificacion/getTipo/${selectedClasificacion.value}`)
+      axios.get(`http://127.0.0.1:8000/clasificacion/getTipo/${selectedClasificacion.value}`)
         .then(response => {
           const clasificacion = response.data;
           tipo.value = clasificacion.tipo;
@@ -140,15 +140,14 @@ export default {
       errorMessage.value = ''; // Limpiar errores previos
       successMessage.value = ''; // Limpiar mensajes de éxito previos
 
-      if (!cuenta.value || !estado.value || !codigo.value || !selectedClasificacion.value || !selectedTipoProyecto.value) {
+      if (!cuenta.value.trim() || !codigo.value.trim() || !selectedClasificacion.value || !selectedTipoProyecto.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
 
       const datos = {
-        cuenta: cuenta.value,
-        estado: estado.value, 
-        codigo: codigo.value,
+        cuenta: cuenta.value.trim(),
+        codigo: codigo.value.trim(),
         id_clasificacion: selectedClasificacion.value,
         id_proyectos: selectedTipoProyecto.value
       };
@@ -157,6 +156,7 @@ export default {
         .then(() => {
           successMessage.value = 'Cuenta guardada correctamente.';
           cargarProyectos();
+          limpiar();
         })
         .catch(() => {
           errorMessage.value = 'Error al guardar la cuenta.';
@@ -172,15 +172,15 @@ export default {
       const datos = {};
 
       if (cuenta.value.trim() !== '') {
-        datos.cuenta = cuenta.value;
+        datos.cuenta = cuenta.value.trim();
       }
 
       if (estado.value.trim() !== '') {  // Verifica que el estado no está vacío
-       datos.estado = estado.value.trim();
-        }
+        datos.estado = String(estado.value).trim();
+      }
 
       if (codigo.value.trim() !== '') {
-        datos.codigo = codigo.value;
+        datos.codigo = codigo.value.trim();
       }
 
       if (selectedClasificacion.value) {
@@ -196,12 +196,11 @@ export default {
         return;
       }
 
-      console.log('Datos a actualizar:', datos);
-
       axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
         .then(() => {
           successMessage.value = 'Cuenta actualizada correctamente.';
           cargarProyectos();
+          limpiar();
         })
         .catch(() => {
           errorMessage.value = 'Error al actualizar la cuenta.';
@@ -250,7 +249,6 @@ export default {
     };
   },
 };
-
 </script>
 
 <style scoped>

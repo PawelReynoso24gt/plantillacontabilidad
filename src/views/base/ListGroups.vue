@@ -45,6 +45,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { saveAs } from 'file-saver';
 
 export default {
   name: 'ReporteAG',
@@ -241,17 +242,8 @@ export default {
         doc.text('Economa Provincial', 85, yOffset + 5);
 
         // Guardar el PDF
-        const handle = await window.showSaveFilePicker({
-          suggestedName: 'Reporte_ingresos_egresos_capilla.pdf',
-          types: [{
-            description: 'PDF Files',
-            accept: { 'application/pdf': ['.pdf'] }
-          }]
-        });
-
-        const writable = await handle.createWritable();
-        await writable.write(doc.output('blob'));
-        await writable.close();
+        const blob = doc.output('blob');
+        saveAs(blob, 'libro_caja_capilla.pdf');
 
       } catch (error) {
         console.error('Error al generar el PDF:', error);
