@@ -140,7 +140,7 @@ export default {
       axios.post('http://127.0.0.1:8000/cuentas/create', datos)
         .then(response => {
           successMessage.value = 'Cuenta guardada correctamente.';
-          limpiar();
+          //limpiar();
           cargarProyectos();
         })
         .catch(error => {
@@ -188,7 +188,7 @@ export default {
       axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
         .then(response => {
           successMessage.value = 'Cuenta actualizada correctamente.';
-          limpiar();
+          //limpiar();
           cargarProyectos();
         })
         .catch(error => {
