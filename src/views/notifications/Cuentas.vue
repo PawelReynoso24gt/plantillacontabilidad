@@ -75,7 +75,7 @@ export default {
     const isEstadoEnabled = ref(false);
 
     const cargarProyectos = () => {
-      axios.get('http://127.0.0.1:8000/cuentas/get')
+      axios.get('http://hogarsantaluisa.test/cuentas/get')
         .then(response => {
           projects.splice(0, projects.length, ...response.data);
         })
@@ -85,7 +85,7 @@ export default {
     };
 
     const cargarClasificaciones = () => {
-      axios.get('http://127.0.0.1:8000/clasificacion/get')
+      axios.get('http://hogarsantaluisa.test/clasificacion/get')
         .then(response => {
           clasificaciones.splice(0, clasificaciones.length, ...response.data);
         })
@@ -95,7 +95,7 @@ export default {
     };
 
     const cargarProyectosTipos = () => {
-      axios.get('http://127.0.0.1:8000/proyectos/get')
+      axios.get('http://hogarsantaluisa.test/proyectos/get')
         .then(response => {
           proyectos.splice(0, proyectos.length, ...response.data);
         })
@@ -106,7 +106,7 @@ export default {
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://127.0.0.1:8000/cuentas/getCrud/${selectedProject.value}`)
+      axios.get(`http://hogarsantaluisa.test/cuentas/getCrud/${selectedProject.value}`)
         .then(response => {
           const proyecto = response.data[0];
           cuenta.value = proyecto.cuenta;
@@ -137,7 +137,7 @@ export default {
         proyecto: selectedTipoProyecto.value
       };
 
-      axios.post('http://127.0.0.1:8000/cuentas/create', datos)
+      axios.post('http://hogarsantaluisa.test/cuentas/create', datos)
         .then(response => {
           successMessage.value = 'Cuenta guardada correctamente.';
           //limpiar();
@@ -185,7 +185,7 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
+      axios.put(`http://hogarsantaluisa.test/cuentas/update/${selectedProject.value}`, datos)
         .then(response => {
           successMessage.value = 'Cuenta actualizada correctamente.';
           //limpiar();

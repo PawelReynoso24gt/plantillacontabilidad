@@ -144,7 +144,7 @@ export default {
     controlarVisibilidadDivisionCuatro();
 
     const cargarCuentas = () => {
-      axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoCA')
+      axios.get('http://hogarsantaluisa.test/in_eg/getAllCuentasEgresoCA')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
@@ -156,7 +156,7 @@ export default {
     };
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
+      axios.get('http://hogarsantaluisa.test/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -168,7 +168,7 @@ export default {
     };
 
     const cargarBancos = () => {
-      axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
+      axios.get('http://hogarsantaluisa.test/in_eg/getByNombreB')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -189,7 +189,7 @@ export default {
       }
 
       if (tipo.value === 'caja') { 
-        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
+        axios.post('http://hogarsantaluisa.test/in_eg/createALLINEGCajaCA', {
           fecha: fecha.value,
           identificacion: identificacion.value,
           nombre: nombre.value,
@@ -220,7 +220,7 @@ export default {
           fecha_emision: fecha_emision.value,
           cuenta_bancaria: cuentaBName.value,
         };
-        axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
+        axios.post('http://hogarsantaluisa.test/in_eg/createALLEGCA', data)
           .then(response => {
             successMessage.value = 'Datos enviados correctamente';
             console.log(response.data); 
