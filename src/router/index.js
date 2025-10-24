@@ -134,7 +134,7 @@ const routes = [
       },
       {
         path: '/buttons',
-        name: 'Buttons',
+        name: 'Buttons1',
         component: {
           render() {
             return h(resolveComponent('router-view'))
@@ -144,7 +144,7 @@ const routes = [
         children: [
           {
             path: '/buttons/standard-buttons',
-            name: 'Buttons',
+            name: 'Buttons2',
             component: () => import('@/views/buttons/Buttons.vue'),
             meta: { requiresAuth: true }
           },
