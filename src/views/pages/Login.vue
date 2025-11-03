@@ -91,7 +91,7 @@ export default {
         console.log('Usuario:', usuarios.value);
         console.log('Contraseña:', contrasenias.value);
         console.log('Tipo de proyecto:', tipoProyecto.value);
-        const response = await axios.post('http://hogarsantaluisa.test/logins/authenticate', {
+        const response = await axios.post('http://127.0.0.1:8000/logins/authenticate', {
           usuarios: usuarios.value,
           contrasenias: contrasenias.value,
           tipoProyecto: tipoProyecto.value,

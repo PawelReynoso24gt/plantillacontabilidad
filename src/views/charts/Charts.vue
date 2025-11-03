@@ -45,7 +45,7 @@ export default {
 
     const generarPDF = async () => {
   try {
-    const response = await axios.get('http://hogarsantaluisa.test/in_eg/getWithCuenta')
+    const response = await axios.get('http://127.0.0.1:8000/in_eg/getWithCuenta')
     const ingresosEgresos = response.data
     
     const doc = new jsPDF()

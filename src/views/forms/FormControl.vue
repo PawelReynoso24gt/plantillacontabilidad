@@ -60,7 +60,7 @@ export default {
     const successMessage = ref(''); // Estado para mensajes de éxito
 
     const cargarBancosNoCuenta = () => {
-      axios.get('http://hogarsantaluisa.test/cuentasB/getConcatenada')
+      axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data); 
@@ -79,7 +79,7 @@ export default {
         return;
       }
 
-      axios.post('http://hogarsantaluisa.test/in_eg/createTrasDepCajaAG', {
+      axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaAG', {
         cuenta_bancaria: cuentaBName.value,
         fecha: fecha.value,
         descripcion: descripcion.value,
