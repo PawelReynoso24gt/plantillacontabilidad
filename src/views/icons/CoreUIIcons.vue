@@ -19,7 +19,7 @@
     <!-- Botones -->
     <div style="margin-top: 20px;"></div>
     <button @click="generarPDF">Generar PDF</button>
-    <button @click="mostrarTabla" class="espacio">Mostrar PDF</button>
+    <button @click="mostrarTabla" class="espacio">Vista previa</button>
 
     <!-- Encabezado tipo PDF -->
     <div v-if="ingresosEgresos.length" class="encabezado-container">
@@ -99,7 +99,7 @@
     <!-- Mensaje cuando no hay datos aún -->
     <div v-else class="sin-datos">
       No hay datos para mostrar. Selecciona un rango de fechas y presiona
-      "Mostrar Tabla".
+      "Vista previa".
     </div>
   
 </template>

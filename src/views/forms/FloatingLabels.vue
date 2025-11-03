@@ -35,7 +35,7 @@
 
     <!-- Botones -->
     <button @click="generarPDF">Generar PDF</button>
-    <button @click="mostrarTabla" class="espacio">Mostrar Tabla</button>
+    <button @click="mostrarTabla" class="espacio">Vista previa</button>
 
     <!-- Encabezado tipo PDF / vista previa -->
     <div v-if="ingresosEgresos.length" class="encabezado-container">
@@ -124,7 +124,7 @@
     <!-- Mensaje cuando no hay datos aún -->
     <div v-else class="sin-datos">
       No hay datos para mostrar. Selecciona rango de fechas y cuenta bancaria y
-      presiona "Mostrar Tabla".
+      presiona "Vista previa".
     </div>
 
 </template>

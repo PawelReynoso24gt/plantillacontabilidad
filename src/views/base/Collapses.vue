@@ -46,7 +46,7 @@
     <!-- Botones -->
     <div style="margin-top: 20px;"></div>
     <button @click="generarPDF">Generar PDF</button>
-    <button @click="mostrarTabla" class="espacio">Mostrar Tabla</button>
+    <button @click="mostrarTabla" class="espacio">Vista previa</button>
     <button @click="limpiar" class="espacio">Limpiar</button>
 
     <!-- Vista previa del informe (solo si ya hay datos) -->
@@ -145,7 +145,7 @@
     <!-- Mensaje cuando aún no se ha pedido nada -->
     <div v-else class="sin-datos">
       No hay datos para mostrar. Selecciona período, mes y responsables y
-      presiona "Mostrar Tabla".
+      presiona "Vista previa".
     </div>
   
 </template>
