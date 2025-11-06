@@ -1,0 +1,33 @@
+.thanks-page {
+  text-align: center;
+  padding: 20px;
+}
+
+.developers-list {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 20px;
+  overflow-x: auto;
+}
+
+.developer {
+  border: 1px solid #ccc;
+  padding: 20px;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.photo img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+
+.description {
+  text-align: center;
+  margin-top: 20px;
+  line-height: 1.25;
+}
