@@ -83,6 +83,11 @@ export default function useNavCapilla() {
           name: 'Ingresos y Egresos Capilla',
           to: '/base/list-groups',
         },
+        {
+          component: 'CNavItem',
+          name: 'Estado de Resultados',
+          to: '/base/EstadoResultadosCapilla',
+        }
       ],
     },
     {

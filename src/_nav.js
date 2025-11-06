@@ -83,6 +83,11 @@ export default function useNavAgricola() {
           name: 'Ingresos y Egresos Agrícola',
           to: '/base/Collapses',
         },
+        {
+          component: 'CNavItem',
+          name: 'Estado de Resultados',
+          to: '/base/EstadoResultadosAgricola',
+        }
       ],
     },
     {
