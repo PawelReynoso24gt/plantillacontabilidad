@@ -1,7 +1,5 @@
 <template>
-
     <label class="titulo-reporte">LIBRO DE BANCOS</label>
-
     <!-- Filtros de fecha -->
     <div class="division-container">
       <div class="numero-fecha-container">
