@@ -141,6 +141,18 @@ const routes = [
             name: 'Estado de Resultados Agricola',
             component: () => import('@/views/base/EstadoResultadosAgricola.vue'),
             meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/BalanceGeneralCapilla',
+            name: 'Balance General',
+            component: () => import('@/views/base/BalanceGeneralCapilla.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/BalanceGeneralAgricola',
+            name: 'Balance General Agricola',
+            component: () => import('@/views/base/BalanceGeneralAgricola.vue'),
+            meta: { requiresAuth: true }
           }
         ],
       },

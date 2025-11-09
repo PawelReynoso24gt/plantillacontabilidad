@@ -87,6 +87,11 @@ export default function useNavCapilla() {
           component: 'CNavItem',
           name: 'Estado de Resultados',
           to: '/base/EstadoResultadosCapilla',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Balance General',
+          to: '/base/BalanceGeneralCapilla',
         }
       ],
     },
