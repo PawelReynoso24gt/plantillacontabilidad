@@ -1,8 +1,9 @@
 <template>
+
     <div>
         <h1>Balance General - Capilla</h1>
     </div>
-    <!-- Formulario -->
+    <!-- Filtros / encabezado del form -->
     <div class="nombre-fecha-container">
         <div class="id-inputs">
             <div class="select-group">
@@ -24,20 +25,8 @@
             </div>
         </div>
 
-        <div class="nombre-inputs">
-            <div class="numero-input">
-                <label>Responsable de Capilla</label>
-                <input type="text" v-model="responsable" />
-            </div>
-            <div class="numero-input">
-                <label>Hermana Sirviente</label>
-                <input type="text" v-model="hermanaSirviente" />
-            </div>
-            <div class="numero-input">
-                <label>Economa Provincial</label>
-                <input type="text" v-model="economaProvincial" />
-            </div>
-        </div>
+        <!-- removed contador/responsables inputs as requested -->
+        
     </div>
 
 
@@ -47,11 +36,12 @@
     <button @click="mostrarTabla" class="espacio">Vista previa</button>
     <button @click="limpiar" class="espacio">Limpiar</button>
 
-    <!-- Encabezado tipo PDF / vista previa -->
+    <!-- Vista previa del informe (solo si ya hay datos) -->
     <div v-if="reporteData" class="encabezado-container">
         <div class="encabezado-box">
             <div class="encabezado-titulo">
-                REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
+                REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
+                {{ currentYear }}
             </div>
         </div>
 
@@ -61,15 +51,15 @@
                 {{ periodoTexto }}
             </div>
             <div><strong>AÑO:</strong> {{ currentYear }}</div>
-            <div>
-                <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
-            </div>
+            <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA</div>
             <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-            <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
+            <div>
+                <strong>FECHA:</strong> {{ fechaHoy }}
+            </div>
         </div>
     </div>
 
-    <!-- Tabla resumen -->
+    <!-- Tabla principal (preview en pantalla) -->
     <div v-if="reporteData" class="tabla-wrapper">
         <table class="tabla-libro">
             <thead>
@@ -82,20 +72,19 @@
             </thead>
 
             <tbody>
-                <tr v-for="(fila, idx) in tablaPreview" :key="idx" :class="{ 'fila-resaltada': fila.tipo === 'heading' }">
-                    <!-- fila tipo heading (título/sección/gran total) -->
-                    <template v-if="fila.tipo === 'heading'">
-                        <td class="bold-text">{{ fila.col1 }}</td>
-                        <td></td>
-                        <td class="right bold-text">
-                            {{ fila.col3 || '' }}
-                        </td>
-                        <td class="right bold-text">
-                            {{ fila.col4 || '' }}
-                        </td>
-                    </template>
+                <tr v-for="(fila, idx) in tablaPreview" :key="idx">
+                    <td class="bold-text" v-if="fila.tipo === 'heading'">
+                        {{ fila.col1 }}
+                    </td>
+                    <td v-if="fila.tipo === 'heading'"></td>
+                    <td v-if="fila.tipo === 'heading'" class="right bold-text">
+                        {{ fila.col3 || '' }}
+                    </td>
+                    <td v-if="fila.tipo === 'heading'" class="right bold-text">
+                        {{ fila.col4 || '' }}
+                    </td>
 
-                    <!-- fila normal -->
+                    <!-- filas normales -->
                     <template v-else>
                         <td>{{ fila.col1 }}</td>
                         <td>{{ fila.col2 }}</td>
@@ -107,35 +96,11 @@
         </table>
     </div>
 
-    <!-- Firmas -->
-    <div v-if="reporteData" class="firmas-wrapper">
-        <div class="firma-col">
-            <div class="firma-line">(f) _____________________________</div>
-            <div class="firma-nombre">{{ reporteData.responsable || responsable }}</div>
-            <div class="firma-cargo">Responsable de Capilla</div>
-        </div>
+    <!-- firmas removed per request -->
 
-        <div class="firma-col">
-            <div class="firma-line">(f) _____________________________</div>
-            <div class="firma-nombre">
-                Vo.Bo. {{ reporteData.sirviente || hermanaSirviente }}
-            </div>
-            <div class="firma-cargo">Hermana Sirviente</div>
-        </div>
-
-        <div class="firma-col firma-centro">
-            <div class="firma-line">(f) _____________________________</div>
-            <div class="firma-nombre">
-                {{ reporteData.economa || economaProvincial }}
-            </div>
-            <div class="firma-cargo">Economa Provincial</div>
-        </div>
-    </div>
-
-    <!-- Mensaje si no hay datos todavía -->
+    <!-- Mensaje cuando aún no se ha pedido nada -->
     <div v-else class="sin-datos">
-        No hay datos para mostrar. Selecciona período y mes, llena
-        responsables y presiona "Vista previa".
+        No hay datos para mostrar. Selecciona período y mes y presiona "Vista previa".
     </div>
 
 </template>
@@ -148,26 +113,34 @@ import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 
 export default {
-    name: 'ReporteCapillaFinal',
+    name: 'ReporteAG',
     setup() {
-        // Form fields
-        const responsable = ref('');
-        const hermanaSirviente = ref('');
-        const economaProvincial = ref('');
+    // removed contador/responsables refs per request
         const selectedPeriodo = ref('');
         const selectedMes = ref('');
         const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
         const meses = ref([]);
 
-        // Datos que regresa el backend cuando consultás
+
         const reporteData = ref(null);
 
-        // Año y fecha actual
+        const formatQ = (n) => {
+            if (n === null || n === undefined || n === '') return '';
+            const num = parseFloat(n);
+            if (isNaN(num)) return '';
+            return (
+                'Q ' +
+                num.toLocaleString('es-GT', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })
+            );
+        };
+
         const now = new Date();
         const currentYear = now.getFullYear();
         const fechaHoy = now.toLocaleDateString('es-ES');
 
-        // Lógica de período -> texto humano (igual a tu PDF)
         const periodoTexto = computed(() => {
             if (selectedPeriodo.value === 'Mensual') {
                 return `RESUMEN DE ${selectedMes.value?.toUpperCase?.() || ''}`;
@@ -189,7 +162,6 @@ export default {
             return '';
         });
 
-        // llenar <select> de Mes según Período
         const actualizarMeses = () => {
             switch (selectedPeriodo.value) {
                 case 'Mensual':
@@ -223,29 +195,13 @@ export default {
             }
         };
 
-        // helper dinero
-        const formatQ = (n) => {
-            if (n === null || n === undefined || n === '') return '';
-            const num = parseFloat(n);
-            if (isNaN(num)) return '';
-            return (
-                'Q ' +
-                num.toLocaleString('es-GT', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })
-            );
-        };
-
-        // Tabla que mostramos en pantalla: construida con reporteData
         const tablaPreview = computed(() => {
             if (!reporteData.value) return [];
 
             const d = reporteData.value;
 
-            // Igual estructura que usamos en agrícola pero con labels capilla
+
             const rows = [
-                // SALDO INICIAL
                 {
                     tipo: 'heading',
                     col1: 'SALDO INICIAL',
@@ -268,7 +224,7 @@ export default {
                     col4: ''
                 },
 
-                // INGRESOS
+
                 {
                     tipo: 'heading',
                     col1: 'INGRESOS',
@@ -283,6 +239,7 @@ export default {
                     col3: formatQ(d.total_ingresos_caja),
                     col4: ''
                 },
+
                 ...d.data_caja
                     .filter(
                         (item) => item.ingresos && parseFloat(item.ingresos) > 0
@@ -301,6 +258,7 @@ export default {
                     col3: formatQ(d.total_ingresos_bancos),
                     col4: ''
                 },
+
                 ...d.data_bancos
                     .filter(
                         (item) => item.ingresos && parseFloat(item.ingresos) > 0
@@ -313,7 +271,7 @@ export default {
                         col4: ''
                     })),
 
-                // EGRESOS
+
                 {
                     tipo: 'heading',
                     col1: 'EGRESOS',
@@ -357,8 +315,6 @@ export default {
                         col3: '',
                         col4: ''
                     })),
-
-                // SALDO FINAL
                 {
                     tipo: 'heading',
                     col1: 'SALDO FINAL',
@@ -380,8 +336,6 @@ export default {
                     col3: formatQ(d.total_saldo_final_bancos),
                     col4: ''
                 },
-
-                // SUMAS IGUALES
                 {
                     tipo: 'heading',
                     col1: 'SUMAS IGUALES',
@@ -394,16 +348,20 @@ export default {
             return rows;
         });
 
+        const limpiar = () => {
+            selectedPeriodo.value = '';
+            selectedMes.value = '';
+            meses.value = [];
+            reporteData.value = null;
+        };
+
         const mostrarTabla = async () => {
             try {
                 const response = await axios.post(
-                    'http://127.0.0.1:8000/in_eg/reporteFinalCA',
+                    'http://127.0.0.1:8000/in_eg/reporteGeneralCA',
                     {
                         tipo: selectedPeriodo.value.toLowerCase(),
-                        mes: selectedMes.value.toLowerCase(),
-                        responsable: responsable.value,
-                        sirviente: hermanaSirviente.value,
-                        economa: economaProvincial.value
+                        mes: selectedMes.value.toLowerCase()
                     }
                 );
 
@@ -414,28 +372,13 @@ export default {
             }
         };
 
-        // Limpiar formulario y preview
-        const limpiar = () => {
-            selectedPeriodo.value = '';
-            selectedMes.value = '';
-            responsable.value = '';
-            hermanaSirviente.value = '';
-            economaProvincial.value = '';
-            meses.value = [];
-            reporteData.value = null;
-        };
-
-        // Generar PDF (tu lógica original con firmas)
         const generarPDF = async () => {
             try {
                 const response = await axios.post(
-                    'http://127.0.0.1:8000/in_eg/reporteFinalCA',
+                    'http://127.0.0.1:8000/in_eg/reporteGeneralCA',
                     {
                         tipo: selectedPeriodo.value.toLowerCase(),
-                        mes: selectedMes.value.toLowerCase(),
-                        responsable: responsable.value,
-                        sirviente: hermanaSirviente.value,
-                        economa: economaProvincial.value
+                        mes: selectedMes.value.toLowerCase()
                     }
                 );
                 const data = response.data;
@@ -473,8 +416,7 @@ export default {
                     yOffset = doc.autoTable.previous.finalY + 10;
                 };
 
-                // Determinar texto de periodo (mismo que periodoTexto)
-                let periodoTextoPDF;
+                let periodoTextoPDF = '';
                 if (selectedPeriodo.value === 'Mensual') {
                     periodoTextoPDF = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
                 } else if (selectedPeriodo.value === 'Trimestral') {
@@ -495,7 +437,7 @@ export default {
                     periodoTextoPDF = 'RESUMEN ANUAL';
                 }
 
-                // Encabezado
+                // Encabezado PDF
                 doc.setFontSize(16);
                 doc.text(
                     `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
@@ -513,7 +455,7 @@ export default {
                 doc.text(`DE`, 165, 40);
                 doc.text(`${currentYear}`, 175, 40);
                 doc.text(
-                    `PROYECTO CAPILLA HOGAR SANTA LUISA`,
+                    `PROYECTO AGRÍCOLA HOGAR SANTA LUISA`,
                     20,
                     50
                 );
@@ -523,32 +465,32 @@ export default {
                 doc.text(`FECHA:`, 130, 60);
                 doc.text(fechaHoy, 160, 60);
 
-                // Tabla
                 yOffset = 75;
+
                 const tableData = [
-                    ['SALDO INICIAL', '', '', 'Q ' + data.saldo_inicial.toFixed(2)],
+                    ['SALDO INICIAL', '', '', formatQ(data.saldo_inicial)],
                     [
                         'SALDO INICIAL EN CAJA GENERAL',
                         '',
-                        'Q ' + data.saldo_inicial_caja.toFixed(2),
+                        formatQ(data.saldo_inicial_caja),
                         ''
                     ],
                     [
                         'SALDO INICIAL EN BANCO',
                         '',
-                        'Q ' + data.saldo_inicial_bancos.toFixed(2),
+                        formatQ(data.saldo_inicial_bancos),
                         ''
                     ],
                     [
                         'INGRESOS',
                         '',
                         '',
-                        'Q ' + data.total_general_ingresos.toFixed(2)
+                        formatQ(data.total_general_ingresos)
                     ],
                     [
                         'CAJA GENERAL',
                         '',
-                        'Q ' + data.total_ingresos_caja.toFixed(2),
+                        formatQ(data.total_ingresos_caja),
                         ''
                     ],
                     ...data.data_caja
@@ -557,14 +499,14 @@ export default {
                         )
                         .map((ingreso) => [
                             ingreso.cuenta,
-                            'Q ' + ingreso.ingresos,
+                            formatQ(ingreso.ingresos),
                             '',
                             ''
                         ]),
                     [
                         'BANCO',
                         '',
-                        'Q ' + data.total_ingresos_bancos.toFixed(2),
+                        formatQ(data.total_ingresos_bancos),
                         ''
                     ],
                     ...data.data_bancos
@@ -573,7 +515,7 @@ export default {
                         )
                         .map((ingreso) => [
                             ingreso.cuenta,
-                            'Q ' + ingreso.ingresos,
+                            formatQ(ingreso.ingresos),
                             '',
                             ''
                         ]),
@@ -581,12 +523,12 @@ export default {
                         'EGRESOS',
                         '',
                         '',
-                        'Q ' + data.total_general_egresos.toFixed(2)
+                        formatQ(data.total_general_egresos)
                     ],
                     [
                         'CAJA GENERAL',
                         '',
-                        'Q ' + data.total_egresos_caja.toFixed(2),
+                        formatQ(data.total_egresos_caja),
                         ''
                     ],
                     ...data.data_caja
@@ -595,14 +537,14 @@ export default {
                         )
                         .map((egreso) => [
                             egreso.cuenta,
-                            'Q ' + egreso.egresos,
+                            formatQ(egreso.egresos),
                             '',
                             ''
                         ]),
                     [
                         'BANCO',
                         '',
-                        'Q ' + data.total_egresos_bancos.toFixed(2),
+                        formatQ(data.total_egresos_bancos),
                         ''
                     ],
                     ...data.data_bancos
@@ -611,7 +553,7 @@ export default {
                         )
                         .map((egreso) => [
                             egreso.cuenta,
-                            'Q ' + egreso.egresos,
+                            formatQ(egreso.egresos),
                             '',
                             ''
                         ]),
@@ -619,28 +561,29 @@ export default {
                         'SALDO FINAL',
                         '',
                         '',
-                        'Q ' + data.total_saldo_final.toFixed(2)
+                        formatQ(data.total_saldo_final)
                     ],
                     [
                         'SALDO FINAL EN CAJA GENERAL',
                         '',
-                        'Q ' + data.total_saldo_final_caja.toFixed(2),
+                        formatQ(data.total_saldo_final_caja),
                         ''
                     ],
                     [
                         'SALDO FINAL EN BANCO',
                         '',
-                        'Q ' + data.total_saldo_final_bancos.toFixed(2),
+                        formatQ(data.total_saldo_final_bancos),
                         ''
                     ],
                     [
                         'SUMAS IGUALES',
                         '',
-                        'Q ' + data.total_saldo_final.toFixed(2),
-                        'Q ' + data.total_saldo_final.toFixed(2)
+                        formatQ(data.total_saldo_final),
+                        formatQ(data.total_saldo_final)
                     ]
                 ];
 
+                // Encabezado columnas
                 const tableHeaders = [
                     'Descripción',
                     'Detalle',
@@ -650,61 +593,28 @@ export default {
 
                 addTable(tableHeaders, tableData);
 
-                // Firmas
-                yOffset += 5;
-                const espacioNecesario = 60;
-                if (yOffset + espacioNecesario > pageHeight - pageMargin) {
-                    doc.addPage();
-                    yOffset = 20;
-                }
-
-                doc.setFontSize(10);
-                doc.text('Hecho por:', 20, yOffset);
-                doc.text('Revisado por:', 140, yOffset);
-                yOffset += 15;
-                doc.text('(f)_____________________________', 20, yOffset);
-                doc.text('(f)_____________________________', 120, yOffset);
-                yOffset += 5;
-                doc.text(data.responsable, 25, yOffset);
-                doc.text('Responsable de Capilla', 30, yOffset + 5);
-                doc.text('Vo.Bo. ' + data.sirviente, 130, yOffset);
-                doc.text('Hermana Sirviente', 135, yOffset + 5);
-                yOffset += 40;
-                doc.text('(f)__________________________________', 65, yOffset);
-                yOffset += 4;
-                doc.text(data.economa, 75, yOffset);
-                doc.text('Economa Provincial', 85, yOffset + 5);
+                // firmas removed for this report
 
                 const blob = doc.output('blob');
-                saveAs(blob, 'informe_final_capilla.pdf');
+                saveAs(blob, 'reporte_final_agrícola.pdf');
             } catch (error) {
                 console.error('Error al generar el PDF:', error);
             }
         };
 
         return {
-            // formulario
-            responsable,
-            hermanaSirviente,
-            economaProvincial,
             selectedPeriodo,
             selectedMes,
             periodos,
             meses,
-
-            // derivados para UI
+            reporteData,
             currentYear,
             fechaHoy,
             periodoTexto,
             tablaPreview,
-
-            // data del backend
-            reporteData,
-
-            // acciones
             actualizarMeses,
-            mostrarTabla,
             limpiar,
+            mostrarTabla,
             generarPDF
         };
     }
@@ -748,7 +658,7 @@ export default {
 }
 
 .select-group {
-    flex: 1 1 140px;
+    flex: 1 1 120px;
     min-width: 140px;
 }
 
@@ -806,7 +716,7 @@ button:hover {
     margin-left: 10px;
 }
 
-/* Encabezado tipo PDF */
+/* Encabezado visual */
 .encabezado-container {
     margin-top: 30px;
     border: 1px solid #133;
@@ -878,11 +788,6 @@ button:hover {
 
 .right {
     text-align: right !important;
-}
-
-.fila-resaltada {
-    background-color: #f3f6fa;
-    font-weight: 600;
 }
 
 /* Firmas */

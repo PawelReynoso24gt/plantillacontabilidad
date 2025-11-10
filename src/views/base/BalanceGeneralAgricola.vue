@@ -25,20 +25,8 @@
             </div>
         </div>
 
-        <div class="nombre-inputs">
-            <div class="numero-input">
-                <label>Contador</label>
-                <input type="text" v-model="contador" />
-            </div>
-            <div class="numero-input">
-                <label>Responsable de proyecto Agrícola</label>
-                <input type="text" v-model="responsableAgricola" />
-            </div>
-            <div class="numero-input">
-                <label>Economa provincial</label>
-                <input type="text" v-model="economaProvincial" />
-            </div>
-        </div>
+        <!-- removed contador/responsables inputs as requested -->
+        
     </div>
 
 
@@ -108,37 +96,11 @@
         </table>
     </div>
 
-    <!-- Bloque de firmas / responsables -->
-    <div v-if="reporteData" class="firmas-wrapper">
-        <div class="firma-col">
-            <div class="firma-line">(f) _____________________________</div>
-            <div class="firma-nombre">
-                {{ reporteData.contador || contador }}
-            </div>
-            <div class="firma-cargo">Contador</div>
-        </div>
-
-        <div class="firma-col">
-            <div class="firma-line">(f) _____________________________</div>
-            <div class="firma-nombre">
-                Vo.Bo. {{ reporteData.responsable || responsableAgricola }}
-            </div>
-            <div class="firma-cargo">Responsable de Proyecto Agrícola</div>
-        </div>
-
-        <div class="firma-col firma-centro">
-            <div class="firma-line">(f) _____________________________</div>
-            <div class="firma-nombre">
-                {{ reporteData.economa || economaProvincial }}
-            </div>
-            <div class="firma-cargo">Economa provincial</div>
-        </div>
-    </div>
+    <!-- firmas removed per request -->
 
     <!-- Mensaje cuando aún no se ha pedido nada -->
     <div v-else class="sin-datos">
-        No hay datos para mostrar. Selecciona período, mes y responsables y
-        presiona "Vista previa".
+        No hay datos para mostrar. Selecciona período y mes y presiona "Vista previa".
     </div>
 
 </template>
@@ -153,9 +115,7 @@ import { saveAs } from 'file-saver';
 export default {
     name: 'ReporteAG',
     setup() {
-        const contador = ref('');
-        const responsableAgricola = ref('');
-        const economaProvincial = ref('');
+    // removed contador/responsables refs per request
         const selectedPeriodo = ref('');
         const selectedMes = ref('');
         const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
@@ -391,9 +351,6 @@ export default {
         const limpiar = () => {
             selectedPeriodo.value = '';
             selectedMes.value = '';
-            contador.value = '';
-            responsableAgricola.value = '';
-            economaProvincial.value = '';
             meses.value = [];
             reporteData.value = null;
         };
@@ -401,13 +358,10 @@ export default {
         const mostrarTabla = async () => {
             try {
                 const response = await axios.post(
-                    'http://127.0.0.1:8000/in_eg/reporteFinalAG',
+                    'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
                     {
                         tipo: selectedPeriodo.value.toLowerCase(),
-                        mes: selectedMes.value.toLowerCase(),
-                        contador: contador.value,
-                        responsable: responsableAgricola.value,
-                        economa: economaProvincial.value
+                        mes: selectedMes.value.toLowerCase()
                     }
                 );
 
@@ -421,13 +375,10 @@ export default {
         const generarPDF = async () => {
             try {
                 const response = await axios.post(
-                    'http://127.0.0.1:8000/in_eg/reporteFinalAG',
+                    'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
                     {
                         tipo: selectedPeriodo.value.toLowerCase(),
-                        mes: selectedMes.value.toLowerCase(),
-                        contador: contador.value,
-                        responsable: responsableAgricola.value,
-                        economa: economaProvincial.value
+                        mes: selectedMes.value.toLowerCase()
                     }
                 );
                 const data = response.data;
@@ -642,33 +593,7 @@ export default {
 
                 addTable(tableHeaders, tableData);
 
-                // Firmas
-                yOffset += 5;
-                doc.setFontSize(10);
-                addPageIfNeeded();
-                doc.text('Hecho por:', 20, yOffset);
-                doc.text('Revisado por:', 140, yOffset);
-                yOffset += 15;
-                addPageIfNeeded();
-                doc.text('(f)_____________________________', 20, yOffset);
-                doc.text('(f)_____________________________', 120, yOffset);
-                yOffset += 5;
-                addPageIfNeeded();
-                doc.text(data.contador, 25, yOffset);
-                doc.text('Contador', 40, yOffset + 5);
-                doc.text('Vo.Bo. ' + data.responsable, 125, yOffset);
-                doc.text(
-                    'Responsable de Proyecto Agricola',
-                    125,
-                    yOffset + 5
-                );
-                yOffset += 40;
-                addPageIfNeeded();
-                doc.text('(f)__________________________________', 65, yOffset);
-                yOffset += 4;
-                addPageIfNeeded();
-                doc.text(data.economa, 75, yOffset);
-                doc.text('Economa provincial', 85, yOffset + 5);
+                // firmas removed for this report
 
                 const blob = doc.output('blob');
                 saveAs(blob, 'reporte_final_agrícola.pdf');
@@ -678,9 +603,6 @@ export default {
         };
 
         return {
-            contador,
-            responsableAgricola,
-            economaProvincial,
             selectedPeriodo,
             selectedMes,
             periodos,
