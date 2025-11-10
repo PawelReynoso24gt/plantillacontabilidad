@@ -54,6 +54,11 @@ export default function useNavCapilla() {
           component: 'CNavItem',
           name: 'Retiros de bancos Capilla',
           to: '/forms/range',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Anticipo sobre compras Capilla',
+          to: '/base/AnticipoSobreComprasCapilla',
         }
       ],
     },

@@ -153,6 +153,18 @@ const routes = [
             name: 'Balance General Agricola',
             component: () => import('@/views/base/BalanceGeneralAgricola.vue'),
             meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/AnticipoSobreComprasAgricola',
+            name: 'Anticipo sobre Compras Agricola',
+            component: () => import('@/views/base/AnticipoSobreComprasAgricola.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/AnticipoSobreComprasCapilla',
+            name: 'Anticipo sobre Compras Capilla',
+            component: () => import('@/views/base/AnticipoSobreComprasCapilla.vue'),
+            meta: { requiresAuth: true }
           }
         ],
       },

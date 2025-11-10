@@ -51,6 +51,11 @@ export default function useNavAgricola() {
           component: 'CNavItem',
           name: 'Retiros de bancos Agrícola',
           to: '/forms/select',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Anticipo sobre compras Agrícola',
+          to: '/base/AnticipoSobreComprasAgricola',
         }
       ],
     },
