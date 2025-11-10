@@ -55,10 +55,11 @@
             </div>
             <div class="input-container">
                 <label>Cuenta Bancaria:</label>
-                <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-                    <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{
-                        cuentaN.banco_y_cuenta }}</option>
-                </select>
+                 <select v-model.number="idCuentaBancaria">
+            <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">
+                {{ c.label }}
+            </option>
+            </select>
             </div>
             <div class="input-container">
                 <label>No. Documento:</label>
@@ -109,9 +110,10 @@ export default {
         const bancos_b = ref('');
         const cuentas = reactive([]);
         const cuentaBName = ref('');
-        const cuentas_bancarias = reactive([]);
+        const cuentas_bancarias = ref([])
         const error = ref(''); // Estado para errores
         const successMessage = ref(''); // Estado para mensajes de éxito
+        const idCuentaBancaria = ref(null);
 
         const limpiar = () => {
             tipo.value = '';
@@ -132,6 +134,18 @@ export default {
         const controlarVisibilidadDivisionCuatro = () => {
             mostrarDivisionCuatro.value = tipo.value === 'bancos';
         }
+
+     const cargarCuentasSelect = () => {
+  axios.get('http://127.0.0.1:8000/cuentasB/for-select') 
+    .then(({ data }) => {
+      cuentas_bancarias.value = data;           
+      if (!idCuentaBancaria.value && data.length) {
+        idCuentaBancaria.value = Number(data[0].id); 
+      }
+    })
+    .catch(e => console.error('for-select:', e?.response?.data || e.message));
+};
+
 
         watch(tipo, controlarVisibilidadDivisionCuatro);
 
@@ -170,58 +184,66 @@ export default {
                 });
         };
 
-        const enviarDatos = () => {
-            error.value = ''; // Resetea el mensaje de error antes de enviar datos
-            successMessage.value = ''; // Resetea el mensaje de éxito antes de enviar datos
+    const enviarDatos = () => {
+        error.value = '';
+        successMessage.value = '';
 
-            if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value || (tipo.value === 'bancos' && (!documento.value || !cuentaBName.value || !numero_documento.value || !fecha_emision.value))) {
-                error.value = 'Por favor, complete todos los campos.';
-                return;
+        if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value ||
+            (tipo.value === 'bancos' && (!documento.value || !idCuentaBancaria.value || !numero_documento.value || !fecha_emision.value))) {
+            error.value = 'Por favor, complete todos los campos.';
+            return;
+        }
+
+        if (tipo.value === 'caja') {
+            const payloadCaja = {
+            fecha: fecha.value,
+            identificacion: identificacion.value,
+            nombre: nombre.value,
+            descripcion: descripcion.value,
+            monto: monto.value,
+            tipo: 'caja',
+            cuenta: 'Anticipo de compras y gastos',
+            };
+            axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', payloadCaja)
+            .then(() => { successMessage.value = 'Datos enviados correctamente'; })
+            .catch(() => { error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.'; });
+        } else {
+            // tipo === 'bancos'
+            const payloadBancos = {
+            fecha: fecha.value,
+            identificacion: identificacion.value,
+            nombre: nombre.value,
+            descripcion: descripcion.value,
+            monto: monto.value,
+            tipo: 'bancos',
+            cuenta: 'Anticipo de compras y gastos',
+            documento: documento.value,
+            numero_documento: numero_documento.value,
+            fecha_emision: fecha_emision.value,
+            id_cuentas_bancarias: idCuentaBancaria.value
+            };
+
+            console.log('id_cuentas_bancarias:', idCuentaBancaria.value, typeof idCuentaBancaria.value);
+
+            if (!Number.isInteger(idCuentaBancaria.value)) {
+            error.value = 'Debes seleccionar una cuenta bancaria válida.';
+            return;
             }
 
-            if (tipo.value === 'caja') {
-                axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', {
-                    fecha: fecha.value,
-                    identificacion: identificacion.value,
-                    nombre: nombre.value,
-                    descripcion: descripcion.value,
-                    monto: monto.value,
-                    tipo: tipo.value,
-                    cuenta: "Anticipo de compras y gastos",
-                })
-                    .then(response => {
-                        successMessage.value = 'Datos enviados correctamente';
-                        console.log(response.data);
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
-                    });
-
-                console.log("Datos enviados para caja");
-            } else {
-                // Si no es "caja", enviar los datos como lo estás haciendo actualmente
-                const data = {
-                    fecha: fecha.value,
-                    identificacion: identificacion.value,
-                    nombre: nombre.value,
-                    descripcion: descripcion.value,
-                    monto: monto.value,
-                    tipo: tipo.value,
-                    cuenta: "Anticipo de compras y gastos",
-                    documento: documento.value,
-                    numero_documento: numero_documento.value,
-                    fecha_emision: fecha_emision.value,
-                    cuenta_bancaria: cuentaBName.value,
-                };
-                console.log("Datos enviados para caja");
-            }
+            axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', payloadBancos)
+            .then(() => { successMessage.value = 'Datos enviados correctamente'; })
+            .catch((e) => {
+                console.error('Error axios:', e?.response?.data || e.message);
+                error.value = 'Error al enviar datos.';
+            });
+        }
         };
 
         onMounted(() => {
-            cargarCuentas();
-            cargarBancos();
-            cargarBancosNoCuenta();
+            //cargarCuentas();
+            //cargarBancos();
+            //cargarBancosNoCuenta();
+            cargarCuentasSelect();  
         });
 
         return {
@@ -245,6 +267,7 @@ export default {
             bancos_b,
             error,
             successMessage,
+            idCuentaBancaria,
             enviarDatos,
             cargarCuentas,
             cargarBancos,
