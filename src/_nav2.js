@@ -54,6 +54,11 @@ export default function useNavCapilla() {
           component: 'CNavItem',
           name: 'Retiros de bancos Capilla',
           to: '/forms/range',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Anticipo sobre compras Capilla',
+          to: '/base/AnticipoSobreComprasCapilla',
         }
       ],
     },
@@ -83,6 +88,16 @@ export default function useNavCapilla() {
           name: 'Ingresos y Egresos Capilla',
           to: '/base/list-groups',
         },
+        {
+          component: 'CNavItem',
+          name: 'Estado de Resultados',
+          to: '/base/EstadoResultadosCapilla',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Balance General',
+          to: '/base/BalanceGeneralCapilla',
+        }
       ],
     },
     {

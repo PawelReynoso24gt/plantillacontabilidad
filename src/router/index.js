@@ -130,6 +130,42 @@ const routes = [
             component: () => import('@/views/base/Tooltips.vue'),
             meta: { requiresAuth: true }
           },
+          {
+            path: '/base/EstadoResultadosCapilla',
+            name: 'Estado de Resultados',
+            component: () => import('@/views/base/EstadoResultadosCapilla.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/EstadoResultadosAgricola',
+            name: 'Estado de Resultados Agricola',
+            component: () => import('@/views/base/EstadoResultadosAgricola.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/BalanceGeneralCapilla',
+            name: 'Balance General',
+            component: () => import('@/views/base/BalanceGeneralCapilla.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/BalanceGeneralAgricola',
+            name: 'Balance General Agricola',
+            component: () => import('@/views/base/BalanceGeneralAgricola.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/AnticipoSobreComprasAgricola',
+            name: 'Anticipo sobre Compras Agricola',
+            component: () => import('@/views/base/AnticipoSobreComprasAgricola.vue'),
+            meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/AnticipoSobreComprasCapilla',
+            name: 'Anticipo sobre Compras Capilla',
+            component: () => import('@/views/base/AnticipoSobreComprasCapilla.vue'),
+            meta: { requiresAuth: true }
+          }
         ],
       },
       {

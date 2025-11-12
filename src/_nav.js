@@ -51,6 +51,11 @@ export default function useNavAgricola() {
           component: 'CNavItem',
           name: 'Retiros de bancos Agrícola',
           to: '/forms/select',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Anticipo sobre compras Agrícola',
+          to: '/base/AnticipoSobreComprasAgricola',
         }
       ],
     },
@@ -83,6 +88,16 @@ export default function useNavAgricola() {
           name: 'Ingresos y Egresos Agrícola',
           to: '/base/Collapses',
         },
+        {
+          component: 'CNavItem',
+          name: 'Estado de Resultados',
+          to: '/base/EstadoResultadosAgricola',
+        },
+        {
+          component: 'CNavItem',
+          name: 'Balance General',
+          to: '/base/BalanceGeneralAgricola',
+        }
       ],
     },
     {
