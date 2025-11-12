@@ -15,22 +15,11 @@
   </div>
 </template>
 
-<style>
-.large-image {
-  width: 500px; /* O el tamaño deseado */
-  height: auto; /* Mantener la proporción original */
-}
-
-.small-image {
-  width: 600px; /* Tamaño de las imágenes */
-  height: auto; /* Mantener la proporción original */
-}
-</style>
-
 <script>
 import MainChart from './MainChart'
 import WidgetsStatsA from './../widgets/WidgetsStatsTypeA.vue'
 import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
+import '../../styles/css/DashboardC.css'
 
 export default {
   name: 'Dashboard',
