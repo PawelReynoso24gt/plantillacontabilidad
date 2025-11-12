@@ -10,7 +10,14 @@
         </select>
       </div>
     </div>
-
+    <div class="division-container">
+        <div class="numero-fecha-container">
+            <div class="checkbox-line-container">
+                <label for="es_pendiente">¿Es una Cuenta por Cobrar?</label>
+                <input type="checkbox" v-model="es_pendiente" id="es_pendiente" class="form-check-input">
+            </div>
+        </div>
+    </div>
     <!-- Segunda división -->
     <div class="division-container">
       <div class="numero-fecha-container">
@@ -110,6 +117,7 @@ export default {
     const cuentas = reactive([]);
     const cuentas_bancarias = reactive([]);
     const mostrarDivisionCuatro = ref(false);
+    const es_pendiente = ref(false);
     const error = ref('');
     const success = ref(''); // Mensaje de éxito
 
@@ -125,6 +133,7 @@ export default {
       fecha_emision.value = '';
       tipo.value = '';
       cuentaBName.value = '';
+      es_pendiente.value = false;
       error.value = ''; // Limpiar el mensaje de error
       success.value = ''; // Limpiar el mensaje de éxito
     };
@@ -171,6 +180,9 @@ export default {
         return;
       }
 
+      // Definimos el valor del checkbox como 1 o 0
+      const valorEsPendiente = es_pendiente.value ? 1 : 0;
+
       const data = {
         fecha: fecha.value,
         identificacion: identificacion.value,
@@ -183,6 +195,8 @@ export default {
         numero_documento: numero_documento.value,
         fecha_emision: fecha_emision.value,
         cuenta_bancaria: cuentaBName.value,
+        flujo_contable: 'INGRESOS', // <-- ¡Valor fijo requerido por el backend!
+        es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
       };
 
       const url = tipo.value === 'caja'
@@ -216,6 +230,7 @@ export default {
       cuentaBName,
       cuentas,
       cuentas_bancarias,
+      es_pendiente,
       cargarCuentas,
       cargarBancosNoCuenta,
       enviarDatos,
@@ -344,5 +359,30 @@ button:hover {
 /* Estilo para mensajes de éxito */
 .text-success {
   color: green;
+}
+
+
+/* --- Nuevo estilo para el checkbox a la par del label --- */
+.checkbox-line-container {
+    display: flex; /* Habilita el flexbox */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 10px; /* Espacio entre el label y el checkbox */
+    padding: 5px 0; /* Espacio interno vertical */
+}
+
+.checkbox-line-container label {
+    /* Sobrescribe el display: block forzado por otros estilos */
+    display: inline-block; 
+    margin-bottom: 0; /* Elimina el margen inferior */
+    flex-grow: 1; /* Permite que el label ocupe el espacio antes del checkbox */
+}
+
+/* --- Estilo para aumentar el tamaño del checkbox --- */
+.checkbox-line-container input[type="checkbox"] {
+    /* Sobrescribe los estilos genéricos para input que pusiste */
+    width: 20px !important; /* Ajusta el ancho */
+    height: 20px !important; /* Ajusta la altura */
+    min-width: 20px; /* Asegura que no se haga más pequeño */
+    margin: 0; /* Elimina cualquier margen residual */
 }
 </style>
