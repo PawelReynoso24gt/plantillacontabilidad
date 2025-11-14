@@ -105,3 +105,27 @@ button:hover {
 .input-container input {
   flex: 1;
 }
+
+/* --- Nuevo estilo para el checkbox a la par del label --- */
+.checkbox-line-container {
+    display: flex; /* Habilita el flexbox */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 10px; /* Espacio entre el label y el checkbox */
+    padding: 5px 0; /* Espacio interno vertical */
+}
+
+.checkbox-line-container label {
+    /* Sobrescribe el display: block forzado por otros estilos */
+    display: inline-block; 
+    margin-bottom: 0; /* Elimina el margen inferior */
+    flex-grow: 1; /* Permite que el label ocupe el espacio antes del checkbox */
+}
+
+/* --- Estilo para aumentar el tamaño del checkbox --- */
+.checkbox-line-container input[type="checkbox"] {
+    /* Sobrescribe los estilos genéricos para input que pusiste */
+    width: 20px !important; /* Ajusta el ancho */
+    height: 20px !important; /* Ajusta la altura */
+    min-width: 20px; /* Asegura que no se haga más pequeño */
+    margin: 0; /* Elimina cualquier margen residual */
+}
