@@ -94,6 +94,48 @@
     <button @click="enviarDatos">Guardar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
   </div>
+
+  <!-- pendientes -->
+  <div>
+    <h3 style="margin-top: 30px;">Cuentas Pendientes por Cobrar (Proyecto Agrícola)</h3>
+    
+    <p v-if="mensajeVacio" class="text-danger" style="margin-top: 10px;">{{ mensajeVacio }}</p>
+
+    <div v-if="pendientes.length > 0" style="margin-top: 20px;">
+        <h4>Deudas Pendientes Encontradas ({{ pendientes.length }})</h4>
+        <table class="pendientes-table">
+            <thead>
+                <tr>
+                    <!-- <th>ID</th> -->
+                    <th>Fecha</th>
+                    <th>Nomenclatura</th>
+                    <th>Nombre</th>
+                    <th>Cuenta Contable</th>
+                    <th>Tipo</th>
+                    <th>Monto Deuda (Q)</th>
+                    <th>Tipo de Saldo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
+                    <!-- <td>{{ item.id_ingresos_egresos }}</td> -->
+                    <td>{{ item.fecha }}</td>
+                    <td>{{ item.nomenclatura }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.cuentas.cuenta }}</td>
+                    <td>{{ item.tipo }}</td>
+                    <td>Q {{ item.monto_haber > 0 ? item.monto_haber : item.monto_debe }}</td>
+                    <td>
+                        <span v-if="item.monto_debe > 0" class="saldo-debe">DEBE</span>
+                        <span v-else class="saldo-haber">HABER</span>
+                    </td>
+                    <td><button>Saldar</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -121,6 +163,11 @@ export default {
     const es_pendiente = ref(false);
     const error = ref('');
     const success = ref(''); // Mensaje de éxito
+    // ** NUEVAS VARIABLES PARA EL REPORTE **
+    const PROYECTO_ID = '1';       // Agrícola
+    const CLASIFICACION_ID = '1'; // Ingresos (Cuentas por Cobrar)
+    const pendientes = reactive([]);
+    const mensajeVacio = ref('');
 
     const limpiar = () => {
       fecha.value = '';
@@ -143,11 +190,41 @@ export default {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
     };
 
+
+    // Función para cargar los pendientes desde la API
+    const cargarPendientes = () => {
+        pendientes.splice(0, pendientes.length); // Limpiar lista
+        error.value = '';
+        mensajeVacio.value = '';
+
+        // Usar Query Parameters para la petición GET
+        const params = {
+            id_proyectos: PROYECTO_ID,
+            id_clasificacion: CLASIFICACION_ID,
+        };
+
+        axios.get('http://127.0.0.1:8000/in_eg/get/transacciones_pendientes', { params })
+            .then(response => {
+                // Almacenar los datos en la lista reactiva
+                pendientes.splice(0, pendientes.length, ...response.data);
+            })
+            .catch(err => {
+                console.error("Error al cargar pendientes:", err);
+                // Si el error es 404 (No hay datos), mostramos el mensaje del backend
+                if (err.response && err.response.status === 404) {
+                    mensajeVacio.value = err.response.data.message;
+                } else {
+                    error.value = 'Error al consultar datos. Revise la conexión al backend.';
+                }
+            });
+    };
+
     watch(tipo, controlarVisibilidadDivisionCuatro);
 
     onMounted(() => {
       cargarCuentas();
       cargarBancosNoCuenta();
+      cargarPendientes();
     });
 
     const cargarCuentas = () => {
@@ -237,7 +314,12 @@ export default {
       enviarDatos,
       error,
       success, // Agregado para el mensaje de éxito
-      controlarVisibilidadDivisionCuatro
+      controlarVisibilidadDivisionCuatro,
+      // nuevas variables
+      pendientes,
+      cargarPendientes,
+      mensajeVacio,
+      // ----------------
     };
   },
 }

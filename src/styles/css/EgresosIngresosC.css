@@ -129,3 +129,40 @@ button:hover {
     min-width: 20px; /* Asegura que no se haga más pequeño */
     margin: 0; /* Elimina cualquier margen residual */
 }
+
+/* Estilo para asegurar que la tabla ocupe todo el ancho disponible */
+.pendientes-table {
+    width: 100%; /* Ocupa el ancho completo del contenedor padre */
+    border-collapse: collapse; /* Asegura que las celdas se unan */
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+/* Estilo para las celdas y cabeceras (la línea que buscas) */
+.pendientes-table th, 
+.pendientes-table td {
+    border: 1px solid #ccc; /* Define el borde visible */
+    padding: 8px 12px; /* Espacio interno para mejor legibilidad */
+    text-align: left;
+}
+
+/* Estilo para la cabecera (Background y Fuente) */
+.pendientes-table thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Estilo para la columna de Monto para alineación */
+.pendientes-table td:nth-last-child(2) {
+    /* Selecciona la columna "Monto Deuda (Q)" */
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Estilo para el botón dentro de la tabla */
+.pendientes-table button {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    margin: 0;
+}
