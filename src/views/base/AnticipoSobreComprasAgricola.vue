@@ -55,11 +55,11 @@
             </div>
             <div class="input-container">
                 <label>Cuenta Bancaria:</label>
-                 <select v-model.number="idCuentaBancaria">
-            <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">
-                {{ c.label }}
-            </option>
-            </select>
+                <select v-model.number="idCuentaBancaria">
+                    <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">
+                        {{ c.label }}
+                    </option>
+                </select>
             </div>
             <div class="input-container">
                 <label>No. Documento:</label>
@@ -83,6 +83,40 @@
         <!-- Botón Agregar -->
         <button @click="enviarDatos">Guardar</button>
         <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
+
+        <!-- Botón para mostrar/ocultar la tabla -->
+        <button @click="toggleMostrarTabla" style="margin-left: 10px;">
+            {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
+        </button>
+
+        <!-- Tabla de anticipos (colapsable) -->
+        <div v-if="showTabla" class="tabla-anticipos" style="margin-top:20px;">
+            <h3>Anticipos registrados</h3>
+            <p v-if="loading">Cargando...</p>
+            <p v-if="!loading && anticipoRows.length === 0">No hay registros.</p>
+            <table v-if="!loading && anticipoRows.length" class="table-anticipo">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Nomenclatura</th>
+                        <th>Nombre</th>
+                        <th>Cuenta</th>
+                        <th>Tipo</th>
+                        <th style="text-align:right">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(r, idx) in anticipoRows" :key="idx">
+                        <td>{{ r.fecha }}</td>
+                        <td>{{ r.nomenclatura }}</td>
+                        <td>{{ r.nombre }}</td>
+                        <td>{{ r.id_cuentas }}</td>
+                        <td>{{ r.tipo }}</td>
+                        <td style="text-align:right">{{ formatMonto(r.monto) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -114,6 +148,10 @@ export default {
         const error = ref(''); // Estado para errores
         const successMessage = ref(''); // Estado para mensajes de éxito
         const idCuentaBancaria = ref(null);
+        // Tabla de anticipos
+        const anticipoRows = ref([]);
+        const loading = ref(false);
+        const showTabla = ref(false);
 
         const limpiar = () => {
             tipo.value = '';
@@ -135,16 +173,16 @@ export default {
             mostrarDivisionCuatro.value = tipo.value === 'bancos';
         }
 
-     const cargarCuentasSelect = () => {
-  axios.get('http://127.0.0.1:8000/cuentasB/for-select') 
-    .then(({ data }) => {
-      cuentas_bancarias.value = data;           
-      if (!idCuentaBancaria.value && data.length) {
-        idCuentaBancaria.value = Number(data[0].id); 
-      }
-    })
-    .catch(e => console.error('for-select:', e?.response?.data || e.message));
-};
+        const cargarCuentasSelect = () => {
+            axios.get('http://127.0.0.1:8000/cuentasB/for-select')
+                .then(({ data }) => {
+                    cuentas_bancarias.value = data;
+                    if (!idCuentaBancaria.value && data.length) {
+                        idCuentaBancaria.value = Number(data[0].id);
+                    }
+                })
+                .catch(e => console.error('for-select:', e?.response?.data || e.message));
+        };
 
 
         watch(tipo, controlarVisibilidadDivisionCuatro);
@@ -184,66 +222,92 @@ export default {
                 });
         };
 
-    const enviarDatos = () => {
-        error.value = '';
-        successMessage.value = '';
+        const enviarDatos = () => {
+            error.value = '';
+            successMessage.value = '';
 
-        if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value ||
-            (tipo.value === 'bancos' && (!documento.value || !idCuentaBancaria.value || !numero_documento.value || !fecha_emision.value))) {
-            error.value = 'Por favor, complete todos los campos.';
-            return;
-        }
-
-        if (tipo.value === 'caja') {
-            const payloadCaja = {
-            fecha: fecha.value,
-            identificacion: identificacion.value,
-            nombre: nombre.value,
-            descripcion: descripcion.value,
-            monto: monto.value,
-            tipo: 'caja',
-            cuenta: 'Anticipo de compras y gastos',
-            };
-            axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', payloadCaja)
-            .then(() => { successMessage.value = 'Datos enviados correctamente'; })
-            .catch(() => { error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.'; });
-        } else {
-            // tipo === 'bancos'
-            const payloadBancos = {
-            fecha: fecha.value,
-            identificacion: identificacion.value,
-            nombre: nombre.value,
-            descripcion: descripcion.value,
-            monto: monto.value,
-            tipo: 'bancos',
-            cuenta: 'Anticipo de compras y gastos',
-            documento: documento.value,
-            numero_documento: numero_documento.value,
-            fecha_emision: fecha_emision.value,
-            id_cuentas_bancarias: idCuentaBancaria.value
-            };
-
-            console.log('id_cuentas_bancarias:', idCuentaBancaria.value, typeof idCuentaBancaria.value);
-
-            if (!Number.isInteger(idCuentaBancaria.value)) {
-            error.value = 'Debes seleccionar una cuenta bancaria válida.';
-            return;
+            if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value ||
+                (tipo.value === 'bancos' && (!documento.value || !idCuentaBancaria.value || !numero_documento.value || !fecha_emision.value))) {
+                error.value = 'Por favor, complete todos los campos.';
+                return;
             }
 
-            axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', payloadBancos)
-            .then(() => { successMessage.value = 'Datos enviados correctamente'; })
-            .catch((e) => {
-                console.error('Error axios:', e?.response?.data || e.message);
-                error.value = 'Error al enviar datos.';
-            });
-        }
+            if (tipo.value === 'caja') {
+                const payloadCaja = {
+                    fecha: fecha.value,
+                    identificacion: identificacion.value,
+                    nombre: nombre.value,
+                    descripcion: descripcion.value,
+                    monto: monto.value,
+                    tipo: 'caja',
+                    cuenta: 'Anticipo de compras y gastos',
+                };
+                axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', payloadCaja)
+                    .then(() => { successMessage.value = 'Datos enviados correctamente'; })
+                    .catch(() => { error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.'; });
+            } else {
+                // tipo === 'bancos'
+                const payloadBancos = {
+                    fecha: fecha.value,
+                    identificacion: identificacion.value,
+                    nombre: nombre.value,
+                    descripcion: descripcion.value,
+                    monto: monto.value,
+                    tipo: 'bancos',
+                    cuenta: 'Anticipo de compras y gastos',
+                    documento: documento.value,
+                    numero_documento: numero_documento.value,
+                    fecha_emision: fecha_emision.value,
+                    id_cuentas_bancarias: idCuentaBancaria.value
+                };
+
+                console.log('id_cuentas_bancarias:', idCuentaBancaria.value, typeof idCuentaBancaria.value);
+
+                if (!Number.isInteger(idCuentaBancaria.value)) {
+                    error.value = 'Debes seleccionar una cuenta bancaria válida.';
+                    return;
+                }
+
+                axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', payloadBancos)
+                    .then(() => { successMessage.value = 'Datos enviados correctamente'; })
+                    .catch((e) => {
+                        console.error('Error axios:', e?.response?.data || e.message);
+                        error.value = 'Error al enviar datos.';
+                    });
+            }
+        };
+
+        const fetchTablaAnticipoAG = () => {
+            loading.value = true;
+            axios.get('http://localhost:8000/in_eg/tablaVistaAnticipoAG')
+                .then(({ data }) => {
+                    // esperar que sea un array de objetos con las claves pedidas
+                    anticipoRows.value = Array.isArray(data) ? data : [];
+                })
+                .catch((e) => {
+                    console.error('Error cargando tablaVistaAnticipoAG:', e?.response?.data || e.message);
+                    anticipoRows.value = [];
+                })
+                .finally(() => { loading.value = false; });
+        };
+
+        const formatMonto = (m) => {
+            const n = Number(m);
+            if (Number.isNaN(n)) return m;
+            return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        };
+
+        const toggleMostrarTabla = () => {
+            showTabla.value = !showTabla.value;
+            // si se abre y aún no hay datos, intentar cargar
+            if (showTabla.value && anticipoRows.value.length === 0) {
+                fetchTablaAnticipoAG();
+            }
         };
 
         onMounted(() => {
-            //cargarCuentas();
-            //cargarBancos();
-            //cargarBancosNoCuenta();
-            cargarCuentasSelect();  
+            cargarCuentasSelect();
+            // no cargamos la tabla automáticamente; se cargará al abrirla
         });
 
         return {
@@ -273,7 +337,13 @@ export default {
             cargarBancos,
             controlarVisibilidadDivisionCuatro,
             cargarBancosNoCuenta,
-            limpiar
+            limpiar,
+            anticipoRows,
+            loading,
+            fetchTablaAnticipoAG,
+            formatMonto,
+            showTabla,
+            toggleMostrarTabla
         }
     },
 }
@@ -395,5 +465,34 @@ button:hover {
 .text-danger {
     color: red;
     font-weight: bold;
+}
+
+/* Estilos para la tabla de anticipos */
+.table-anticipo {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-anticipo th,
+.table-anticipo td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.table-anticipo thead th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.table-anticipo tbody tr:nth-child(even) {
+    background-color: #fafafa
+}
+
+.table-anticipo tbody tr:hover {
+    background-color: #f1f1f1
+}
+
+.tabla-anticipos h3 {
+    margin: 0 0 8px 0
 }
 </style>
