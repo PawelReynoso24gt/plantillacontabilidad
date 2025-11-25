@@ -103,6 +103,7 @@
                         <th>Cuenta</th>
                         <th>Tipo</th>
                         <th style="text-align:right">Monto</th>
+                        <th style="text-align:center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,9 +114,81 @@
                         <td>{{ r.id_cuentas }}</td>
                         <td>{{ r.tipo }}</td>
                         <td style="text-align:right">{{ formatMonto(r.monto) }}</td>
+                        <td style="text-align:center">
+                            <button @click="openSaldarModal(r)">Saldar</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <!-- Modal para saldar (UI) -->
+        <div v-if="showModal" class="modal-overlay">
+            <div class="modal-box">
+                <h3>Saldar registro</h3>
+                <div class="modal-form">
+                    <div class="input-container">
+                        <label>Nomenclatura</label>
+                        <input type="text" v-model="modalData.nomenclatura">
+                    </div>
+                    <div class="input-container">
+                        <label>Cuenta</label>
+                        <input type="text" v-model="modalData.id_cuentas">
+                    </div>
+                    <div class="input-container">
+                        <label>Fecha</label>
+                        <input type="date" v-model="modalData.fecha">
+                    </div>
+                    <div class="input-container">
+                        <label>DPI/NIT/CF</label>
+                        <input type="text" v-model="modalData.identificacion">
+                    </div>
+                    <div class="input-container">
+                        <label>Nombre</label>
+                        <input type="text" v-model="modalData.nombre">
+                    </div>
+                    <div class="input-container">
+                        <label>Observaciones</label>
+                        <input type="text" v-model="modalData.descripcion">
+                    </div>
+                    <div class="input-container">
+                        <label>Monto</label>
+                        <input type="text" v-model="modalData.monto">
+                    </div>
+                    <div class="input-container">
+                        <label>Tipo</label>
+                        <select v-model="modalData.tipo">
+                            <option value="caja">caja</option>
+                            <option value="bancos">bancos</option>
+                        </select>
+                    </div>
+                    <div v-if="modalData.tipo === 'bancos'" class="input-container">
+                        <label>Documento</label>
+                        <select v-model="modalData.documento">
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Depósitos">Depósitos</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                    <div v-if="modalData.tipo === 'bancos'" class="input-container">
+                        <label>Cuenta Bancaria</label>
+                        <select v-model.number="modalData.idCuentaBancaria">
+                            <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">{{ c.label }}</option>
+                        </select>
+                    </div>
+                    <div v-if="modalData.tipo === 'bancos'" class="input-container">
+                        <label>No. Documento</label>
+                        <input type="text" v-model="modalData.numero_documento">
+                    </div>
+                    <div v-if="modalData.tipo === 'bancos'" class="input-container">
+                        <label>Fecha emisión</label>
+                        <input type="date" v-model="modalData.fecha_emision">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button @click="saldarRegistroConfirm">Confirmar</button>
+                    <button @click="closeModal" style="margin-left:10px">Cancelar</button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -305,6 +378,56 @@ export default {
             }
         };
 
+        // Modal state and handlers
+        const showModal = ref(false);
+        const modalData = reactive({
+            fecha: '',
+            identificacion: '',
+            nombre: '',
+            descripcion: '',
+            monto: '',
+            tipo: '',
+            documento: '',
+            numero_documento: '',
+            fecha_emision: '',
+            idCuentaBancaria: null,
+            id_cuentas: '',
+            nomenclatura: ''
+        });
+
+        const openSaldarModal = (row) => {
+            // Map common possible field names from the API row to modalData
+            modalData.nomenclatura = row.nomenclatura || row.nomen || row.nom || '';
+            modalData.id_cuentas = row.id_cuentas || row.cuenta || row.cuenta_nombre || '';
+            modalData.fecha = row.fecha || row.fecha_valor || '';
+            // Priorizar exactamente la columna 'identificacion' de la fila (viene desde la BD)
+            modalData.identificacion = row.identificacion !== undefined && row.identificacion !== null
+                ? String(row.identificacion)
+                : (row.dpi || row.nit || row.DPI || '');
+            modalData.nombre = row.nombre || row.nombre_proveedor || row.proveedor || '';
+            modalData.descripcion = row.descripcion || row.observaciones || row.obs || '';
+            modalData.monto = row.monto != null ? String(row.monto) : (row.amount != null ? String(row.amount) : '');
+            // normalize tipo values (some APIs use 'banco' singular)
+            const rawTipo = (row.tipo || row.type || '').toString();
+            modalData.tipo = rawTipo === 'banco' ? 'bancos' : rawTipo || '';
+            modalData.documento = row.documento || row.document || '';
+            modalData.numero_documento = row.numero_documento || row.no_documento || row.noDocumento || '';
+            modalData.fecha_emision = row.fecha_emision || row.fecha_documento || '';
+            modalData.idCuentaBancaria = row.id_cuentas_bancarias || row.id_cuenta || row.cuenta_bancaria_id || null;
+            showModal.value = true;
+        };
+
+        const closeModal = () => {
+            showModal.value = false;
+        };
+
+        const saldarRegistroConfirm = () => {
+            console.log('Confirmar saldar (simulado):', JSON.parse(JSON.stringify(modalData)));
+            successMessage.value = `Registro ${modalData.nomenclatura || ''} saldado (simulado)`;
+            setTimeout(() => { successMessage.value = ''; }, 3000);
+            showModal.value = false;
+        };
+
         onMounted(() => {
             cargarCuentasSelect();
             // no cargamos la tabla automáticamente; se cargará al abrirla
@@ -343,7 +466,12 @@ export default {
             fetchTablaAnticipoAG,
             formatMonto,
             showTabla,
-            toggleMostrarTabla
+            toggleMostrarTabla,
+            showModal,
+            modalData,
+            openSaldarModal,
+            closeModal,
+            saldarRegistroConfirm
         }
     },
 }
@@ -495,4 +623,29 @@ button:hover {
 .tabla-anticipos h3 {
     margin: 0 0 8px 0
 }
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.modal-box h3 { margin-top: 0 }
+.modal-form .input-container { margin-bottom: 8px }
+.modal-actions { margin-top: 12px; text-align: right }
 </style>
