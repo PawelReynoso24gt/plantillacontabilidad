@@ -95,6 +95,17 @@ const routes = [
             meta: { requiresAuth: true }
           },
           {
+            path: '/capilla/cuenta/:cuenta',
+            name: 'ReporteCuentaCapillaCuenta',
+            component: () => import('../views/base/DetalleCuentaCapilla.vue'),
+            props: true
+          },
+          {
+            path: '/agricola/cuenta/:cuenta',
+            name: 'ReporteCuentaAgricolaCuenta',
+            component: () => import('../views/base/DetalleCuentaAgricola.vue'),
+          },
+          {
             path: '/base/placeholders',
             name: 'Placeholders',
             component: () => import('@/views/base/Placeholders.vue'),

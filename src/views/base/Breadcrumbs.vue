@@ -9,16 +9,6 @@
             </select>
         </div>
     </div>
-
-    <div class="division-container">
-        <div class="numero-fecha-container">
-            <div class="checkbox-line-container">
-                <label for="es_pendiente">¿Es una Cuenta por Pagar?</label>
-                <input type="checkbox" v-model="es_pendiente" id="es_pendiente" class="form-check-input">
-            </div>
-        </div>
-    </div>
-
     <!-- Primera división -->
     <div class="division-container">
       <div class="numero-fecha-container">
@@ -123,7 +113,6 @@ export default {
     const cuentas = reactive([]);
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
-    const es_pendiente = ref(false);
     const error = ref(''); // Estado para errores
     const successMessage = ref(''); // Estado para mensajes de éxito
 
@@ -139,7 +128,6 @@ export default {
       cuentaBName.value = '';
       numero_documento.value = '';
       fecha_emision.value = '';
-      es_pendiente.value = false;
       error.value = ''; // Limpiar el mensaje de error
       successMessage.value = ''; // Limpiar el mensaje de éxito
     };
@@ -201,9 +189,6 @@ export default {
         return;
       }
 
-      // Definimos el valor del checkbox como 1 o 0
-      const valorEsPendiente = es_pendiente.value ? 1 : 0;
-
       if (tipo.value === 'caja') { 
         axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
           fecha: fecha.value,
@@ -213,8 +198,6 @@ export default {
           monto: monto.value,
           tipo: tipo.value,
           cuenta: cuentaCMB.value,
-          flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
-          es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
         })
         .then(response => {
           successMessage.value = 'Datos enviados correctamente';
@@ -237,8 +220,6 @@ export default {
           numero_documento: numero_documento.value,
           fecha_emision: fecha_emision.value,
           cuenta_bancaria: cuentaBName.value,
-          flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
-          es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
         };
         axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
           .then(response => {
@@ -278,7 +259,6 @@ export default {
       cuentaCMB,
       cuentaBName,
       bancos_b,
-      es_pendiente,
       error,
       successMessage,
       enviarDatos,

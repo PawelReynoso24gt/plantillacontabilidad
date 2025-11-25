@@ -62,6 +62,7 @@
     <table class="tabla-libro">
       <thead>
         <tr>
+          <th>Cuenta</th>
           <th>Descripción</th>
           <th>Detalle</th>
           <th class="right">Saldo suma</th>
@@ -70,7 +71,28 @@
       </thead>
 
       <tbody>
-        <tr v-for="(fila, idx) in tablaPreview" :key="idx" :class="{ 'fila-resaltada': fila.tipo === 'heading' }">
+        <tr
+          v-for="(fila, idx) in tablaPreview"
+          :key="idx"
+          :class="{ 'fila-resaltada': fila.tipo === 'heading' }"
+        >
+          <!-- Columna CUENTA -->
+          <td class="right">
+            <!-- si es una cuenta clickeable -->
+            <span
+              v-if="fila.esCuenta && fila.cuenta"
+              class="link-cuenta"
+              @click="irDetalleCuenta(fila.cuenta)"
+            >
+              {{ fila.cuenta }}
+            </span>
+
+            <!-- si NO es una cuenta clickeable (encabezados, totales, etc.) -->
+            <span v-else>
+              {{ fila.cuenta || '' }}
+            </span>
+          </td>
+
           <!-- fila tipo heading (título/sección/gran total) -->
           <template v-if="fila.tipo === 'heading'">
             <td class="bold-text">{{ fila.col1 }}</td>
@@ -86,12 +108,12 @@
           <!-- fila normal -->
           <template v-else>
             <td>{{ fila.col1 }}</td>
-            <td>{{ fila.col2 }}</td>
             <td class="right">{{ fila.col3 }}</td>
             <td class="right">{{ fila.col4 }}</td>
           </template>
         </tr>
       </tbody>
+
     </table>
   </div>
 
@@ -109,10 +131,13 @@ import { ref, computed } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { aplicarNumeracion } from '../../../utils/numeracion'; 
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
   name: 'ReporteCapillaFinal',
   setup() {
+    const router = useRouter(); 
   // Form fields
     const selectedPeriodo = ref('');
     const selectedMes = ref('');
@@ -205,6 +230,13 @@ export default {
       );
     };
 
+    const irDetalleCuenta = (cuenta) => {
+      router.push({
+        name: 'ReporteCuentaCapillaCuenta', 
+        params: { cuenta }
+      });
+    };
+
     // Tabla que mostramos en pantalla: construida con reporteData (SOLO EGRESOS)
     const tablaPreview = computed(() => {
       if (!reporteData.value) return [];
@@ -214,35 +246,35 @@ export default {
       const rows = [];
 
       // SALDO INICIAL
-      rows.push({ tipo: 'heading', col1: 'SALDO INICIAL', col2: '', col3: '', col4: formatQ(d.saldo_inicial) });
-      rows.push({ tipo: 'normal', col1: 'SALDO INICIAL EN CAJA GENERAL', col2: '', col3: formatQ(d.saldo_inicial_caja), col4: '' });
-      rows.push({ tipo: 'normal', col1: 'SALDO INICIAL EN BANCO', col2: '', col3: formatQ(d.saldo_inicial_bancos), col4: '' });
+      rows.push({ tipo: 'heading', nivel: 1, col1: 'SALDO INICIAL', col2: '', col3: '', col4: formatQ(d.saldo_inicial) });
+      rows.push({ tipo: 'normal', nivel: 2, col1: 'SALDO INICIAL EN CAJA GENERAL', col2: '', col3: formatQ(d.saldo_inicial_caja), col4: '' });
+      rows.push({ tipo: 'normal', nivel: 2, col1: 'SALDO INICIAL EN BANCO', col2: '', col3: formatQ(d.saldo_inicial_bancos), col4: '' });
 
       // EGRESOS (solo cuentas con valor > 0)
-      rows.push({ tipo: 'heading', col1: 'EGRESOS', col2: '', col3: '', col4: formatQ(d.total_general_egresos) });
-      rows.push({ tipo: 'normal', col1: 'CAJA GENERAL', col2: '', col3: formatQ(d.total_egresos_caja), col4: '' });
+      rows.push({ tipo: 'heading', nivel: 1,col1: 'EGRESOS', col2: '', col3: '', col4: formatQ(d.total_general_egresos) });
+      rows.push({ tipo: 'normal', nivel: 2, col1: 'CAJA GENERAL', col2: '', col3: formatQ(d.total_egresos_caja), col4: '' });
       (d.data_caja || [])
         .filter((item) => parseNumber(item.egresos) > 0)
         .forEach((eg) => {
-          rows.push({ tipo: 'normal', col1: eg.cuenta, col2: formatQ(eg.egresos), col3: '', col4: '' });
+          rows.push({ tipo: 'normal', nivel: 3, esCuenta: true, col1: eg.cuenta, col2: formatQ(eg.egresos), col3: '', col4: '' });
         });
 
-      rows.push({ tipo: 'normal', col1: 'BANCO', col2: '', col3: formatQ(d.total_egresos_bancos), col4: '' });
+      rows.push({ tipo: 'normal', nivel: 2, col1: 'BANCO', col2: '', col3: formatQ(d.total_egresos_bancos), col4: '' });
       (d.data_bancos || [])
         .filter((item) => parseNumber(item.egresos) > 0)
         .forEach((eg) => {
-          rows.push({ tipo: 'normal', col1: eg.cuenta, col2: formatQ(eg.egresos), col3: '', col4: '' });
+          rows.push({ tipo: 'normal', nivel: 3, esCuenta: true, col1: eg.cuenta, col2: formatQ(eg.egresos), col3: '', col4: '' });
         });
 
       // SALDO FINAL
-      rows.push({ tipo: 'heading', col1: 'SALDO FINAL', col2: '', col3: '', col4: formatQ(d.total_saldo_final) });
-      rows.push({ tipo: 'normal', col1: 'SALDO FINAL EN CAJA GENERAL', col2: '', col3: formatQ(d.total_saldo_final_caja), col4: '' });
-      rows.push({ tipo: 'normal', col1: 'SALDO FINAL EN BANCO', col2: '', col3: formatQ(d.total_saldo_final_bancos), col4: '' });
+      rows.push({ tipo: 'heading',  nivel: 1, col1: 'SALDO FINAL', col2: '', col3: '', col4: formatQ(d.total_saldo_final) });
+      rows.push({ tipo: 'normal', nivel: 2, col1: 'SALDO FINAL EN CAJA GENERAL', col2: '', col3: formatQ(d.total_saldo_final_caja), col4: '' });
+      rows.push({ tipo: 'normal', nivel: 2, col1: 'SALDO FINAL EN BANCO', col2: '', col3: formatQ(d.total_saldo_final_bancos), col4: '' });
 
       // SUMAS IGUALES
-      rows.push({ tipo: 'heading', col1: 'SUMAS IGUALES', col2: '', col3: formatQ(d.total_saldo_final), col4: formatQ(d.total_saldo_final) });
+      rows.push({ tipo: 'heading',  nivel: 1, col1: 'SUMAS IGUALES', col2: '', col3: formatQ(d.total_saldo_final), col4: formatQ(d.total_saldo_final) });
 
-      return rows;
+      return aplicarNumeracion(rows);
     });
 
     const mostrarTabla = async () => {
@@ -440,7 +472,8 @@ export default {
       actualizarMeses,
       mostrarTabla,
       limpiar,
-      generarPDF
+      generarPDF,
+      irDetalleCuenta 
     };
   }
 };
@@ -658,4 +691,15 @@ button:hover {
   text-align: center;
   font-style: italic;
 }
+
+.link-cuenta {
+  color: #0a53be;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-cuenta:hover {
+  color: #063a83;
+}
+
 </style>
