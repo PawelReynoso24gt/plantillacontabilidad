@@ -128,42 +128,46 @@
                 <div class="modal-form">
                     <div class="input-container">
                         <label>Nomenclatura</label>
-                        <input type="text" v-model="modalData.nomenclatura">
+                        <input type="text" v-model="modalData.nomenclatura" readonly>
                     </div>
                     <div class="input-container">
                         <label>Cuenta</label>
-                        <input type="text" v-model="modalData.id_cuentas">
+                        <input type="text" v-model="modalData.id_cuentas" readonly>
                     </div>
                     <div class="input-container">
                         <label>Fecha</label>
-                        <input type="date" v-model="modalData.fecha">
+                        <input type="date" v-model="modalData.fecha" disabled>
                     </div>
                     <div class="input-container">
                         <label>DPI/NIT/CF</label>
-                        <input type="text" v-model="modalData.identificacion">
+                        <input type="text" v-model="modalData.identificacion" readonly>
                     </div>
                     <div class="input-container">
                         <label>Nombre</label>
-                        <input type="text" v-model="modalData.nombre">
+                        <input type="text" v-model="modalData.nombre" readonly>
                     </div>
                     <div class="input-container">
                         <label>Observaciones</label>
-                        <input type="text" v-model="modalData.descripcion">
+                        <input type="text" v-model="modalData.descripcion" readonly>
                     </div>
                     <div class="input-container">
                         <label>Monto</label>
-                        <input type="text" v-model="modalData.monto">
+                        <input type="text" v-model="modalData.monto" readonly>
+                    </div>
+                    <div class="input-container">
+                        <label>Monto a abonar</label>
+                        <input type="text" v-model="modalData.monto_abono" placeholder="0.00">
                     </div>
                     <div class="input-container">
                         <label>Tipo</label>
-                        <select v-model="modalData.tipo">
+                        <select v-model="modalData.tipo" disabled>
                             <option value="caja">caja</option>
                             <option value="bancos">bancos</option>
                         </select>
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>Documento</label>
-                        <select v-model="modalData.documento">
+                        <select v-model="modalData.documento" disabled>
                             <option value="Transferencia">Transferencia</option>
                             <option value="Depósitos">Depósitos</option>
                             <option value="Cheque">Cheque</option>
@@ -171,17 +175,17 @@
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>Cuenta Bancaria</label>
-                        <select v-model.number="modalData.idCuentaBancaria">
+                        <select v-model.number="modalData.idCuentaBancaria" disabled>
                             <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">{{ c.label }}</option>
                         </select>
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>No. Documento</label>
-                        <input type="text" v-model="modalData.numero_documento">
+                        <input type="text" v-model="modalData.numero_documento" readonly>
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>Fecha emisión</label>
-                        <input type="date" v-model="modalData.fecha_emision">
+                        <input type="date" v-model="modalData.fecha_emision" disabled>
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -386,6 +390,7 @@ export default {
             nombre: '',
             descripcion: '',
             monto: '',
+            monto_abono: '',
             tipo: '',
             documento: '',
             numero_documento: '',
@@ -631,21 +636,32 @@ button:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
 }
+
 .modal-box {
     background: #fff;
     padding: 20px;
     border-radius: 6px;
     width: 90%;
     max-width: 600px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
-.modal-box h3 { margin-top: 0 }
-.modal-form .input-container { margin-bottom: 8px }
-.modal-actions { margin-top: 12px; text-align: right }
+
+.modal-box h3 {
+    margin-top: 0
+}
+
+.modal-form .input-container {
+    margin-bottom: 8px
+}
+
+.modal-actions {
+    margin-top: 12px;
+    text-align: right
+}
 </style>
