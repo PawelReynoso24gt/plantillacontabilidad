@@ -397,13 +397,16 @@ export default {
             fecha_emision: '',
             idCuentaBancaria: null,
             id_cuentas: '',
+            id_ingresos_egresos: null,
             nomenclatura: ''
         });
 
         const openSaldarModal = (row) => {
             // Map common possible field names from the API row to modalData
             modalData.nomenclatura = row.nomenclatura || row.nomen || row.nom || '';
-            modalData.id_cuentas = row.id_cuentas || row.cuenta || row.cuenta_nombre || '';
+            modalData.id_cuentas = row.id_cuentas;
+            // id_ingresos_egresos viene ahora desde el backend en la lista y debe reenviarse
+            modalData.id_ingresos_egresos = row.id_ingresos_egresos || null;
             modalData.fecha = row.fecha || row.fecha_valor || '';
             // Priorizar exactamente la columna 'identificacion' de la fila (viene desde la BD)
             modalData.identificacion = row.identificacion !== undefined && row.identificacion !== null
@@ -426,11 +429,60 @@ export default {
             showModal.value = false;
         };
 
-        const saldarRegistroConfirm = () => {
-            console.log('Confirmar saldar (simulado):', JSON.parse(JSON.stringify(modalData)));
-            successMessage.value = `Registro ${modalData.nomenclatura || ''} saldado (simulado)`;
-            setTimeout(() => { successMessage.value = ''; }, 3000);
-            showModal.value = false;
+        const saldarRegistroConfirm = async () => {
+            // Validar monto_abono
+            const montoAbono = parseFloat(String(modalData.monto_abono).replace(/,/g, ''));
+            const montoTotal = parseFloat(String(modalData.monto).replace(/,/g, '')) || 0;
+            if (Number.isNaN(montoAbono) || montoAbono <= 0) {
+                error.value = 'Ingrese un monto a abonar válido mayor que 0.';
+                return;
+            }
+            if (montoAbono > montoTotal) {
+                error.value = 'El monto a abonar no puede ser mayor al monto total.';
+                return;
+            }
+
+            
+
+            // For testing: try to extract `id_abono` from `nomenclatura` (last numeric group).
+            // If not found, keep it null so backend can handle creation.
+            let idAbono = null;
+            try {
+                const matches = String(modalData.nomenclatura || '').match(/\d+/g);
+                if (matches && matches.length) {
+                    idAbono = Number(matches[matches.length - 1]);
+                }
+            } catch (e) {
+                idAbono = null;
+            }
+
+            const payload = {
+                fecha: modalData.fecha || new Date().toISOString().slice(0, 10),
+                identificacion: modalData.identificacion || '',
+                nombre: modalData.nombre || '',
+                descripcion: modalData.descripcion || '',
+                monto: montoAbono,
+                tipo: modalData.tipo || '',
+                cuenta: modalData.id_cuentas || '',
+                id_ingresos_egresos: modalData.id_ingresos_egresos || null,
+                fecha_pago: modalData.fecha_emision || modalData.fecha || new Date().toISOString().slice(0, 10),
+                id_abono: idAbono,
+                monto_pago: montoAbono
+            };
+
+            error.value = '';
+            try {
+                const url = 'http://localhost:8000/saldar_anticipos/saldarAnticipo';
+                const resp = await axios.post(url, payload);
+                successMessage.value = 'Registro saldado correctamente.';
+                // refrescar tabla
+                fetchTablaAnticipoAG();
+                setTimeout(() => { successMessage.value = ''; }, 3000);
+                showModal.value = false;
+            } catch (e) {
+                console.error('Error al saldar:', e?.response?.data || e.message || e);
+                error.value = e?.response?.data?.message || 'Error al saldar el anticipo.';
+            }
         };
 
         onMounted(() => {
