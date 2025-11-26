@@ -134,31 +134,31 @@
                 <div class="modal-form">
                     <div class="input-container">
                         <label>Nomenclatura</label>
-                        <input type="text" v-model="modalData.nomenclatura" readonly>
+                        <input type="text" v-model="modalData.nomenclatura">
                     </div>
                     <div class="input-container">
                         <label>Cuenta</label>
-                        <input type="text" v-model="modalData.id_cuentas" readonly>
+                        <input type="text" v-model="modalData.id_cuentas">
                     </div>
                     <div class="input-container">
                         <label>Fecha</label>
-                        <input type="date" v-model="modalData.fecha" disabled>
+                        <input type="date" v-model="modalData.fecha">
                     </div>
                     <div class="input-container">
                         <label>DPI/NIT/CF</label>
-                        <input type="text" v-model="modalData.identificacion" readonly>
+                        <input type="text" v-model="modalData.identificacion">
                     </div>
                     <div class="input-container">
                         <label>Nombre</label>
-                        <input type="text" v-model="modalData.nombre" readonly>
+                        <input type="text" v-model="modalData.nombre">
                     </div>
                     <div class="input-container">
                         <label>Observaciones</label>
-                        <input type="text" v-model="modalData.descripcion" readonly>
+                        <input type="text" v-model="modalData.descripcion">
                     </div>
                     <div class="input-container">
                         <label>Monto</label>
-                        <input type="text" v-model="modalData.monto" readonly>
+                        <input type="text" v-model="modalData.monto">
                     </div>
                     <div class="input-container">
                         <label>Monto a abonar</label>
@@ -166,14 +166,14 @@
                     </div>
                     <div class="input-container">
                         <label>Tipo</label>
-                        <select v-model="modalData.tipo" disabled>
+                        <select v-model="modalData.tipo">
                             <option value="caja">caja</option>
                             <option value="bancos">bancos</option>
                         </select>
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>Documento</label>
-                        <select v-model="modalData.documento" disabled>
+                        <select v-model="modalData.documento">
                             <option value="Transferencia">Transferencia</option>
                             <option value="Depósitos">Depósitos</option>
                             <option value="Cheque">Cheque</option>
@@ -181,17 +181,17 @@
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>Cuenta Bancaria</label>
-                        <select v-model.number="modalData.idCuentaBancaria" disabled>
+                        <select v-model.number="modalData.idCuentaBancaria">
                             <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">{{ c.label }}</option>
                         </select>
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>No. Documento</label>
-                        <input type="text" v-model="modalData.numero_documento" readonly>
+                        <input type="text" v-model="modalData.numero_documento">
                     </div>
                     <div v-if="modalData.tipo === 'bancos'" class="input-container">
                         <label>Fecha emisión</label>
-                        <input type="date" v-model="modalData.fecha_emision" disabled>
+                        <input type="date" v-model="modalData.fecha_emision">
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -424,26 +424,32 @@ export default {
         });
 
         const openSaldarModal = (row) => {
-            // Map common possible field names from the API row to modalData
+            // Keep only the linkage/context values from the row, let the user
+            // enter the rest of the data manually.
             modalData.nomenclatura = row.nomenclatura || row.nomen || row.nom || '';
-            modalData.id_cuentas = row.id_cuentas;
-            // id_ingresos_egresos viene ahora desde el backend en la lista y debe reenviarse
+            modalData.id_cuentas = row.id_cuentas || '';
+            // Keep the id so backend knows which ingreso/egreso to link
             modalData.id_ingresos_egresos = row.id_ingresos_egresos || null;
-            modalData.fecha = row.fecha || row.fecha_valor || '';
-            // Priorizar exactamente la columna 'identificacion' de la fila (viene desde la BD)
-            modalData.identificacion = row.identificacion !== undefined && row.identificacion !== null
-                ? String(row.identificacion)
-                : (row.dpi || row.nit || row.DPI || '');
-            modalData.nombre = row.nombre || row.nombre_proveedor || row.proveedor || '';
-            modalData.descripcion = row.descripcion || row.observaciones || row.obs || '';
-            modalData.monto = row.monto != null ? String(row.monto) : (row.amount != null ? String(row.amount) : '');
-            // normalize tipo values (some APIs use 'banco' singular)
+
+            // Prefill monto from the row so user sees the original amount
+            // and can edit the abono. Other fields are cleared for user input.
+            modalData.fecha = '';
+            modalData.identificacion = '';
+            modalData.nombre = '';
+            modalData.descripcion = '';
+            modalData.monto = row.monto != null ? String(row.monto) : '';
+            modalData.monto_abono = '';
+
+            // Default tipo to the row value and keep it locked (not editable)
             const rawTipo = (row.tipo || row.type || '').toString();
-            modalData.tipo = rawTipo === 'banco' ? 'bancos' : rawTipo || '';
-            modalData.documento = row.documento || row.document || '';
-            modalData.numero_documento = row.numero_documento || row.no_documento || row.noDocumento || '';
-            modalData.fecha_emision = row.fecha_emision || row.fecha_documento || '';
-            modalData.idCuentaBancaria = row.id_cuentas_bancarias || row.id_cuenta || row.cuenta_bancaria_id || null;
+            modalData.tipo = rawTipo === 'banco' ? 'bancos' : (rawTipo || '');
+
+            // Clear bank-specific fields so user can input them when needed
+            modalData.documento = '';
+            modalData.numero_documento = '';
+            modalData.fecha_emision = '';
+            modalData.idCuentaBancaria = null;
+
             showModal.value = true;
         };
 
@@ -468,6 +474,7 @@ export default {
 
             // No enviar `id_abono` desde el frontend; el backend gestionará la creación
             // y relación del abono. Construir payload sin `id_abono`.
+            // Build payload; include bank-specific fields when tipo === 'bancos'
             const payload = {
                 fecha: modalData.fecha || new Date().toISOString().slice(0, 10),
                 identificacion: modalData.identificacion || '',
@@ -480,6 +487,14 @@ export default {
                 fecha_pago: modalData.fecha_emision || modalData.fecha || new Date().toISOString().slice(0, 10),
                 monto_pago: montoAbono
             };
+
+            if ((modalData.tipo || '').toString() === 'bancos') {
+                // Attach bank fields
+                payload.documento = modalData.documento || '';
+                payload.numero_documento = modalData.numero_documento || '';
+                payload.fecha_emision = modalData.fecha_emision || '';
+                payload.id_cuentas_bancarias = modalData.idCuentaBancaria || null;
+            }
 
             error.value = '';
             try {
