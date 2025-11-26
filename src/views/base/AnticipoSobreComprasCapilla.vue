@@ -1,3 +1,5 @@
 <template>
-    <div><h1>Aqui va anticipo sobre compras de capilla</h1></div>
+    <div>
+        <h1>Anticipo sobre compras - Capilla</h1>
+    </div>
 </template>

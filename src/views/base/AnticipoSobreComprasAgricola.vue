@@ -375,7 +375,7 @@ export default {
                             r.monto_faltante = 0;
                             return;
                         }
-                        const resp = await axios.post('http://localhost:8000/saldar_anticipos/getMontoFaltante', { id_ingresos_egresos: id });
+                        const resp = await axios.post('http://localhost:8000/saldar_anticipos/getMontoFaltanteAG', { id_ingresos_egresos: id });
                         r.monto_faltante = resp?.data?.monto_faltante ?? 0;
                     } catch (err) {
                         console.error('Error obteniendo monto faltante para', r.id_ingresos_egresos, err?.response?.data || err.message || err);
@@ -498,7 +498,7 @@ export default {
 
             error.value = '';
             try {
-                const url = 'http://localhost:8000/saldar_anticipos/saldarAnticipo';
+                const url = 'http://localhost:8000/saldar_anticipos/saldarAnticipoAG';
                 const resp = await axios.post(url, payload);
                 successMessage.value = 'Registro saldado correctamente.';
                 // refrescar tabla
