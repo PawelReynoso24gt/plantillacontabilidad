@@ -125,6 +125,10 @@
         <div v-if="showModal" class="modal-overlay">
             <div class="modal-box">
                 <h3>Saldar registro</h3>
+                <div class="input-container" style="margin-bottom:10px; align-items:center;">
+                    <label style="width:auto; margin-right:8px; font-weight:bold;">ID cuenta:</label>
+                    <div>{{ modalData.id_ingresos_egresos !== null && modalData.id_ingresos_egresos !== undefined ? modalData.id_ingresos_egresos : '-' }}</div>
+                </div>
                 <div class="modal-form">
                     <div class="input-container">
                         <label>Nomenclatura</label>
@@ -444,18 +448,8 @@ export default {
 
             
 
-            // For testing: try to extract `id_abono` from `nomenclatura` (last numeric group).
-            // If not found, keep it null so backend can handle creation.
-            let idAbono = null;
-            try {
-                const matches = String(modalData.nomenclatura || '').match(/\d+/g);
-                if (matches && matches.length) {
-                    idAbono = Number(matches[matches.length - 1]);
-                }
-            } catch (e) {
-                idAbono = null;
-            }
-
+            // No enviar `id_abono` desde el frontend; el backend gestionará la creación
+            // y relación del abono. Construir payload sin `id_abono`.
             const payload = {
                 fecha: modalData.fecha || new Date().toISOString().slice(0, 10),
                 identificacion: modalData.identificacion || '',
@@ -466,7 +460,6 @@ export default {
                 cuenta: modalData.id_cuentas || '',
                 id_ingresos_egresos: modalData.id_ingresos_egresos || null,
                 fecha_pago: modalData.fecha_emision || modalData.fecha || new Date().toISOString().slice(0, 10),
-                id_abono: idAbono,
                 monto_pago: montoAbono
             };
 
