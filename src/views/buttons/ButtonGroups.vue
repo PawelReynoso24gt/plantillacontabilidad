@@ -126,16 +126,113 @@
                     <td>{{ item.nombre }}</td>
                     <td>{{ item.cuentas.cuenta }}</td>
                     <td>{{ item.tipo }}</td>
-                    <td>Q {{ item.monto_haber > 0 ? item.monto_haber : item.monto_debe }}</td>
+                    <td>Q {{ item.saldo_pendiente }}</td>
                     <td>
-                        <span v-if="item.monto_debe > 0" class="saldo-debe">DEBE</span>
+                        <!-- Usamos los montos originales para determinar el tipo de saldo -->
+                        <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
                         <span v-else class="saldo-haber">HABER</span>
                     </td>
-                    <td><button>Saldar</button></td>
+                    <td><button @click="abrirModalSaldado(item)">Saldar</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
+  </div>
+
+<!-- ******* MODAL DE SALDADO ******* -->
+  <div v-if="mostrarModalSaldado" class="modal-overlay">
+      <div class="modal-content">
+          <h3>Saldar Deuda Pendiente</h3>
+          <p><strong>ID Deuda:</strong> {{ formSaldar.deuda_original_id }}</p>
+          <p><strong>Cuenta Contable:</strong> {{ formSaldar.nombre_cuenta_visual }}</p>
+          
+          <!-- Formulario dentro del Modal -->
+          <div class="division-container">
+              <div class="fecha-inputs">
+                  <label>Fecha de Pago:</label>
+                  <input type="date" v-model="formSaldar.fecha">
+              </div>
+          </div>
+
+          <div class="division-container">
+              <label>DPI/NIT/CF:</label>
+              <input type="text" v-model="formSaldar.identificacion">
+              <label>Nombre/CF:</label>
+              <input type="text" v-model="formSaldar.nombre">
+              <label>Observaciones:</label>
+              <input type="text" v-model="formSaldar.descripcion">
+          </div>
+
+          <div class="division-container">
+                <div class="numero-fecha-container">
+                  <div class="numero-inputs">
+                      <label>Medio de Pago:</label>
+                        <select v-model="formSaldar.tipo"> 
+                            <option value="caja">Caja</option>
+                            <option value="bancos">Bancos</option>  
+                        </select>
+                  </div>
+                  <div class="fecha-inputs">
+                      <label>Monto a Pagar (Q):</label>
+                      <input type="text" v-model="formSaldar.monto">
+                  </div>
+              </div>
+          </div>
+
+          <!-- Sección Bancaria Condicional (Dentro del Modal) -->
+          <div class="division-container" v-if="formSaldar.tipo === 'bancos'">
+                <label>DATOS BANCARIOS</label>
+                <div class="input-container">
+                  <label>Documento:</label>
+                  <select v-model="formSaldar.documento">
+                    <option value="Transferencia">Transferencia</option> 
+                    <option value="Depósitos">Depósitos</option>
+                    <option value="Cheque">Cheque</option> 
+                  </select>
+                </div>
+                <div class="input-container">
+                  <label>Cuenta Bancaria:</label>
+                  <!-- Reutilizamos la lista de cuentas bancarias cargada -->
+                  <select v-model="formSaldar.cuenta_bancaria">
+                    <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
+                  </select>
+                </div>
+                <div class="input-container">
+                  <label>No. Documento:</label>
+                  <input type="text" v-model="formSaldar.numero_documento">
+                </div>
+                <div class="input-container">
+                  <label>Fecha Emisión:</label>
+                  <input type="date" v-model="formSaldar.fecha_emision">
+                </div>
+          </div>
+
+          <!-- Botones del Modal -->
+          <div class="modal-actions" style="margin-top: 20px; text-align: right;">
+              <button @click="cerrarModal" style="background-color: #ccc; color: #333; margin-right: 10px;">Cancelar</button>
+              <button @click="enviarSaldado">Confirmar Pago</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- ******* MODAL DE ÉXITO ******* -->
+  <div v-if="mostrarModalExito" class="modal-overlay">
+      <div class="modal-content" style="max-width: 400px; text-align: center;">
+          <h3 style="color: #14491b;">¡Pago Exitoso!</h3>
+          
+          <div style="margin: 20px 0;">
+              <p style="font-size: 1.1em;">El abono se ha registrado correctamente.</p>
+              
+              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                  <p style="margin: 0; color: #666;">Saldo Pendiente Restante:</p>
+                  <h2 style="margin: 5px 0; color: #cc0000;">Q {{ datosExito.saldo }}</h2>
+              </div>
+          </div>
+
+          <div class="modal-actions" style="text-align: center;">
+              <button @click="cerrarModalExito">Aceptar</button>
+          </div>
+      </div>
   </div>
 </template>
 
@@ -173,6 +270,32 @@ export default {
     const CLASIFICACION_ID = '1'; // Ingresos (Cuentas por Cobrar)
     const pendientes = reactive([]);
     const mensajeVacio = ref('');
+    // ** VARIABLES PARA EL MODAL DE SALDADO **
+    const mostrarModalSaldado = ref(false);
+    const formSaldar = reactive({
+        deuda_original_id: '',
+        cuenta: '', // Nombre de la cuenta (para el backend)
+        nombre_cuenta_visual: '', // Solo para mostrar
+        fecha: '',
+        identificacion: '',
+        nombre: '',
+        descripcion: '',
+        monto: '',
+        tipo: 'caja',
+        // Bancarios
+        documento: '',
+        numero_documento: '',
+        fecha_emision: '',
+        cuenta_bancaria: '',
+        // Datos fijos del proyecto/clasificación (vienen del reporte)
+        id_proyectos: '',
+        id_clasificacion: ''
+    });
+    const mostrarModalExito = ref(false);
+    const datosExito = reactive({
+        mensaje: '',
+        saldo: ''
+    });
 
     const limpiar = () => {
       fecha.value = '';
@@ -194,6 +317,61 @@ export default {
       es_pendiente.value = false;
       error.value = ''; // Limpiar el mensaje de error
       successMessage.value = ''; // Limpiar el mensaje de éxito
+    };
+
+    // ** ABRIR MODAL **
+    // Se llama al hacer clic en "Saldar" en la tabla
+    const abrirModalSaldado = (item) => {
+        // Prellenar datos básicos
+        formSaldar.deuda_original_id = item.id_ingresos_egresos;
+        formSaldar.cuenta = item.cuentas.cuenta; // Nombre exacto para buscarla
+        formSaldar.nombre_cuenta_visual = item.cuentas.cuenta;
+        
+        // >> CORRECCIÓN DE FECHA (ZONA HORARIA LOCAL) <<
+        // Creamos un objeto Date con la hora actual del sistema
+        const hoy = new Date();
+        // Obtenemos el año, mes y día locales. 
+        // OJO: getMonth() devuelve 0-11, así que sumamos 1.
+        // padStart(2, '0') asegura que tengamos '05' en vez de '5'.
+        const año = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        
+        // Formateamos manualmente a YYYY-MM-DD
+        formSaldar.fecha = `${año}-${mes}-${dia}`;
+        formSaldar.identificacion = ''; 
+        formSaldar.descripcion = '';
+        formSaldar.nombre = '';
+        formSaldar.tipo = 'caja'; 
+        formSaldar.documento = '';
+        formSaldar.numero_documento = '';
+        formSaldar.fecha_emision = '';
+        formSaldar.cuenta_bancaria = '';
+        // El monto sugerido es el saldo pendiente
+        // const saldo = item.monto_haber > 0 ? item.monto_haber : item.monto_debe;
+        formSaldar.monto = '';
+
+        // Heredar los IDs de proyecto y clasificación del filtro actual
+        // (Asumimos que son los mismos que se usaron para cargar la tabla)
+        // OJO: Usa las constantes o variables que definiste: PROYECTO_ID / CLASIFICACION_ID
+        formSaldar.id_proyectos = PROYECTO_ID; // O usa la variable PROYECTO_ID
+        formSaldar.id_clasificacion = CLASIFICACION_ID; // O usa CLASIFICACION_ID
+
+        mostrarModalSaldado.value = true;
+    };
+
+    // ** CERRAR MODAL **
+    const cerrarModal = () => {
+        mostrarModalSaldado.value = false;
+        limpiar();
+        cargarPendientes();
+        // Limpiar formulario saldado si es necesario
+    };
+
+    const cerrarModalExito = () => {
+        mostrarModalExito.value = false;
+        limpiar();
+        //cargarPendientes(); // Recargar la tabla al cerrar el éxito
     };
 
     const agregarDivision = () => {
@@ -251,6 +429,50 @@ export default {
           error.value = 'Error al cargar bancos.';
         });
     };
+
+  // ** ENVIAR SALDADO **
+  const enviarSaldado = () => {
+      if (!formSaldar.monto || !formSaldar.fecha) {
+          alert("Por favor ingrese monto y fecha.");
+          return;
+      }
+
+      // Preparar payload
+      const payload = {
+          deuda_original_id: formSaldar.deuda_original_id,
+          fecha: formSaldar.fecha,
+          monto: formSaldar.monto,
+          identificacion: formSaldar.identificacion,
+          nombre: formSaldar.nombre,
+          descripcion: formSaldar.descripcion,
+          tipo: formSaldar.tipo,
+          cuenta: formSaldar.cuenta,
+          id_proyectos: formSaldar.id_proyectos,
+          id_clasificacion: formSaldar.id_clasificacion,
+          // Bancarios (se envían si aplica)
+          documento: formSaldar.documento,
+          numero_documento: formSaldar.numero_documento,
+          fecha_emision: formSaldar.fecha_emision,
+          cuenta_bancaria: formSaldar.cuenta_bancaria,
+      };
+
+      axios.post('http://127.0.0.1:8000/in_eg/saldar_pendiente', payload)
+          .then(response => {
+              //alert("Pago registrado con éxito. Nuevo saldo: Q" + response.data.saldo_restante);
+              cerrarModal();
+              // PREPARAMOS Y ABRIMOS EL MODAL DE ÉXITO
+              datosExito.mensaje = response.data.message;
+              // Formatear el saldo para que se vea bonito (Q 100.00)
+              datosExito.saldo = parseFloat(response.data.saldo_restante).toFixed(2);
+              mostrarModalExito.value = true;
+              limpiar();
+              cargarPendientes(); // Recargar la tabla para ver cambios
+          })
+          .catch(err => {
+              console.error(err);
+              alert("Error al registrar el pago.");
+          });
+  };
 
     const enviarDatos = () => {
       error.value = ''; // Resetea el mensaje de error antes de enviar datos
@@ -373,6 +595,15 @@ export default {
       pendientes,
       cargarPendientes,
       mensajeVacio,
+      // ----------------
+      mostrarModalSaldado,
+      formSaldar,
+      abrirModalSaldado,
+      cerrarModal,
+      enviarSaldado,
+      mostrarModalExito,
+      datosExito,
+      cerrarModalExito,
       // ----------------
     }
   },
