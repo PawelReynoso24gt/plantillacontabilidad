@@ -103,6 +103,7 @@
                         <th>Cuenta</th>
                         <th>Tipo</th>
                         <th style="text-align:right">Monto</th>
+                        <th style="text-align:right">Monto faltante</th>
                         <th style="text-align:center">Acciones</th>
                     </tr>
                 </thead>
@@ -114,6 +115,7 @@
                         <td>{{ r.id_cuentas }}</td>
                         <td>{{ r.tipo }}</td>
                         <td style="text-align:right">{{ formatMonto(r.monto) }}</td>
+                        <td style="text-align:right">{{ formatMonto(r.monto_faltante) }}</td>
                         <td style="text-align:center">
                             <button @click="openSaldarModal(r)">Saldar</button>
                         </td>
@@ -358,18 +360,34 @@ export default {
             }
         };
 
-        const fetchTablaAnticipoAG = () => {
+        const fetchTablaAnticipoAG = async () => {
             loading.value = true;
-            axios.get('http://localhost:8000/in_eg/tablaVistaAnticipoAG')
-                .then(({ data }) => {
-                    // esperar que sea un array de objetos con las claves pedidas
-                    anticipoRows.value = Array.isArray(data) ? data : [];
-                })
-                .catch((e) => {
-                    console.error('Error cargando tablaVistaAnticipoAG:', e?.response?.data || e.message);
-                    anticipoRows.value = [];
-                })
-                .finally(() => { loading.value = false; });
+            try {
+                const { data } = await axios.get('http://localhost:8000/in_eg/tablaVistaAnticipoAG');
+                anticipoRows.value = Array.isArray(data) ? data : [];
+
+                // For each row, request monto faltante and attach it to the row object
+                await Promise.all(anticipoRows.value.map(async (r) => {
+                    try {
+                        // Ensure we have an id_ingresos_egresos to query
+                        const id = r.id_ingresos_egresos || r.id_ingresos_egreso || null;
+                        if (id === null || id === undefined) {
+                            r.monto_faltante = 0;
+                            return;
+                        }
+                        const resp = await axios.post('http://localhost:8000/saldar_anticipos/getMontoFaltante', { id_ingresos_egresos: id });
+                        r.monto_faltante = resp?.data?.monto_faltante ?? 0;
+                    } catch (err) {
+                        console.error('Error obteniendo monto faltante para', r.id_ingresos_egresos, err?.response?.data || err.message || err);
+                        r.monto_faltante = 0;
+                    }
+                }));
+            } catch (e) {
+                console.error('Error cargando tablaVistaAnticipoAG:', e?.response?.data || e.message);
+                anticipoRows.value = [];
+            } finally {
+                loading.value = false;
+            }
         };
 
         const formatMonto = (m) => {
