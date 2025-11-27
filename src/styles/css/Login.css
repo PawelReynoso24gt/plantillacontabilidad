@@ -1,120 +1,107 @@
-/* Estilos para el contenedor principal */
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+/* Fondo general de la página */
+.login-page {
+  background: #f7f7f7; /* #F7F7F7 */
 }
 
-/* Estilos para las divisiones */
-.division-container {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 10px;
+/* Grupo principal de la tarjeta */
+.login-card-group {
+  border-radius: 18px;
+  overflow: hidden;
 }
 
-/* Estilos para las etiquetas */
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-/* Estilos para los campos de entrada */
-input[type="text"],
-input[type="date"],
-select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-/* Estilos para el botón */
-button {
-  padding: 10px 20px;
-  background-color: #14491b;
-  color: #fff;
+/* Lado del logo / marca */
+.login-card-brand {
+  background: linear-gradient(135deg, #BD9F69, #A69581); /* #BD9F69 y #A0834E */
+  color: #ffffff;
+  min-width: 40%;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-button:hover {
-  background-color: #475f27;
+.login-logo {
+  max-width: 300px;
+  max-height: 140px;
+  object-fit: contain;
 }
 
-/* Estilos para los campos de entrada de número y select */
-.numero-fecha-container {
-  display: flex;
+.login-brand-title {
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
-.numero-inputs,
-.fecha-inputs {
-  flex: 1;
-  margin-right: 10px;
+.login-brand-subtitle {
+  font-size: 0.95rem;
+  opacity: 0.95;
 }
 
-.numero-inputs label,
-.fecha-inputs label {
-  display: block;
-}
-
-/* Estilos para los campos de entrada de número */
-.numero-input {
-  display: flex;
-}
-
-.numero-input input[type="text"] {
-  margin-right: 10px;
-}
-
-/* Estilos para los campos de entrada de fecha */
-.fecha-container {
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-}
-
-.fecha-container label {
-  display: block;
-}
-
-.fecha-container select {
-  width: calc(100% - 10px);
+/* Lado del formulario */
+.login-card-form {
+  background: #ffffff; /* #FFFFFF */
   border: none;
+}
+
+.login-title {
+  color: #080808; /* #080808 */
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.login-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* Inputs */
+.login-input {
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  font-size: 0.95rem;
+}
+
+.login-input:focus {
   outline: none;
+  box-shadow: 0 0 0 0.15rem rgba(189, 159, 105, 0.35);
+  border-color: #bd9f69;
 }
 
-/* Estilos para los contenedores de entrada */
-.input-container {
-  display: flex;
-  align-items: center;
+/* Iconos */
+.input-icon {
+  background-color: #f7f7f7;
+  border-radius: 999px 0 0 999px;
+  border-right: none;
+  color: #a0834e;
 }
 
-.input-container label {
-  width: 150px; /* Ancho fijo para las etiquetas */
-  margin-right: 10px;
+.input-icon-clickable {
+  cursor: pointer;
+  border-radius: 0 999px 999px 0;
+  border-left: none;
 }
 
-.input-container select,
-.input-container input {
-  flex: 1;
+/* Botón principal */
+.login-btn.btn-primary {
+  background-color: #a0834e;
+  border-color: #a0834e;
+  border-radius: 999px;
+  font-weight: 600;
 }
 
-/* Estilos para el mensaje de error */
+.login-btn.btn-primary:hover,
+.login-btn.btn-primary:focus {
+  background-color: #bd9f69;
+  border-color: #bd9f69;
+}
+
+/* Mensaje de error */
 .text-danger {
-  color: red;
-  font-weight: bold;
+  color: #d9534f;
+  font-weight: 600;
 }
 
-/* Estilos para el mensaje de éxito */
-.text-success {
-  color: green;
-  font-weight: bold;
+/* Responsive: en pantallas pequeñas solo se muestra el formulario redondeado */
+@media (max-width: 767.98px) {
+  .login-card-form {
+    border-radius: 18px;
+  }
 }
-

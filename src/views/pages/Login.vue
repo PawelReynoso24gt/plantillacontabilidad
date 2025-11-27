@@ -1,26 +1,51 @@
 <template>
-  <div class="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+  <div class="login-page min-vh-100 d-flex align-items-center justify-content-center">
     <CContainer>
       <CRow class="justify-content-center">
-        <CCol :md="8">
-          <CCardGroup>
-            <CCard class="p-4">
+        <CCol :md="10" :lg="8">
+          <CCardGroup class="login-card-group shadow-lg">
+            <!-- Lado del logo / bienvenida -->
+            <CCard class="login-card-brand d-none d-md-flex flex-column align-items-center justify-content-center">
+              <!-- Cambia la ruta del logo según tu proyecto -->
+              <img
+                src="../../assets/brand/logoComp.png"
+                alt="Logo"
+                class="login-logo mb-4"
+              />
+            </CCard>
+
+            <!-- Lado del formulario -->
+            <CCard class="login-card-form p-4">
               <CCardBody>
                 <CForm @submit.prevent="login">
-                  <h1>BIENVENIDOS!</h1>
-                  <p class="text-body-secondary">Inicia sesión con tu usuario!</p>
+                  <div class="text-center mb-4 d-md-none">
+                    <!-- Logo visible también en pantallas pequeñas -->
+                    <img
+                       src="../../assets/brand/logoComp.png"
+                      alt="Logo"
+                      class="login-logo mb-3"
+                    />
+                  </div>
+
+                  <h1 class="login-title mb-2">Inicia sesión</h1>
+                  <p class="login-subtitle mb-4">
+                    Usa tu usuario, contraseña y selecciona el proyecto.
+                  </p>
+
                   <CInputGroup class="mb-3">
-                    <CInputGroupText>
+                    <CInputGroupText class="input-icon">
                       <font-awesome-icon :icon="['fas', 'user']" />
                     </CInputGroupText>
                     <CFormInput
                       v-model="usuarios"
                       placeholder="Usuario"
                       autocomplete="usuarios"
+                      class="login-input"
                     />
                   </CInputGroup>
+
                   <CInputGroup class="mb-3">
-                    <CInputGroupText>
+                    <CInputGroupText class="input-icon">
                       <font-awesome-icon :icon="['fas', 'lock']" />
                     </CInputGroupText>
                     <CFormInput
@@ -28,25 +53,39 @@
                       v-model="contrasenias"
                       placeholder="Contraseña"
                       autocomplete="contrasenias"
+                      class="login-input"
                     />
-                    <CInputGroupText @click="togglePasswordVisibility">
+                    <CInputGroupText
+                      class="input-icon input-icon-clickable"
+                      @click="togglePasswordVisibility"
+                    >
                       <font-awesome-icon :icon="['fas', showPassword ? 'eye-slash' : 'eye']" />
                     </CInputGroupText>
                   </CInputGroup>
+
                   <CInputGroup class="mb-4">
-                    <CInputGroupText>
+                    <CInputGroupText class="input-icon">
                       <font-awesome-icon :icon="['fas', 'project-diagram']" />
                     </CInputGroupText>
-                    <select v-model="tipoProyecto" class="form-select">
+                    <select
+                      v-model="tipoProyecto"
+                      class="form-select login-input"
+                    >
                       <option :value="null" disabled>Seleccionar tipo de proyecto</option>
                       <option value="agricola">Proyecto Agrícola</option>
                       <option value="capilla">Proyecto Capilla</option>
                     </select>
                   </CInputGroup>
-                  <p v-if="error" class="text-danger">{{ error }}</p>
-                  <CRow>
+
+                  <p v-if="error" class="text-danger mb-3">
+                    {{ error }}
+                  </p>
+
+                  <CRow class="align-items-center">
                     <CCol :xs="6">
-                      <CButton type="submit" color="primary" class="px-4">Login</CButton>
+                      <CButton type="submit" color="primary" class="px-4 login-btn">
+                        Login
+                      </CButton>
                     </CCol>
                   </CRow>
                 </CForm>
@@ -64,6 +103,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
+// importa tu css global de login
+import '../../styles/css/Login.css';
 
 export default {
   name: 'Login',
@@ -91,6 +132,7 @@ export default {
         console.log('Usuario:', usuarios.value);
         console.log('Contraseña:', contrasenias.value);
         console.log('Tipo de proyecto:', tipoProyecto.value);
+
         const response = await axios.post('http://127.0.0.1:8000/logins/authenticate', {
           usuarios: usuarios.value,
           contrasenias: contrasenias.value,
@@ -102,7 +144,11 @@ export default {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('tipoProyecto', tipoProyecto.value);
           const projectToken = tipoProyecto.value === 'agricola' ? '1' : '2';
-          store.dispatch('updateSelectedProject', tipoProyecto.value === 'agricola' ? 'Proyecto Agrícola' : 'Proyecto Capilla');
+
+          store.dispatch(
+            'updateSelectedProject',
+            tipoProyecto.value === 'agricola' ? 'Proyecto Agrícola' : 'Proyecto Capilla'
+          );
           store.dispatch('updateProjectToken', projectToken);
 
           if (tipoProyecto.value === 'agricola') {
@@ -122,9 +168,17 @@ export default {
           error.value = 'Error de inicio de sesión. Por favor, inténtelo de nuevo.';
         }
       }
-    };//añañin
+    };
 
-    return { usuarios, contrasenias, tipoProyecto, showPassword, error, togglePasswordVisibility, login };
+    return {
+      usuarios,
+      contrasenias,
+      tipoProyecto,
+      showPassword,
+      error,
+      togglePasswordVisibility,
+      login,
+    };
   },
 };
 </script>
