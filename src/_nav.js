@@ -63,7 +63,7 @@ export default function useNavAgricola() {
       component: 'CNavGroup',
       name: 'Informes',
       to: '/icons',
-      icon: 'cil-star',
+      icon: 'cil-notes',
       items: [
         {
           component: 'CNavItem',
@@ -104,7 +104,7 @@ export default function useNavAgricola() {
       component: 'CNavGroup',
       name: 'CRUDS Simples',
       to: '/notifications',
-      icon: 'cil-bell',
+     icon: 'cil-file',
       items: [
         {
           component: 'CNavItem',
@@ -142,7 +142,7 @@ export default function useNavAgricola() {
       component: 'CNavItem',
       name: 'Desarrolladores',
       to: '/widgets',
-      icon: 'cil-bell',
+      icon: 'cil-star',
     }
   ];
 

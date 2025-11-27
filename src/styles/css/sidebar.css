@@ -1,0 +1,88 @@
+/* CONTENEDOR PRINCIPAL DEL SIDEBAR */
+.slm-sidebar {
+  background: #292b57;             
+  color: #f7f7f7;
+  border-right: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+/* HEADER DEL SIDEBAR (LOGO) */
+.slm-sidebar-header {
+  background: #41251c;             
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.slm-sidebar-header img {
+  max-height: 60px;
+  width: auto;
+}
+
+/* FOOTER DEL SIDEBAR (TOGGLER) */
+.slm-sidebar-footer {
+  background: #292b57;
+}
+
+/* TÍTULOS (Acciones, Informes, etc.) */
+.slm-sidebar .sidebar-nav .nav-title {
+  color: #bd9f69;                   /* dorado suave */
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.75rem;
+}
+
+/* LINKS (Inicio, Egresos, Ingresos, etc.) */
+.slm-sidebar .sidebar-nav .nav-link {
+  color: #f7f7f7;
+  font-weight: 500;
+  border-radius: 999px;
+  margin: 0.15rem 0.4rem;
+  padding: 0.55rem 0.85rem;
+}
+
+/* ICONOS DE LOS LINKS */
+.slm-sidebar .sidebar-nav .nav-link .nav-icon {
+  color: #bd9f69;                   /* dorado para iconos */
+}
+
+/* HOVER SOBRE LINKS */
+.slm-sidebar .sidebar-nav .nav-link:hover {
+  background: rgba(189, 159, 105, 0.18);
+  color: #ffffff;
+}
+
+/* LINK ACTIVO (RUTA ACTUAL) */
+.slm-sidebar .sidebar-nav .nav-link.active {
+  background: linear-gradient(90deg, #bd9f69, #a0834e);
+  color: #080808;
+}
+
+.slm-sidebar .sidebar-nav .nav-link.active .nav-icon {
+  color: #080808;
+}
+
+/* GRUPO ABIERTO (CNavGroup) */
+.slm-sidebar .sidebar-nav .nav-group.show > .nav-group-toggle {
+  background: rgba(189, 159, 105, 0.22);
+}
+
+/* SCROLL INTERNO DEL SIDEBAR (OPCIONAL) */
+.slm-sidebar .sidebar-nav {
+  scrollbar-width: thin;
+}
+
+.slm-sidebar .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.slm-sidebar .sidebar-nav::-webkit-scrollbar-track {
+  background: #292b57;
+}
+
+.slm-sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+  background: #a0834e;
+  border-radius: 999px;
+}
