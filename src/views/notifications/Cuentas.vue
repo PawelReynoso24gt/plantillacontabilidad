@@ -35,6 +35,26 @@
             <option v-for="proyecto in proyectos" :value="proyecto.nombre" :key="proyecto.id_proyectos">{{ proyecto.nombre }}</option>
           </select>
         </div>
+        <div class="tipo_cuenta">
+          <label for="tipo_cuenta">Tipo Cuenta</label>
+          <div class="tipo-cuenta-select">
+            <select id="tipo_cuenta" v-model="tipo_cuenta">
+              <option disabled value="">-- Selecciona --</option>
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="PASIVO">PASIVO</option>
+            </select>
+          </div>
+        </div>
+        <div class="corriente">
+          <label for="corriente">Corriente</label>
+          <div class="corriente-select">
+            <select id="corriente" v-model="corriente">
+              <option disabled value="">-- Selecciona --</option>
+              <option value="CORRIENTE">CORRIENTE</option>
+              <option value="NO CORRIENTE">NO CORRIENTE</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -74,6 +94,8 @@ export default {
     const errorMessage = ref('');
     const successMessage = ref('');
     const isEstadoEnabled = ref(false);
+    const tipo_cuenta = ref('');
+    const corriente = ref('');
 
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/cuentas/get')
@@ -116,6 +138,8 @@ export default {
           selectedClasificacion.value = proyecto.clasificacion;
           selectedTipoProyecto.value = proyecto.proyecto;
           isEstadoEnabled.value = true;
+          tipo_cuenta.value = proyecto.tipo_cuenta === 1 ? 'ACTIVO' : proyecto.tipo_cuenta === 0 ? 'PASIVO' : '';
+          corriente.value = proyecto.corriente === 1 ? 'CORRIENTE' : proyecto .corriente === 0 ? 'NO CORRIENTE' : '';
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos del proyecto.';
@@ -126,10 +150,14 @@ export default {
       errorMessage.value = '';
       successMessage.value = '';
 
-      if (!cuenta.value || !codigo.value || !selectedClasificacion.value || !selectedTipoProyecto.value) {
+      if (!cuenta.value || !codigo.value || !selectedClasificacion.value || !selectedTipoProyecto.value || !tipo_cuenta.value || !corriente.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
         return;
       }
+
+      // map select labels to numeric flags expected by backend
+      const tipo_cuentaFlag = tipo_cuenta.value === 'ACTIVO' ? 1 : tipo_cuenta.value === 'PASIVO' ? 0 : null;
+      const corrienteFlag = corriente.value === 'CORRIENTE' ? 1 : corriente.value === 'NO CORRIENTE' ? 0 : null;
 
       const datos = {
         cuenta: cuenta.value,
@@ -137,6 +165,9 @@ export default {
         clasificacion: selectedClasificacion.value,
         proyecto: selectedTipoProyecto.value
       };
+
+      if (tipo_cuentaFlag !== null) datos.tipo_cuenta = tipo_cuentaFlag;
+      if (corrienteFlag !== null) datos.corriente = corrienteFlag;
 
       axios.post('http://127.0.0.1:8000/cuentas/create', datos)
         .then(response => {
@@ -181,6 +212,16 @@ export default {
         datos.proyecto = selectedTipoProyecto.value;
       }
 
+      const tipo_cuentaFlag = tipo_cuenta.value === 'ACTIVO' ? 1 : tipo_cuenta.value === 'PASIVO' ? 0 : null;
+      if (tipo_cuentaFlag !== null) {
+        datos.tipo_cuenta = tipo_cuentaFlag;
+      }
+
+      const corrienteFlag = corriente.value === 'CORRIENTE' ? 1 : corriente.value === 'NO CORRIENTE' ? 0 : null;
+      if (corrienteFlag !== null) {
+        datos.corriente = corrienteFlag;
+      }
+
       if (Object.keys(datos).length === 0) {
         errorMessage.value = 'No hay campos para actualizar.';
         return;
@@ -204,6 +245,8 @@ export default {
       selectedClasificacion.value = '';
       selectedTipoProyecto.value = '';
       selectedProject.value = '';
+      tipo_cuenta.value = '';
+      corriente.value = '';
       errorMessage.value = '';
       successMessage.value = '';
       isEstadoEnabled.value = false;
@@ -235,7 +278,9 @@ export default {
       cargarDatosProyecto,
       errorMessage,
       successMessage,
-      isEstadoEnabled
+      isEstadoEnabled,
+      tipo_cuenta,
+      corriente
     };
   },
 };
