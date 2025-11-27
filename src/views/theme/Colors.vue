@@ -1,36 +1,61 @@
 <template>
-  <div>
-    <div style="display: flex; justify-content: center; align-items: center; height: 30vh;">
-      <img src="@/assets/brand/logoComp.png" class="large-image"/>
-    </div>
-    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <div style="text-align: center; color: gray; font-size: 50px; margin-bottom: 20px;">
-        PROYECTO AGRÍCOLA
+  <div class="dashboard-wrapper">
+      <!-- Encabezado con logo y título -->
+      <div class="project-header">
+        <img
+          src="@/assets/brand/logoComp.png"
+          alt="Logo Hogar Santa Luisa de Marillac"
+          class="project-logo"
+        />
+        <div class="project-title-block">
+          <h1 class="project-title">PROYECTO AGRÍCOLA</h1>
+          <p class="project-subtitle">
+            Hogar de Ancianas "Santa Luisa de Marillac"
+          </p>
+          <div class="project-divider"></div>
+        </div>
       </div>
-      <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-        <img src="@/assets/brand/hogar12.jpg" class="small-image"/>
-        <img src="@/assets/brand/hogar123.jpg" class="small-image"/>
       </div>
-    </div>
-  </div>
+
+      <!-- Contenido principal: imágenes -->
+      <div class="project-content">
+        <div class="project-main-image-wrapper">
+          <img
+            src="@/assets/brand/hogar12.jpg"
+            alt="Entrada del Hogar"
+            class="project-main-image"
+          />
+        </div>
+        <div class="project-side-content">
+          <img
+            src="@/assets/brand/hogar123.jpg"
+            alt="Residentes del hogar"
+            class="project-side-image"
+          />
+          <div class="project-text-box">
+            <p>
+              Proyecto enfocado en el acompañamiento y sostenimiento agrícola
+              del Hogar, buscando apoyar el bienestar integral de las
+              residentes.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie de página -->
+      <div class="project-footer">
+    
+      </div>
+    
+ 
 </template>
 
-<style>
-.large-image {
-  width: 500px; /* O el tamaño deseado */
-  height: auto; /* Mantener la proporción original */
-}
-
-.small-image {
-  width: 600px; /* Tamaño de las imágenes */
-  height: auto; /* Mantener la proporción original */
-}
-</style>
-
 <script>
-
 import WidgetsStatsA from './../widgets/WidgetsStatsTypeA.vue'
 import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
+
+
+import '../../styles/css/dashboard.css'
 
 export default {
   name: 'Dashboard',
@@ -43,3 +68,5 @@ export default {
   },
 }
 </script>
+
+
