@@ -230,104 +230,114 @@ export default {
     };
 
     const generarPDF = () => {
-      const doc = new jsPDF('landscape');
 
-      // Encabezado tipo LibroDiario
-      doc.setFontSize(16);
-      doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
-      doc.rect(60, 17, 170, 15);
+    if (!ingresosEgresos.value.length) {
+      console.warn('No hay movimientos para generar el PDF.');
+      return;
+    }
 
-      doc.setFontSize(12);
-      doc.text(
-        `Dirección del Proyecto: ${direccionProyecto.value}`,
-        20,
-        40
-      );
+    const doc = new jsPDF('landscape');
 
-      const textoAdicional = `REPORTE: ESTADO DE MOVIMIENTOS POR CUENTA`;
-      doc.setFontSize(10);
-      doc.text(textoAdicional, 20, 50);
+    // Encabezado tipo LibroDiario / Libro Mayor
+    doc.setFontSize(16);
+    doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
+    doc.rect(60, 17, 170, 15);
 
-      const especificacion = `CUENTA: ${codigoCuenta.value} - ${nombreCuenta.value} | PERÍODO: Anual ${year}`;
-      doc.text(especificacion, 20, 60);
+    doc.setFontSize(12);
+    doc.text(
+      `Dirección del Proyecto: ${direccionProyecto.value}`,
+      20,
+      40
+    );
 
-      const columnas = [
-        { title: 'Conteo', dataKey: 'nomenclatura' },
-        { title: 'Número de Documento', dataKey: 'numero_documento' },
-        { title: 'Fecha', dataKey: 'fecha' },
-        { title: 'Cuenta', dataKey: 'cuenta' },
-        { title: 'Descripción', dataKey: 'descripcion' },
-        { title: 'Acredita', dataKey: 'acredita' },
-        { title: 'Debita', dataKey: 'debita' },
-        { title: 'Saldo', dataKey: 'total' }
-      ];
+    const textoAdicional = 'REPORTE: LIBRO MAYOR - ESTADO DE MOVIMIENTOS POR CUENTA';
+    doc.setFontSize(10);
+    doc.text(textoAdicional, 20, 50);
 
-      const filas = ingresosEgresos.value.map((row) => {
-        const total = row.total ? formatNumber(row.total) : '';
+    const especificacion = `CUENTA: ${codigoCuenta.value} - ${nombreCuenta.value} | PERÍODO: Anual ${year}`;
+    doc.text(especificacion, 20, 60);
 
-        if (
-          row.cuenta === 'Saldo inicial' ||
-          row.cuenta === 'Suma total'
-        ) {
-          return {
-            nomenclatura: row.nomenclatura,
-            numero_documento: row.numero_documento || '-',
-            fecha: row.fecha || '',
-            cuenta: row.cuenta,
-            descripcion: row.descripcion,
-            acredita: '',
-            debita: '',
-            total: { content: total, styles: { fontStyle: 'bold' } }
-          };
-        }
+    // 👉 aquí usamos "columns" y lo pasamos como tal a autoTable
+    const columns = [
+      { title: 'Conteo', dataKey: 'nomenclatura' },
+      { title: 'Número de Documento', dataKey: 'numero_documento' },
+      { title: 'Fecha', dataKey: 'fecha' },
+      { title: 'Cuenta', dataKey: 'cuenta' },
+      { title: 'Descripción', dataKey: 'descripcion' },
+      { title: 'Acredita', dataKey: 'acredita' },
+      { title: 'Debita', dataKey: 'debita' },
+      { title: 'Saldo', dataKey: 'total' }
+    ];
 
+    const filas = ingresosEgresos.value.map((row) => {
+      const total = row.total ? formatNumber(row.total) : '';
+
+      if (
+        row.cuenta === 'Saldo inicial' ||
+        row.cuenta === 'Suma total'
+      ) {
         return {
           nomenclatura: row.nomenclatura,
           numero_documento: row.numero_documento || '-',
-          fecha: row.fecha,
+          fecha: row.fecha || '',
           cuenta: row.cuenta,
           descripcion: row.descripcion,
-          acredita: row.acredita ? formatNumber(row.acredita) : '',
-          debita: row.debita ? formatNumber(row.debita) : '',
-          total: total
+          acredita: '',
+          debita: '',
+          total: { content: total, styles: { fontStyle: 'bold' } }
         };
-      });
+      }
 
-      doc.autoTable({
-        columns,
-        body: filas,
-        startY: 80,
-        theme: 'grid',
-        styles: {
-          cellPadding: 3,
-          fontSize: 8,
-          halign: 'left',
-          valign: 'middle'
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: [255, 255, 255]
-        },
-        columnStyles: {
-          nomenclatura: { minCellWidth: 20, halign: 'left' },
-          numero_documento: { minCellWidth: 30, halign: 'left' },
-          fecha: { minCellWidth: 20, halign: 'left' },
-          cuenta: { minCellWidth: 40, halign: 'left' },
-          descripcion: { minCellWidth: 40, halign: 'left' },
-          acredita: { minCellWidth: 20, halign: 'right' },
-          debita: { minCellWidth: 20, halign: 'right' },
-          total: { minCellWidth: 20, halign: 'right' }
-        }
-      });
+      return {
+        nomenclatura: row.nomenclatura,
+        numero_documento: row.numero_documento || '-',
+        fecha: row.fecha,
+        cuenta: row.cuenta,
+        descripcion: row.descripcion,
+        acredita: row.acredita ? formatNumber(row.acredita) : '',
+        debita: row.debita ? formatNumber(row.debita) : '',
+        total: total
+      };
+    });
 
-      const blob = doc.output('blob');
-      saveAs(blob, `libro_diario_cuenta_${codigoCuenta.value}.pdf`);
-    };
+    doc.autoTable({
+      columns,          // 👈 antes ponías "columnas" sin existir, aquí ya está bien
+      body: filas,
+      startY: 80,
+      theme: 'grid',
+      styles: {
+        cellPadding: 3,
+        fontSize: 8,
+        halign: 'left',
+        valign: 'middle'
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: [255, 255, 255]
+      },
+      columnStyles: {
+        nomenclatura: { minCellWidth: 20, halign: 'left' },
+        numero_documento: { minCellWidth: 30, halign: 'left' },
+        fecha: { minCellWidth: 20, halign: 'left' },
+        cuenta: { minCellWidth: 40, halign: 'left' },
+        descripcion: { minCellWidth: 40, halign: 'left' },
+        acredita: { minCellWidth: 20, halign: 'right' },
+        debita: { minCellWidth: 20, halign: 'right' },
+        total: { minCellWidth: 20, halign: 'right' }
+      }
+    });
+
+    // (Opcional) podrías usar doc.lastAutoTable?.finalY si quisieras seguir escribiendo más contenido
+
+    const blob = doc.output('blob');
+    saveAs(blob, `libro_mayor_cuenta_${codigoCuenta.value}.pdf`);
+  };
 
     const volver = () => {
       router.back();
     };
 
+    
     onMounted(() => {
       cargarMovimientos();
     });

@@ -408,7 +408,153 @@ export default {
       reporteData.value = null;
     };
 
+    // Generar PDF (tu lógica original con firmas)
     const generarPDF = async () => {
+      try {
+        const response = await axios.post(
+          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
+          {
+            tipo: selectedPeriodo.value.toLowerCase(),
+            mes: selectedMes.value.toLowerCase()
+          }
+        );
+        const data = response.data;
+
+  const doc = new jsPDF();
+        let yOffset = 20;
+        const pageHeight = doc.internal.pageSize.height;
+        const pageMargin = 20;
+
+        const addPageIfNeeded = () => {
+          if (yOffset > pageHeight - pageMargin) {
+            doc.addPage();
+            yOffset = 20;
+          }
+        };
+
+        const addTable = (head, body) => {
+          doc.autoTable({
+            head: [head],
+            body: body,
+            startY: yOffset,
+            theme: 'grid',
+            styles: {
+              cellPadding: 2.5,
+              fontSize: 8,
+              halign: 'center',
+              valign: 'middle',
+              overflow: 'linebreak'
+            },
+            headStyles: {
+              fillColor: [41, 128, 185],
+              textColor: [255, 255, 255]
+            }
+          });
+          yOffset = doc.autoTable.previous.finalY + 10;
+        };
+
+  // Determinar texto de periodo (mismo que periodoTexto)
+        let periodoTextoPDF;
+        if (selectedPeriodo.value === 'Mensual') {
+          periodoTextoPDF = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
+        } else if (selectedPeriodo.value === 'Trimestral') {
+          const trimestre = {
+            Enero: 'PRIMER TRIMESTRE',
+            Abril: 'SEGUNDO TRIMESTRE',
+            Julio: 'TERCER TRIMESTRE',
+            Octubre: 'CUARTO TRIMESTRE'
+          };
+          periodoTextoPDF = `RESUMEN ${trimestre[selectedMes.value] || ''
+            }`;
+        } else if (selectedPeriodo.value === 'Semestral') {
+          periodoTextoPDF =
+            selectedMes.value === 'Enero'
+              ? 'RESUMEN PRIMER SEMESTRE'
+              : 'RESUMEN SEGUNDO SEMESTRE';
+        } else if (selectedPeriodo.value === 'Anual') {
+          periodoTextoPDF = 'RESUMEN ANUAL';
+        }
+
+        // Encabezado
+        doc.setFontSize(16);
+        doc.text(
+          `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
+          105,
+          27,
+          { align: 'center' }
+        );
+        doc.setLineWidth(0.5);
+        doc.line(60, 32, 150, 32);
+
+        doc.setFontSize(12);
+        yOffset = 40;
+        doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
+        doc.text(periodoTextoPDF, 91, 40);
+        doc.text(`DE`, 165, 40);
+        doc.text(`${currentYear}`, 175, 40);
+        doc.text(
+          `PROYECTO CAPILLA HOGAR SANTA LUISA`,
+          20,
+          50
+        );
+        doc.text(`LUGAR:`, 130, 50);
+        doc.text(`QUETZALTENANGO`, 155, 50);
+        doc.text(`GUATEMALA`, 20, 60);
+        doc.text(`FECHA:`, 130, 60);
+        doc.text(fechaHoy, 160, 60);
+
+        // Tabla (SOLO EGRESOS). Construimos filas solo con egresos > 0
+        yOffset = 75;
+
+        const parseNumber = (v) => {
+          if (v === null || v === undefined || v === '') return 0;
+          const s = String(v).replace(/,/g, '');
+          const n = parseFloat(s);
+          return isNaN(n) ? 0 : n;
+        };
+
+        const tableData = [];
+
+        // SALDO INICIAL
+        tableData.push(['SALDO INICIAL', '', '', formatQ(parseNumber(data.saldo_inicial))]);
+        tableData.push(['SALDO INICIAL EN CAJA GENERAL', '', formatQ(parseNumber(data.saldo_inicial_caja)), '']);
+        tableData.push(['SALDO INICIAL EN BANCO', '', formatQ(parseNumber(data.saldo_inicial_bancos)), '']);
+
+        // EGRESOS - CAJA
+        tableData.push(['EGRESOS', '', '', formatQ(parseNumber(data.total_general_egresos))]);
+        tableData.push(['CAJA GENERAL', '', formatQ(parseNumber(data.total_egresos_caja)), '']);
+        data.data_caja
+          .filter((item) => parseNumber(item.egresos) > 0)
+          .forEach((eg) => {
+            tableData.push([eg.cuenta, formatQ(parseNumber(eg.egresos)), '', '']);
+          });
+
+        // EGRESOS - BANCOS
+        tableData.push(['BANCO', '', formatQ(parseNumber(data.total_egresos_bancos)), '']);
+        data.data_bancos
+          .filter((item) => parseNumber(item.egresos) > 0)
+          .forEach((eg) => {
+            tableData.push([eg.cuenta, formatQ(parseNumber(eg.egresos)), '', '']);
+          });
+
+        // SALDO FINAL
+        tableData.push(['SALDO FINAL', '', '', formatQ(parseNumber(data.total_saldo_final))]);
+        tableData.push(['SALDO FINAL EN CAJA GENERAL', '', formatQ(parseNumber(data.total_saldo_final_caja)), '']);
+        tableData.push(['SALDO FINAL EN BANCO', '', formatQ(parseNumber(data.total_saldo_final_bancos)), '']);
+
+        // SUMAS IGUALES
+        tableData.push(['SUMAS IGUALES', '', formatQ(parseNumber(data.total_saldo_final)), formatQ(parseNumber(data.total_saldo_final))]);
+
+        const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
+        addTable(tableHeaders, tableData);
+
+        // (Se eliminaron las firmas de la versión PDF)
+
+        const blob = doc.output('blob');
+        saveAs(blob, 'informe_final_capilla.pdf');
+      } catch (error) {
+        console.error('Error al generar el PDF:', error);
+      }
     };
 
     return {
