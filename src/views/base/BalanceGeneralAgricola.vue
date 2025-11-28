@@ -1,7 +1,7 @@
 <template>
 
     <div>
-        <h1>Balance General - Capilla</h1>
+        <h1>Balance General - Agricola</h1>
     </div>
     <!-- Filtros / encabezado del form -->
     <div class="nombre-fecha-container">
@@ -195,155 +195,96 @@ export default {
             }
         };
 
+        // helper: parse numbers robustly (accepts '1,234.56' and 'Q 1,234.56')
+        const parseNumberString = (v) => {
+            if (v === null || v === undefined || v === '') return 0;
+            if (typeof v === 'number') return v;
+            const s = String(v).replace(/[^0-9\.-]+/g, '');
+            const n = parseFloat(s);
+            return isNaN(n) ? 0 : n;
+        };
+
+        // getItems: prefer nested container[cat][sub] arrays; otherwise filter flatArray by flags
+        const getItems = (container, flatArray, cat, sub, field) => {
+            try {
+                if (container && container[cat] && container[cat][sub] && Array.isArray(container[cat][sub])) {
+                    return container[cat][sub].filter((it) => parseNumberString(it[field]) > 0);
+                }
+
+                if (Array.isArray(flatArray)) {
+                    return flatArray.filter((it) => {
+                        const tipo = it.tipoCuenta ?? it.tipo_cuenta ?? it.tipo ?? null; // 1=ACTIVO,0=PASIVO
+                        const corriente = it.corriente ?? it.es_corriente ?? null; // 1=CORRIENTE,0=NO
+                        const tipoMatch = cat === 'activos' ? tipo == 1 : tipo == 0;
+                        const subMatch = sub === 'corriente' ? corriente == 1 : corriente == 0;
+                        return tipoMatch && subMatch && parseNumberString(it[field]) > 0;
+                    });
+                }
+
+                return [];
+            } catch (e) {
+                return [];
+            }
+        };
+
         const tablaPreview = computed(() => {
             if (!reporteData.value) return [];
-
             const d = reporteData.value;
 
+            const rows = [];
 
-            const rows = [
-                {
-                    tipo: 'heading',
-                    col1: 'SALDO INICIAL',
-                    col2: '',
-                    col3: '',
-                    col4: formatQ(d.saldo_inicial)
-                },
-                {
-                    tipo: 'normal',
-                    col1: 'SALDO INICIAL EN CAJA GENERAL',
-                    col2: '',
-                    col3: formatQ(d.saldo_inicial_caja),
-                    col4: ''
-                },
-                {
-                    tipo: 'normal',
-                    col1: 'SALDO INICIAL EN BANCO',
-                    col2: '',
-                    col3: formatQ(d.saldo_inicial_bancos),
-                    col4: ''
-                },
+            // Saldo inicial
+            rows.push({ tipo: 'heading', col1: 'SALDO INICIAL', col2: '', col3: '', col4: formatQ(d.saldo_inicial) });
+            rows.push({ tipo: 'normal', col1: 'SALDO INICIAL EN CAJA GENERAL', col2: '', col3: formatQ(d.saldo_inicial_caja), col4: '' });
+            rows.push({ tipo: 'normal', col1: 'SALDO INICIAL EN BANCO', col2: '', col3: formatQ(d.saldo_inicial_bancos), col4: '' });
 
+            // INGRESOS
+            rows.push({ tipo: 'heading', col1: 'INGRESOS', col2: '', col3: '', col4: formatQ(d.total_general_ingresos) });
+            rows.push({ tipo: 'heading', col1: 'ACTIVO', col2: '', col3: '', col4: '' });
 
-                {
-                    tipo: 'heading',
-                    col1: 'INGRESOS',
-                    col2: '',
-                    col3: '',
-                    col4: formatQ(d.total_general_ingresos)
-                },
-                {
-                    tipo: 'normal',
-                    col1: 'CAJA GENERAL',
-                    col2: '',
-                    col3: formatQ(d.total_ingresos_caja),
-                    col4: ''
-                },
+            // CAJA GENERAL
+            rows.push({ tipo: 'heading', col1: 'CAJA GENERAL', col2: '', col3: formatQ(d.total_ingresos_caja), col4: '' });
 
-                ...d.data_caja
-                    .filter(
-                        (item) => item.ingresos && parseFloat(item.ingresos) > 0
-                    )
-                    .map((ingreso) => ({
-                        tipo: 'normal',
-                        col1: ingreso.cuenta,
-                        col2: formatQ(ingreso.ingresos),
-                        col3: '',
-                        col4: ''
-                    })),
-                {
-                    tipo: 'normal',
-                    col1: 'BANCO',
-                    col2: '',
-                    col3: formatQ(d.total_ingresos_bancos),
-                    col4: ''
-                },
+            const caja_corriente = getItems(d, d.data_caja, 'activos', 'corriente', 'ingresos');
+            caja_corriente.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.ingresos), col3: '', col4: '' }));
 
-                ...d.data_bancos
-                    .filter(
-                        (item) => item.ingresos && parseFloat(item.ingresos) > 0
-                    )
-                    .map((ingreso) => ({
-                        tipo: 'normal',
-                        col1: ingreso.cuenta,
-                        col2: formatQ(ingreso.ingresos),
-                        col3: '',
-                        col4: ''
-                    })),
+            rows.push({ tipo: 'heading', col1: 'NO CORRIENTE', col2: '', col3: '', col4: '' });
+            const caja_no = getItems(d, d.data_caja, 'activos', 'no_corriente', 'ingresos');
+            caja_no.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.ingresos), col3: '', col4: '' }));
 
+            // BANCOS
+            rows.push({ tipo: 'heading', col1: 'BANCOS', col2: '', col3: formatQ(d.total_ingresos_bancos), col4: '' });
+            const bancos_corriente = getItems(d, d.data_bancos, 'activos', 'corriente', 'ingresos');
+            bancos_corriente.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.ingresos), col3: '', col4: '' }));
+            rows.push({ tipo: 'heading', col1: 'NO CORRIENTE', col2: '', col3: '', col4: '' });
+            const bancos_no = getItems(d, d.data_bancos, 'activos', 'no_corriente', 'ingresos');
+            bancos_no.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.ingresos), col3: '', col4: '' }));
 
-                {
-                    tipo: 'heading',
-                    col1: 'EGRESOS',
-                    col2: '',
-                    col3: '',
-                    col4: formatQ(d.total_general_egresos)
-                },
-                {
-                    tipo: 'normal',
-                    col1: 'CAJA GENERAL',
-                    col2: '',
-                    col3: formatQ(d.total_egresos_caja),
-                    col4: ''
-                },
-                ...d.data_caja
-                    .filter(
-                        (item) => item.egresos && parseFloat(item.egresos) > 0
-                    )
-                    .map((egreso) => ({
-                        tipo: 'normal',
-                        col1: egreso.cuenta,
-                        col2: formatQ(egreso.egresos),
-                        col3: '',
-                        col4: ''
-                    })),
-                {
-                    tipo: 'normal',
-                    col1: 'BANCO',
-                    col2: '',
-                    col3: formatQ(d.total_egresos_bancos),
-                    col4: ''
-                },
-                ...d.data_bancos
-                    .filter(
-                        (item) => item.egresos && parseFloat(item.egresos) > 0
-                    )
-                    .map((egreso) => ({
-                        tipo: 'normal',
-                        col1: egreso.cuenta,
-                        col2: formatQ(egreso.egresos),
-                        col3: '',
-                        col4: ''
-                    })),
-                {
-                    tipo: 'heading',
-                    col1: 'SALDO FINAL',
-                    col2: '',
-                    col3: '',
-                    col4: formatQ(d.total_saldo_final)
-                },
-                {
-                    tipo: 'normal',
-                    col1: 'SALDO FINAL EN CAJA GENERAL',
-                    col2: '',
-                    col3: formatQ(d.total_saldo_final_caja),
-                    col4: ''
-                },
-                {
-                    tipo: 'normal',
-                    col1: 'SALDO FINAL EN BANCO',
-                    col2: '',
-                    col3: formatQ(d.total_saldo_final_bancos),
-                    col4: ''
-                },
-                {
-                    tipo: 'heading',
-                    col1: 'SUMAS IGUALES',
-                    col2: '',
-                    col3: formatQ(d.total_saldo_final),
-                    col4: formatQ(d.total_saldo_final)
-                }
-            ];
+            // EGRESOS
+            rows.push({ tipo: 'heading', col1: 'EGRESOS', col2: '', col3: '', col4: formatQ(d.total_general_egresos) });
+            rows.push({ tipo: 'heading', col1: 'PASIVO', col2: '', col3: '', col4: '' });
+
+            // CAJA GENERAL (egresos)
+            rows.push({ tipo: 'heading', col1: 'CAJA GENERAL', col2: '', col3: formatQ(d.total_egresos_caja), col4: '' });
+            const caja_corriente_e = getItems(d, d.data_caja, 'pasivos', 'corriente', 'egresos');
+            caja_corriente_e.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.egresos), col3: '', col4: '' }));
+            rows.push({ tipo: 'heading', col1: 'NO CORRIENTE', col2: '', col3: '', col4: '' });
+            const caja_no_e = getItems(d, d.data_caja, 'pasivos', 'no_corriente', 'egresos');
+            caja_no_e.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.egresos), col3: '', col4: '' }));
+
+            // BANCOS (egresos)
+            rows.push({ tipo: 'heading', col1: 'BANCOS', col2: '', col3: formatQ(d.total_egresos_bancos), col4: '' });
+            const bancos_corriente_e = getItems(d, d.data_bancos, 'pasivos', 'corriente', 'egresos');
+            bancos_corriente_e.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.egresos), col3: '', col4: '' }));
+            rows.push({ tipo: 'heading', col1: 'NO CORRIENTE', col2: '', col3: '', col4: '' });
+            const bancos_no_e = getItems(d, d.data_bancos, 'pasivos', 'no_corriente', 'egresos');
+            bancos_no_e.forEach((it) => rows.push({ tipo: 'normal', col1: it.cuenta, col2: formatQ(it.egresos), col3: '', col4: '' }));
+
+            // Saldo final
+            rows.push({ tipo: 'heading', col1: 'SALDO FINAL', col2: '', col3: '', col4: formatQ(d.total_saldo_final) });
+            rows.push({ tipo: 'normal', col1: 'SALDO FINAL EN CAJA GENERAL', col2: '', col3: formatQ(d.total_saldo_final_caja), col4: '' });
+            rows.push({ tipo: 'normal', col1: 'SALDO FINAL EN BANCO', col2: '', col3: formatQ(d.total_saldo_final_bancos), col4: '' });
+            rows.push({ tipo: 'heading', col1: 'SUMAS IGUALES', col2: '', col3: formatQ(d.total_saldo_final), col4: formatQ(d.total_saldo_final) });
 
             return rows;
         });
@@ -467,121 +408,54 @@ export default {
 
                 yOffset = 75;
 
-                const tableData = [
-                    ['SALDO INICIAL', '', '', formatQ(data.saldo_inicial)],
-                    [
-                        'SALDO INICIAL EN CAJA GENERAL',
-                        '',
-                        formatQ(data.saldo_inicial_caja),
-                        ''
-                    ],
-                    [
-                        'SALDO INICIAL EN BANCO',
-                        '',
-                        formatQ(data.saldo_inicial_bancos),
-                        ''
-                    ],
-                    [
-                        'INGRESOS',
-                        '',
-                        '',
-                        formatQ(data.total_general_ingresos)
-                    ],
-                    [
-                        'CAJA GENERAL',
-                        '',
-                        formatQ(data.total_ingresos_caja),
-                        ''
-                    ],
-                    ...data.data_caja
-                        .filter(
-                            (item) => item.ingresos && parseFloat(item.ingresos) > 0
-                        )
-                        .map((ingreso) => [
-                            ingreso.cuenta,
-                            formatQ(ingreso.ingresos),
-                            '',
-                            ''
-                        ]),
-                    [
-                        'BANCO',
-                        '',
-                        formatQ(data.total_ingresos_bancos),
-                        ''
-                    ],
-                    ...data.data_bancos
-                        .filter(
-                            (item) => item.ingresos && parseFloat(item.ingresos) > 0
-                        )
-                        .map((ingreso) => [
-                            ingreso.cuenta,
-                            formatQ(ingreso.ingresos),
-                            '',
-                            ''
-                        ]),
-                    [
-                        'EGRESOS',
-                        '',
-                        '',
-                        formatQ(data.total_general_egresos)
-                    ],
-                    [
-                        'CAJA GENERAL',
-                        '',
-                        formatQ(data.total_egresos_caja),
-                        ''
-                    ],
-                    ...data.data_caja
-                        .filter(
-                            (item) => item.egresos && parseFloat(item.egresos) > 0
-                        )
-                        .map((egreso) => [
-                            egreso.cuenta,
-                            formatQ(egreso.egresos),
-                            '',
-                            ''
-                        ]),
-                    [
-                        'BANCO',
-                        '',
-                        formatQ(data.total_egresos_bancos),
-                        ''
-                    ],
-                    ...data.data_bancos
-                        .filter(
-                            (item) => item.egresos && parseFloat(item.egresos) > 0
-                        )
-                        .map((egreso) => [
-                            egreso.cuenta,
-                            formatQ(egreso.egresos),
-                            '',
-                            ''
-                        ]),
-                    [
-                        'SALDO FINAL',
-                        '',
-                        '',
-                        formatQ(data.total_saldo_final)
-                    ],
-                    [
-                        'SALDO FINAL EN CAJA GENERAL',
-                        '',
-                        formatQ(data.total_saldo_final_caja),
-                        ''
-                    ],
-                    [
-                        'SALDO FINAL EN BANCO',
-                        '',
-                        formatQ(data.total_saldo_final_bancos),
-                        ''
-                    ],
-                    [
-                        'SUMAS IGUALES',
-                        '',
-                        formatQ(data.total_saldo_final),
-                        formatQ(data.total_saldo_final)
-                    ]
-                ];
+                const tableData = [];
+
+                // SALDO INICIAL
+                tableData.push(['SALDO INICIAL', '', '', formatQ(data.saldo_inicial)]);
+                tableData.push(['SALDO INICIAL EN CAJA GENERAL', '', formatQ(data.saldo_inicial_caja), '']);
+                tableData.push(['SALDO INICIAL EN BANCO', '', formatQ(data.saldo_inicial_bancos), '']);
+
+                // INGRESOS / ACTIVOS
+                tableData.push(['INGRESOS', '', '', formatQ(data.total_general_ingresos)]);
+                tableData.push(['ACTIVO', '', '', '']);
+
+                tableData.push(['CAJA GENERAL', '', formatQ(data.total_ingresos_caja), '']);
+                const caja_corriente = getItems(data, data.data_caja, 'activos', 'corriente', 'ingresos');
+                caja_corriente.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+                tableData.push(['NO CORRIENTE', '', '', '']);
+                const caja_no = getItems(data, data.data_caja, 'activos', 'no_corriente', 'ingresos');
+                caja_no.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+
+                tableData.push(['BANCOS', '', formatQ(data.total_ingresos_bancos), '']);
+                const bancos_corriente = getItems(data, data.data_bancos, 'activos', 'corriente', 'ingresos');
+                bancos_corriente.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+                tableData.push(['NO CORRIENTE', '', '', '']);
+                const bancos_no = getItems(data, data.data_bancos, 'activos', 'no_corriente', 'ingresos');
+                bancos_no.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+
+                // EGRESOS / PASIVOS
+                tableData.push(['EGRESOS', '', '', formatQ(data.total_general_egresos)]);
+                tableData.push(['PASIVO', '', '', '']);
+
+                tableData.push(['CAJA GENERAL', '', formatQ(data.total_egresos_caja), '']);
+                const caja_corriente_e = getItems(data, data.data_caja, 'pasivos', 'corriente', 'egresos');
+                caja_corriente_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+                tableData.push(['NO CORRIENTE', '', '', '']);
+                const caja_no_e = getItems(data, data.data_caja, 'pasivos', 'no_corriente', 'egresos');
+                caja_no_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+
+                tableData.push(['BANCOS', '', formatQ(data.total_egresos_bancos), '']);
+                const bancos_corriente_e = getItems(data, data.data_bancos, 'pasivos', 'corriente', 'egresos');
+                bancos_corriente_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+                tableData.push(['NO CORRIENTE', '', '', '']);
+                const bancos_no_e = getItems(data, data.data_bancos, 'pasivos', 'no_corriente', 'egresos');
+                bancos_no_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+
+                // SALDO FINAL
+                tableData.push(['SALDO FINAL', '', '', formatQ(data.total_saldo_final)]);
+                tableData.push(['SALDO FINAL EN CAJA GENERAL', '', formatQ(data.total_saldo_final_caja), '']);
+                tableData.push(['SALDO FINAL EN BANCO', '', formatQ(data.total_saldo_final_bancos), '']);
+                tableData.push(['SUMAS IGUALES', '', formatQ(data.total_saldo_final), formatQ(data.total_saldo_final)]);
 
                 // Encabezado columnas
                 const tableHeaders = [
