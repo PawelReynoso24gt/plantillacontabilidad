@@ -1,5 +1,5 @@
-/* Fondo general */
-.libro-diario-wrapper {
+/* Fondo general del módulo */
+.estado-wrapper {
   background-color: #f7f7f7;
   min-height: calc(100vh - 100px);
   display: flex;
@@ -9,7 +9,7 @@
 }
 
 /* Card principal */
-.libro-diario-card {
+.estado-card {
   background-color: #ffffff;
   border-radius: 18px;
   padding: 2rem 2.5rem;
@@ -20,46 +20,48 @@
 }
 
 /* Encabezado */
-.libro-header {
+.estado-header {
   margin-bottom: 1.5rem;
 }
 
-.libro-title {
+.estado-title {
   margin: 0;
   font-size: 1.9rem;
   font-weight: 700;
-  color: #292b57; /* azul oscuro */
+  color: #292b57;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.libro-subtitle {
+.estado-subtitle {
   margin-top: 0.3rem;
   font-size: 0.95rem;
   color: #6c757d;
 }
 
-/* Bloques de filtros */
-.division-container {
-  background-color: #fafafa;
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1rem;
-  border-left: 4px solid #bd9f69; /* dorado */
+/* Filtros de período / mes */
+.nombre-fecha-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem 1.5rem;
+  gap: 1.2rem;
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  border-left: 4px solid #bd9f69;
+  margin-bottom: 1.4rem;
 }
 
-.division-inline {
-  align-items: center;
-}
-
-.field-group {
+.id-inputs {
+  flex: 1;
+  min-width: 250px;
   display: flex;
   flex-direction: column;
-  min-width: 210px;
-  flex: 1;
+  gap: 0.8rem;
+}
+
+.select-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .field-label {
@@ -82,7 +84,7 @@
 
 .field-control:focus {
   border-color: #bd9f69;
-  box-shadow: 0 0 0 0.12rem rgba(189, 159, 105, 0.45);
+  box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
 }
 
 /* Botones */
@@ -90,11 +92,12 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  margin: 0.75rem 0 1.5rem;
+  margin-bottom: 1.6rem;
 }
 
 .btn-primary,
-.btn-secondary {
+.btn-secondary,
+.btn-ghost {
   border-radius: 999px;
   padding: 0.45rem 1.4rem;
   border: none;
@@ -102,17 +105,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-}
-
-/* Generar PDF */
-.btn-primary {
-  background: #a0834e;
-  color: #ffffff;
-}
-.btn-primary:hover {
-  background: #bd9f69;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  transform: translateY(-1px);
 }
 
 /* Vista previa */
@@ -127,7 +119,29 @@
   transform: translateY(-1px);
 }
 
-/* Encabezado tipo PDF / vista previa */
+/* Generar PDF */
+.btn-primary {
+  background: #a0834e;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: #bd9f69;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Limpiar */
+.btn-ghost {
+  background: transparent;
+  color: #41251c;
+  border: 1px dashed #bd9f69;
+}
+.btn-ghost:hover {
+  background: #f7f7f7;
+  transform: translateY(-1px);
+}
+
+/* Encabezado tipo reporte */
 .encabezado-container {
   margin-top: 0.5rem;
   margin-bottom: 0.75rem;
@@ -150,12 +164,6 @@
   color: #292b57;
   text-transform: uppercase;
   letter-spacing: 1px;
-}
-
-.encabezado-direccion {
-  font-size: 0.85rem;
-  color: #41251c;
-  margin-top: 0.35rem;
 }
 
 .encabezado-detalles {
@@ -186,7 +194,7 @@
 
 .tabla-libro th,
 .tabla-libro td {
-  padding: 0.45rem 0.5rem;
+  padding: 0.45rem 0.55rem;
   border: 1px solid #dee2e6;
   text-align: left;
 }
@@ -196,23 +204,32 @@
   text-align: right;
 }
 
-.descripcion-col {
-  max-width: 320px;
-  word-wrap: break-word;
-}
-
-/* Filas especiales */
-.fila-resaltada {
-  background-color: #f9f3e6;
-}
-
 .bold-text {
   font-weight: 700;
 }
 
+.fila-resaltada {
+  background-color: #f3f6fa;
+}
+
+/* Columna de cuenta */
+.cuenta-col {
+  white-space: nowrap;
+}
+
+.link-cuenta {
+  color: #292b57;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.link-cuenta:hover {
+  color: #a0834e;
+}
+
 /* Sin datos */
 .sin-datos {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
   font-size: 0.95rem;
   color: #6c757d;
@@ -229,15 +246,15 @@
 
 /* Responsivo */
 @media (max-width: 768px) {
-  .libro-diario-card {
+  .estado-card {
     padding: 1.5rem 1.25rem;
   }
 
-  .libro-title {
-    font-size: 1.5rem;
+  .estado-title {
+    font-size: 1.6rem;
   }
 
-  .encabezado-container {
+  .nombre-fecha-container {
     flex-direction: column;
   }
 }

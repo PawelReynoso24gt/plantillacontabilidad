@@ -1,107 +1,255 @@
-/* Fondo general de la página */
-.login-page {
-  background: #f7f7f7; /* #F7F7F7 */
-}
-
-/* Grupo principal de la tarjeta */
-.login-card-group {
-  border-radius: 18px;
-  overflow: hidden;
-}
-
-/* Lado del logo / marca */
-.login-card-brand {
-  background: linear-gradient(135deg, #BD9F69, #A69581); /* #BD9F69 y #A0834E */
-  color: #ffffff;
-  min-width: 40%;
-  border: none;
-}
-
-.login-logo {
-  max-width: 300px;
-  max-height: 140px;
-  object-fit: contain;
-}
-
-.login-brand-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-}
-
-.login-brand-subtitle {
-  font-size: 0.95rem;
-  opacity: 0.95;
-}
-
-/* Lado del formulario */
-.login-card-form {
-  background: #ffffff; /* #FFFFFF */
-  border: none;
-}
-
-.login-title {
-  color: #080808; /* #080808 */
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.login-subtitle {
-  color: #6c757d;
-  font-size: 0.95rem;
-}
-
-/* Inputs */
-.login-input {
-  border-radius: 999px;
-  border: 1px solid #e0e0e0;
-  padding-left: 0.9rem;
-  padding-right: 0.9rem;
-  font-size: 0.95rem;
-}
-
-.login-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.15rem rgba(189, 159, 105, 0.35);
-  border-color: #bd9f69;
-}
-
-/* Iconos */
-.input-icon {
+/* ===== Fondo general del módulo ===== */
+.module-wrapper {
   background-color: #f7f7f7;
-  border-radius: 999px 0 0 999px;
-  border-right: none;
-  color: #a0834e;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1.5rem;
 }
 
-.input-icon-clickable {
-  cursor: pointer;
-  border-radius: 0 999px 999px 0;
-  border-left: none;
+/* ===== Card principal ===== */
+.module-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 1100px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
-/* Botón principal */
-.login-btn.btn-primary {
-  background-color: #a0834e;
-  border-color: #a0834e;
+/* ===== Encabezado ===== */
+.module-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.module-title {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #292b57;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.module-subtitle {
+  margin-top: 0.3rem;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+/* ===== Contenedor de campos (similar a nombre-fecha-container) ===== */
+.division-container {
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem 1.3rem;
+  border-left: 4px solid #bd9f69;
+  margin-bottom: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Fila de campos (2 columnas) */
+.division-inline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .division-inline {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Grupos de campos ===== */
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #292b57;
+  margin-bottom: 0.25rem;
+}
+
+/* Inputs y selects generales */
+.field-control {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
   border-radius: 999px;
-  font-weight: 600;
+  border: 1px solid #d0d0d0;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.login-btn.btn-primary:hover,
-.login-btn.btn-primary:focus {
-  background-color: #bd9f69;
+.field-control:focus {
   border-color: #bd9f69;
+  box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
+  background-color: #fffdf8;
 }
 
-/* Mensaje de error */
-.text-danger {
-  color: #d9534f;
+.field-control:disabled {
+  background-color: #f1f1f1;
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* ===== Input de contraseña con botón dentro ===== */
+.field-control--with-button {
+  display: flex;
+  align-items: center;
+  padding: 0.1rem 0.1rem 0.1rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d0d0d0;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.field-control--with-button:focus-within {
+  border-color: #bd9f69;
+  box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
+  background-color: #fffdf8;
+}
+
+.field-control-inner {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: #333;
+  padding: 0.35rem 0;
+}
+
+/* Botón "Mostrar/Ocultar" */
+.btn-inline {
+  border: none;
+  background: #a0834e;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
+  margin-left: 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
-/* Responsive: en pantallas pequeñas solo se muestra el formulario redondeado */
-@media (max-width: 767.98px) {
-  .login-card-form {
-    border-radius: 18px;
+.btn-inline:hover {
+  background: #bd9f69;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+/* ===== Mensajes ===== */
+.messages-container {
+  min-height: 1.2rem;
+  margin-top: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.text-danger {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b3261e;
+}
+
+.text-success {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1b5e20;
+}
+
+/* ===== Botones de acción ===== */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+/* base */
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.1s ease,
+    border-color 0.2s ease;
+}
+
+/* Guardar */
+.btn-primary {
+  background: #a0834e;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: #bd9f69;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Actualizar */
+.btn-secondary {
+  background: #f7f7f7;
+  color: #292b57;
+  border: 1px solid #bd9f69;
+}
+.btn-secondary:hover {
+  background: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Limpiar */
+.btn-ghost {
+  background: transparent;
+  color: #41251c;
+  border: 1px dashed #bd9f69;
+}
+.btn-ghost:hover {
+  background: #f7f7f7;
+  transform: translateY(-1px);
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 768px) {
+  .module-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .module-title {
+    font-size: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    width: 100%;
+    text-align: center;
   }
 }

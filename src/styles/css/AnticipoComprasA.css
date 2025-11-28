@@ -1,5 +1,5 @@
 /* Fondo general */
-.retiros-wrapper {
+.anticipo-wrapper {
   background-color: #f7f7f7;
   min-height: calc(100vh - 100px);
   display: flex;
@@ -8,8 +8,8 @@
   padding: 2.5rem 1.5rem;
 }
 
-/* Card */
-.retiros-card {
+/* Tarjeta principal */
+.anticipo-card {
   background-color: #ffffff;
   border-radius: 18px;
   padding: 2rem 2.5rem;
@@ -20,17 +20,17 @@
 }
 
 /* Encabezado */
-.retiros-title {
+.anticipo-title {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57; 
+  color: #292b57;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.retiros-subtitle {
-  margin: 0.3rem 0 0;
+.anticipo-subtitle {
+  margin-top: 0.3rem;
   font-size: 0.95rem;
   color: #6c757d;
 }
@@ -56,8 +56,8 @@
   font-size: 1rem;
   font-weight: 600;
   color: #41251c;
-  margin-bottom: 0.6rem;
   flex-basis: 100%;
+  margin-bottom: 0.3rem;
 }
 
 /* Inputs */
@@ -85,9 +85,7 @@
   border-radius: 999px;
   border: 1px solid #d0d0d0;
   font-size: 0.95rem;
-  outline: none;
-  background-color: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: 0.2s ease;
 }
 
 .field-control:focus {
@@ -98,7 +96,6 @@
 /* Mensajes */
 .messages-container {
   min-height: 1.5rem;
-  margin-top: 0.5rem;
 }
 
 .text-danger {
@@ -127,7 +124,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  transition: 0.2s ease;
 }
 
 /* Botón Guardar */
@@ -147,17 +144,6 @@
   border: 1px solid #bd9f69;
 }
 .btn-secondary:hover {
-  background: #ffffff;
+  background: white;
   transform: translateY(-1px);
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  .retiros-card {
-    padding: 1.5rem 1.25rem;
-  }
-
-  .retiros-title {
-    font-size: 1.4rem;
-  }
 }

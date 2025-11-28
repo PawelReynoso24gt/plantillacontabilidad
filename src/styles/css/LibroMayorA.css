@@ -1,5 +1,5 @@
-/* Fondo general */
-.libro-diario-wrapper {
+/* Fondo general del módulo */
+.libro-mayor-wrapper {
   background-color: #f7f7f7;
   min-height: calc(100vh - 100px);
   display: flex;
@@ -9,7 +9,7 @@
 }
 
 /* Card principal */
-.libro-diario-card {
+.libro-card {
   background-color: #ffffff;
   border-radius: 18px;
   padding: 2rem 2.5rem;
@@ -28,7 +28,7 @@
   margin: 0;
   font-size: 1.9rem;
   font-weight: 700;
-  color: #292b57; /* azul oscuro */
+  color: #292b57;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -39,37 +39,38 @@
   color: #6c757d;
 }
 
-/* Bloques de filtros */
+/* Contenedor de “filtros” / info */
 .division-container {
-  background-color: #fafafa;
   border-radius: 12px;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1rem;
-  border-left: 4px solid #bd9f69; /* dorado */
+  padding: 1.1rem 1.3rem;
+  margin-top: 0.4rem;
+  background-color: #fafafa;
+  border-left: 4px solid #bd9f69;
+}
+
+.numero-fecha-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem 1.5rem;
+  gap: 1rem;
 }
 
-.division-inline {
-  align-items: center;
-}
-
-.field-group {
-  display: flex;
-  flex-direction: column;
-  min-width: 210px;
+.fecha-inputs {
   flex: 1;
+  min-width: 220px;
 }
 
-.field-label {
+/* Labels / inputs */
+label {
   font-size: 0.9rem;
   font-weight: 600;
   color: #292b57;
   margin-bottom: 0.25rem;
+  display: block;
 }
 
-.field-control {
+.field-control,
+.division-container input[type='text'],
+.division-container input[type='date'] {
   width: 100%;
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
@@ -80,9 +81,10 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.field-control:focus {
+.field-control:focus,
+.division-container input:focus {
   border-color: #bd9f69;
-  box-shadow: 0 0 0 0.12rem rgba(189, 159, 105, 0.45);
+  box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
 }
 
 /* Botones */
@@ -90,11 +92,11 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  margin: 0.75rem 0 1.5rem;
+  margin: 1.4rem 0 1rem;
 }
 
 .btn-primary,
-.btn-secondary {
+.btn-ghost {
   border-radius: 999px;
   padding: 0.45rem 1.4rem;
   border: none;
@@ -115,19 +117,18 @@
   transform: translateY(-1px);
 }
 
-/* Vista previa */
-.btn-secondary {
-  background: #f7f7f7;
-  color: #292b57;
-  border: 1px solid #bd9f69;
+/* Regresar */
+.btn-ghost {
+  background: transparent;
+  color: #41251c;
+  border: 1px dashed #bd9f69;
 }
-.btn-secondary:hover {
-  background: #ffffff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+.btn-ghost:hover {
+  background: #f7f7f7;
   transform: translateY(-1px);
 }
 
-/* Encabezado tipo PDF / vista previa */
+/* Encabezado tipo reporte */
 .encabezado-container {
   margin-top: 0.5rem;
   margin-bottom: 0.75rem;
@@ -153,9 +154,8 @@
 }
 
 .encabezado-direccion {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #41251c;
-  margin-top: 0.35rem;
 }
 
 .encabezado-detalles {
@@ -186,7 +186,7 @@
 
 .tabla-libro th,
 .tabla-libro td {
-  padding: 0.45rem 0.5rem;
+  padding: 0.45rem 0.55rem;
   border: 1px solid #dee2e6;
   text-align: left;
 }
@@ -196,48 +196,33 @@
   text-align: right;
 }
 
-.descripcion-col {
-  max-width: 320px;
-  word-wrap: break-word;
-}
-
-/* Filas especiales */
-.fila-resaltada {
-  background-color: #f9f3e6;
-}
-
 .bold-text {
   font-weight: 700;
 }
 
-/* Sin datos */
+.fila-resaltada {
+  background-color: #f3f6fa;
+}
+
+/* Mensaje sin datos */
 .sin-datos {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
   font-size: 0.95rem;
   color: #6c757d;
 }
 
-.badge-ayuda {
-  display: inline-block;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  background: #bd9f69;
-  color: #ffffff;
-  font-size: 0.8rem;
-}
-
 /* Responsivo */
 @media (max-width: 768px) {
-  .libro-diario-card {
+  .libro-card {
     padding: 1.5rem 1.25rem;
   }
 
   .libro-title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
-  .encabezado-container {
+  .numero-fecha-container {
     flex-direction: column;
   }
 }

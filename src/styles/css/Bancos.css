@@ -1,119 +1,217 @@
-/* Estilos para el contenedor principal */
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Estilos para las divisiones */
-.division-container {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-/* Estilos para las etiquetas */
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-/* Estilos para los campos de entrada */
-input[type="text"],
-input[type="date"],
-select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-/* Estilos para el botón */
-button {
-  padding: 10px 20px;
-  background-color: #14491b;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #475f27;
-}
-
-/* Estilos para los campos de entrada de número y select */
-.numero-fecha-container {
+/* Fondo general del módulo */
+.estado-wrapper {
+  background-color: #f7f7f7;
+  min-height: calc(100vh - 100px);
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1.5rem;
 }
 
-.numero-inputs,
-.fecha-inputs {
+/* Card principal */
+.estado-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+}
+
+/* Encabezado */
+.estado-header {
+  margin-bottom: 1.5rem;
+}
+
+.estado-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #292b57;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.estado-subtitle {
+  margin-top: 0.3rem;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+/* Contenedor de campos */
+.nombre-fecha-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  border-left: 4px solid #bd9f69;
+  margin-bottom: 1.2rem;
+}
+
+.id-inputs {
   flex: 1;
-  margin-right: 10px;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-.numero-inputs label,
-.fecha-inputs label {
-  display: block;
+.nombre-inputs {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Estilos para los campos de entrada de número */
+.fecha-inputs {
+  flex: 0.6;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
 .numero-input {
   display: flex;
+  flex-direction: column;
 }
 
-.numero-input input[type="text"] {
-  margin-right: 10px;
+/* Labels e inputs */
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #292b57;
+  margin-bottom: 0.25rem;
 }
 
-/* Estilos para los campos de entrada de fecha */
-.fecha-container {
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-}
-
-.fecha-container label {
-  display: block;
-}
-
-.fecha-container select {
-  width: calc(100% - 10px);
-  border: none;
+.field-control {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d0d0d0;
+  font-size: 0.95rem;
   outline: none;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
-/* Estilos para los contenedores de entrada */
-.input-container {
-  display: flex;
-  align-items: center;
+.field-control:focus {
+  border-color: #bd9f69;
+  box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
+  background-color: #fffdf8;
 }
 
-.input-container label {
-  width: 150px; /* Ancho fijo para las etiquetas */
-  margin-right: 10px;
+.field-control:disabled {
+  background-color: #f1f1f1;
+  color: #888;
+  cursor: not-allowed;
 }
 
-.input-container select,
-.input-container input {
-  flex: 1;
+/* Mensajes */
+.messages-container {
+  min-height: 1.2rem;
+  margin-bottom: 0.8rem;
 }
 
-/* Estilos para el mensaje de error */
 .text-danger {
-  color: red;
-  font-weight: bold;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b3261e;
 }
 
-/* Estilos para el mensaje de éxito */
 .text-success {
-  color: green;
-  font-weight: bold;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1b5e20;
+}
+
+/* Botones */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* Base botones */
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.1s ease,
+    border-color 0.2s ease;
+}
+
+/* Guardar */
+.btn-primary {
+  background: #a0834e;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #bd9f69;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Actualizar */
+.btn-secondary {
+  background: #f7f7f7;
+  color: #292b57;
+  border: 1px solid #bd9f69;
+}
+
+.btn-secondary:hover {
+  background: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Limpiar */
+.btn-ghost {
+  background: transparent;
+  color: #41251c;
+  border: 1px dashed #bd9f69;
+}
+
+.btn-ghost:hover {
+  background: #f7f7f7;
+  transform: translateY(-1px);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .estado-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .estado-title {
+    font-size: 1.5rem;
+  }
+
+  .nombre-fecha-container {
+    flex-direction: column;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    width: 100%;
+    text-align: center;
+  }
 }

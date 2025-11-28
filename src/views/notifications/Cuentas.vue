@@ -1,57 +1,135 @@
 <template>
-  <div>
-    <!-- Primera división -->
-    <div class="division-container">
-      <div class="nombre-fecha-container">
-        <div class="id-inputs">
-          <label>Cuentas</label>
-          <select v-model="selectedProject" @change="cargarDatosProyecto">
-            <option v-for="project in projects" :value="project.cuenta" :key="project.id_cuentas">{{ project.cuenta }}</option>
-          </select>
-        </div>
-        <div class="nombre-inputs">
-          <label>Cuentas</label>
-          <div class="numero-input">
-            <input type="text" v-model="cuenta">
-          </div>
-        </div>
-        <div class="fecha-inputs">
-          <label>Estado</label>
-          <input type="text" v-model="estado" :disabled="!isEstadoEnabled">
-        </div>
-        <div class="fecha-inputs">
-          <label>Código</label>
-          <input type="text" v-model="codigo">
-        </div>
-        <div class="id-inputs">
-          <label>Clasificación</label>
-          <select v-model="selectedClasificacion">
-            <option v-for="clasificacion in clasificaciones" :value="clasificacion.tipo" :key="clasificacion.id_clasificacion">{{ clasificacion.tipo }}</option>
-          </select>
-        </div>
-        <div class="id-inputs">
-          <label>Proyecto</label>
-          <select v-model="selectedTipoProyecto">
-            <option v-for="proyecto in proyectos" :value="proyecto.nombre" :key="proyecto.id_proyectos">{{ proyecto.nombre }}</option>
-          </select>
+      <!-- Encabezado -->
+      <div class="estado-header">
+        <div>
+          <h2 class="estado-title">Gestión de cuentas contables</h2>
+          <p class="estado-subtitle">
+            Crea, actualiza y administra las cuentas usadas en los reportes contables.
+          </p>
         </div>
       </div>
-    </div>
 
-    <!-- Mensaje de error -->
-    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-    
-    <!-- Mensaje de éxito -->
-    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      <!-- Formulario principal -->
+      <div class="nombre-fecha-container">
+        <!-- Fila 1: selección de cuenta + nombre de cuenta -->
+        <div class="row-inline">
+          <!-- Select de cuentas -->
+          <div class="field-group">
+            <label class="field-label">Cuentas registradas</label>
+            <select
+              v-model="selectedProject"
+              @change="cargarDatosProyecto"
+              class="field-control"
+            >
+              <option disabled value="">Seleccione una cuenta</option>
+              <option
+                v-for="project in projects"
+                :key="project.id_cuentas"
+                :value="project.cuenta"
+              >
+                {{ project.cuenta }}
+              </option>
+            </select>
+          </div>
 
-    <!-- Espacio entre la división 3 y el botón -->
-    <div style="margin-top: 20px;"></div>
+          <!-- Nombre de la cuenta -->
+          <div class="field-group">
+            <label class="field-label">Nombre de la cuenta</label>
+            <input
+              type="text"
+              v-model="cuenta"
+              class="field-control"
+              placeholder="Ingrese el nombre de la cuenta"
+            />
+          </div>
+        </div>
 
-    <!-- Botones -->
-    <button @click="insertar">Guardar</button>
-    <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
-    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
-  </div>
+        <!-- Fila 2: estado + código -->
+        <div class="row-inline">
+          <!-- Estado -->
+          <div class="field-group">
+            <label class="field-label">Estado</label>
+            <input
+              type="text"
+              v-model="estado"
+              :disabled="!isEstadoEnabled"
+              class="field-control"
+              placeholder="1 = Activo, 0 = Inactivo"
+            />
+          </div>
+
+          <!-- Código -->
+          <div class="field-group">
+            <label class="field-label">Código contable</label>
+            <input
+              type="text"
+              v-model="codigo"
+              class="field-control"
+              placeholder="Ej. 1.1.1"
+            />
+          </div>
+        </div>
+
+        <!-- Fila 3: clasificación + proyecto -->
+        <div class="row-inline">
+          <!-- Clasificación -->
+          <div class="field-group">
+            <label class="field-label">Clasificación</label>
+            <select
+              v-model="selectedClasificacion"
+              class="field-control"
+            >
+              <option disabled value="">Seleccione una clasificación</option>
+              <option
+                v-for="clasificacion in clasificaciones"
+                :key="clasificacion.id_clasificacion"
+                :value="clasificacion.tipo"
+              >
+                {{ clasificacion.tipo }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Proyecto -->
+          <div class="field-group">
+            <label class="field-label">Proyecto</label>
+            <select
+              v-model="selectedTipoProyecto"
+              class="field-control"
+            >
+              <option disabled value="">Seleccione un proyecto</option>
+              <option
+                v-for="proyecto in proyectos"
+                :key="proyecto.id_proyectos"
+                :value="proyecto.nombre"
+              >
+                {{ proyecto.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="messages-container">
+        <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="insertar">
+          Guardar
+        </button>
+        <button class="btn-secondary" @click="actualizar">
+          Actualizar
+        </button>
+        <button class="btn-ghost" @click="limpiar">
+          Limpiar
+        </button>
+      </div>
+  
+
 </template>
 
 <script>

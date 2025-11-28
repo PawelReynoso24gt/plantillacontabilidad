@@ -1,46 +1,94 @@
 <template>
-  <div>
-    <label>TRASLADOS INTERNOS DE CAJA</label>
-    <!-- Primera división -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Cuenta bancaria:</label>
-          <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-            <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option>
-          </select>
-          <label>Numero de documento:</label>
-          <input type="text" v-model="numero_documento">
-        </div>
-        <div class="fecha-inputs">
-          <label>Fecha</label>
-          <input type="date" v-model="fecha">
+      <!-- Encabezado -->
+      <div class="deposito-header">
+        <div>
+          <h2 class="deposito-title">Traslados internos de caja</h2>
+          <p class="deposito-subtitle">
+            Registre el depósito desde caja hacia la cuenta bancaria seleccionada.
+          </p>
         </div>
       </div>
-    </div>
 
-    <!-- Segunda división -->
-    <div class="division-container">
-      <label>MONTO A RETIRAR DE CAJA</label>
-      <label>Valor a retirar:</label>
-      <input type="text" v-model="monto">
-      <label>Observaciones</label>
-      <input type="text" v-model="descripcion">
-    </div>
+      <!-- Primera división: cuenta bancaria + documento + fecha -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Cuenta bancaria</label>
+          <select
+            v-model="cuentaBName"
+            @change="cargarBancosNoCuenta"
+            class="field-control"
+          >
+            <option disabled value="">Seleccione una cuenta bancaria</option>
+            <option
+              v-for="cuentaN in cuentas_bancarias"
+              :key="cuentaN.cuenta_bancaria"
+              :value="cuentaN.cuenta_bancaria"
+            >
+              {{ cuentaN.banco_y_cuenta }}
+            </option>
+          </select>
+        </div>
 
-    <!-- Espacio entre la división 3 y el botón -->
-    <div style="margin-top: 20px;"></div>
+        <div class="field-group">
+          <label class="field-label">Número de documento</label>
+          <input
+            type="text"
+            v-model="numero_documento"
+            class="field-control"
+          />
+        </div>
 
-    <!-- Mensaje de error -->
-    <p v-if="error" class="text-danger">{{ error }}</p>
+        <div class="field-group">
+          <label class="field-label">Fecha</label>
+          <input
+            type="date"
+            v-model="fecha"
+            class="field-control"
+          />
+        </div>
+      </div>
 
-    <!-- Mensaje de éxito -->
-    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      <!-- Segunda división: monto y observaciones -->
+      <div class="division-container">
+        <h3 class="division-title">Monto a retirar de caja</h3>
 
-    <!-- Botón Agregar -->
-    <button @click="enviarDatos">Guardar</button>
-    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
-  </div>
+        <div class="field-group">
+          <label class="field-label">Valor a retirar</label>
+          <input
+            type="text"
+            v-model="monto"
+            class="field-control"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="field-group full-width">
+          <label class="field-label">Observaciones</label>
+          <input
+            type="text"
+            v-model="descripcion"
+            class="field-control"
+          />
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="messages-container">
+        <p v-if="error" class="text-danger">{{ error }}</p>
+        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="enviarDatos">
+          Guardar
+        </button>
+        <button class="btn-secondary" @click="limpiar">
+          Limpiar
+        </button>
+      </div>
+  
+
 </template>
 
 <script>

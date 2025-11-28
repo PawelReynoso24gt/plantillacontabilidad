@@ -1,11 +1,26 @@
-<template>
+<template> 
+      <!-- Encabezado principal -->
+      <div class="reporte-header">
+        <div>
+          <h2 class="reporte-title">Ingresos y egresos - reporte final</h2>
+          <p class="reporte-subtitle">
+            Genera el resumen contable del proyecto agrícola por período.
+          </p>
+        </div>
+      </div>
 
-    <!-- Filtros / encabezado del form -->
+      <!-- Filtros / encabezado del form -->
       <div class="nombre-fecha-container">
+        <!-- Columna izquierda: período y mes -->
         <div class="id-inputs">
           <div class="select-group">
-            <label>Período de informe</label>
-            <select v-model="selectedPeriodo" @change="actualizarMeses">
+            <label class="field-label">Período de informe</label>
+            <select
+              v-model="selectedPeriodo"
+              @change="actualizarMeses"
+              class="field-control"
+            >
+              <option disabled value="">Seleccione un período</option>
               <option
                 v-for="periodo in periodos"
                 :key="periodo"
@@ -17,8 +32,9 @@
           </div>
 
           <div class="select-group">
-            <label>Mes</label>
-            <select v-model="selectedMes">
+            <label class="field-label">Mes</label>
+            <select v-model="selectedMes" class="field-control">
+              <option disabled value="">Seleccione un mes</option>
               <option v-for="mes in meses" :key="mes" :value="mes">
                 {{ mes }}
               </option>
@@ -26,129 +42,141 @@
           </div>
         </div>
 
+        <!-- Columna derecha: responsables -->
         <div class="nombre-inputs">
           <div class="numero-input">
-            <label>Contador</label>
-            <input type="text" v-model="contador" />
+            <label class="field-label">Contador</label>
+            <input type="text" v-model="contador" class="field-control" />
           </div>
           <div class="numero-input">
-            <label>Responsable de proyecto Agrícola</label>
-            <input type="text" v-model="responsableAgricola" />
+            <label class="field-label">Responsable de proyecto agrícola</label>
+            <input
+              type="text"
+              v-model="responsableAgricola"
+              class="field-control"
+            />
           </div>
           <div class="numero-input">
-            <label>Economa provincial</label>
-            <input type="text" v-model="economaProvincial" />
+            <label class="field-label">Economa provincial</label>
+            <input
+              type="text"
+              v-model="economaProvincial"
+              class="field-control"
+            />
           </div>
         </div>
       </div>
-   
 
-    <!-- Botones -->
-    <div style="margin-top: 20px;"></div>
-    <button @click="generarPDF">Generar PDF</button>
-    <button @click="mostrarTabla" class="espacio">Vista previa</button>
-    <button @click="limpiar" class="espacio">Limpiar</button>
+      <!-- Botones -->
+      <div class="form-actions">
+        <button @click="mostrarTabla" class="btn-secondary">
+          Vista previa
+        </button>
+        <button @click="generarPDF" class="btn-primary">
+          Generar PDF
+        </button>
+        <button @click="limpiar" class="btn-ghost">
+          Limpiar
+        </button>
+      </div>
 
-    <!-- Vista previa del informe (solo si ya hay datos) -->
-    <div v-if="reporteData" class="encabezado-container">
-      <div class="encabezado-box">
-        <div class="encabezado-titulo">
-          REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
-          {{ currentYear }}
+      <!-- Vista previa del informe (solo si ya hay datos) -->
+      <div v-if="reporteData" class="encabezado-container">
+        <div class="encabezado-box">
+          <div class="encabezado-titulo">
+            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
+          </div>
+        </div>
+
+        <div class="encabezado-detalles">
+          <div>
+            <strong>INFORME CORRESPONDIENTE AL:</strong>
+            {{ periodoTexto }}
+          </div>
+          <div><strong>AÑO:</strong> {{ currentYear }}</div>
+          <div><strong>PROYECTO:</strong> AGRÍCOLA HOGAR SANTA LUISA</div>
+          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+          <div>
+            <strong>FECHA:</strong> {{ fechaHoy }}
+          </div>
         </div>
       </div>
 
-      <div class="encabezado-detalles">
-        <div>
-          <strong>INFORME CORRESPONDIENTE AL:</strong>
-          {{ periodoTexto }}
-        </div>
-        <div><strong>AÑO:</strong> {{ currentYear }}</div>
-        <div><strong>:</strong>  AGRÍCOLA HOGAR SANTA LUISA</div>
-        <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-        <div>
-          <strong>FECHA:</strong> {{ fechaHoy }}
-        </div>
-      </div>
-    </div>
+      <!-- Tabla principal (preview en pantalla) -->
+      <div v-if="reporteData" class="tabla-wrapper">
+        <table class="tabla-libro">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Detalle</th>
+              <th class="right">Saldo suma</th>
+              <th class="right">Suma</th>
+            </tr>
+          </thead>
 
-    <!-- Tabla principal (preview en pantalla) -->
-    <div v-if="reporteData" class="tabla-wrapper">
-      <table class="tabla-libro">
-        <thead>
-          <tr>
-            <th>Descripción</th>
-            <th>Detalle</th>
-            <th class="right">Saldo suma</th>
-            <th class="right">Suma</th>
-          </tr>
-        </thead>
+          <tbody>
+            <tr v-for="(fila, idx) in tablaPreview" :key="idx">
+              <!-- Encabezados de sección -->
+              <template v-if="fila.tipo === 'heading'">
+                <td class="bold-text">{{ fila.col1 }}</td>
+                <td></td>
+                <td class="right bold-text">
+                  {{ fila.col3 || '' }}
+                </td>
+                <td class="right bold-text">
+                  {{ fila.col4 || '' }}
+                </td>
+              </template>
 
-        <tbody>
-          <tr v-for="(fila, idx) in tablaPreview" :key="idx">
-            <td class="bold-text" v-if="fila.tipo === 'heading'">
-              {{ fila.col1 }}
-            </td>
-            <td v-if="fila.tipo === 'heading'"></td>
-            <td
-              v-if="fila.tipo === 'heading'"
-              class="right bold-text"
-            >
-              {{ fila.col3 || '' }}
-            </td>
-            <td
-              v-if="fila.tipo === 'heading'"
-              class="right bold-text"
-            >
-              {{ fila.col4 || '' }}
-            </td>
-
-            <!-- filas normales -->
-            <template v-else>
-              <td>{{ fila.col1 }}</td>
-              <td>{{ fila.col2 }}</td>
-              <td class="right">{{ fila.col3 }}</td>
-              <td class="right">{{ fila.col4 }}</td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Bloque de firmas / responsables -->
-    <div v-if="reporteData" class="firmas-wrapper">
-      <div class="firma-col">
-        <div class="firma-line">(f) _____________________________</div>
-        <div class="firma-nombre">
-          {{ reporteData.contador || contador }}
-        </div>
-        <div class="firma-cargo">Contador</div>
+              <!-- Filas normales -->
+              <template v-else>
+                <td>{{ fila.col1 }}</td>
+                <td>{{ fila.col2 }}</td>
+                <td class="right">{{ fila.col3 }}</td>
+                <td class="right">{{ fila.col4 }}</td>
+              </template>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <div class="firma-col">
-        <div class="firma-line">(f) _____________________________</div>
-        <div class="firma-nombre">
-          Vo.Bo. {{ reporteData.responsable || responsableAgricola }}
+      <!-- Bloque de firmas / responsables -->
+      <div v-if="reporteData" class="firmas-wrapper">
+        <div class="firma-col">
+          <div class="firma-line">(f) _____________________________</div>
+          <div class="firma-nombre">
+            {{ reporteData.contador || contador }}
+          </div>
+          <div class="firma-cargo">Contador</div>
         </div>
-        <div class="firma-cargo">Responsable de Proyecto Agrícola</div>
+
+        <div class="firma-col">
+          <div class="firma-line">(f) _____________________________</div>
+          <div class="firma-nombre">
+            Vo.Bo. {{ reporteData.responsable || responsableAgricola }}
+          </div>
+          <div class="firma-cargo">Responsable de Proyecto Agrícola</div>
+        </div>
+
+        <div class="firma-col firma-centro">
+          <div class="firma-line">(f) _____________________________</div>
+          <div class="firma-nombre">
+            {{ reporteData.economa || economaProvincial }}
+          </div>
+          <div class="firma-cargo">Economa provincial</div>
+        </div>
       </div>
 
-      <div class="firma-col firma-centro">
-        <div class="firma-line">(f) _____________________________</div>
-        <div class="firma-nombre">
-          {{ reporteData.economa || economaProvincial }}
-        </div>
-        <div class="firma-cargo">Economa provincial</div>
+      <!-- Mensaje cuando aún no se ha pedido nada -->
+      <div v-else class="sin-datos">
+        No hay datos para mostrar.<br />
+        Selecciona período, mes y responsables y presiona
+        <span class="badge-ayuda">Vista previa</span>.
       </div>
-    </div>
-
-    <!-- Mensaje cuando aún no se ha pedido nada -->
-    <div v-else class="sin-datos">
-      No hay datos para mostrar. Selecciona período, mes y responsables y
-      presiona "Vista previa".
-    </div>
-  
+ 
+ 
 </template>
+
 
 <script>
 import axios from 'axios';

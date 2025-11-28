@@ -1,105 +1,182 @@
 <template>
-  <div>
-    <!-- Primera división -->
-    <div class="division-container">
-      <div class="fecha-inputs">
-        <label>Ingreso para:</label>
-        <select v-model="tipo">
-          <option value="caja">caja</option>
-          <option value="bancos">bancos</option>
-        </select>
-      </div>
-    </div>
-    <div class="division-container">
-        <div class="numero-fecha-container">
-            <div class="checkbox-line-container">
-                <label for="es_pendiente">¿Es una Cuenta por Cobrar?</label>
-                <input type="checkbox" v-model="es_pendiente" id="es_pendiente" class="form-check-input">
-            </div>
-        </div>
-    </div>
-    <!-- Segunda división -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="fecha-inputs">
-          <label>Fecha</label>
-          <input type="date" v-model="fecha">
+      <!-- Encabezado -->
+      <div class="ingreso-header">
+        <div>
+          <h2 class="ingreso-title">Registro de Ingreso Agrícola</h2>
+          <p class="ingreso-subtitle">
+            Complete la información del ingreso y los datos del comprobante.
+          </p>
         </div>
       </div>
-    </div>
 
-    <!-- Tercera división -->
-    <div class="division-container">
-      <label>DPI/NIT/CF</label>
-      <input type="text" v-model="identificacion">
-      <label>Nombre/CF</label>
-      <input type="text" v-model="nombre">
-      <label>Observaciones de comprobante</label>
-      <input type="text" v-model="descripcion">
-    </div>
-
-    <!-- Cuarta división -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Cuenta</label>
-          <select v-model="cuentaCMB" @change="cargarCuentas">
-            <option v-for="cuentab in cuentas" :key="cuentab.cuenta" :value="cuentab.cuenta">{{ cuentab.cuenta }}</option>
+      <!-- Ingreso para + Cuenta por cobrar -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Ingreso para</label>
+          <select v-model="tipo" class="field-control">
+            <option disabled value="">Seleccione una opción</option>
+            <option value="caja">Caja</option>
+            <option value="bancos">Bancos</option>
           </select>
         </div>
-        <div class="fecha-inputs">
-          <label>Monto</label>
-          <input type="text" v-model="monto">
+
+        <div class="field-group checkbox-group">
+          <label for="es_pendiente" class="field-label">
+            ¿Es una Cuenta por Cobrar?
+          </label>
+          <input
+            type="checkbox"
+            v-model="es_pendiente"
+            id="es_pendiente"
+            class="form-check-input"
+          />
         </div>
       </div>
-    </div>
 
-    <!-- Datos del Pago -->
-    <div class="division-container" v-if="mostrarDivisionCuatro">
-      <label>DATOS DEL PAGO</label>
-      <div class="input-container">
-        <label>Documento:</label>
-        <select v-model="documento">
-          <option value="Transferencia">Transferencia</option>
-          <option value="Depósitos">Depósitos</option>
-          <option value="Cheque">Cheque</option>
-        </select>
+      <!-- Fecha -->
+      <div class="division-container">
+        <div class="field-group">
+          <label class="field-label">Fecha</label>
+          <input
+            type="date"
+            v-model="fecha"
+            class="field-control"
+          />
+        </div>
       </div>
-      <div class="input-container">
-        <label>Cuenta Bancaria:</label>
-        <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-          <option v-for="cuentaN in cuentas_bancarias" :key="cuentaN.cuenta_bancaria" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option>
-        </select>
-      </div>
-      <div class="input-container">
-        <label>No. Documento:</label>
-        <input type="text" v-model="numero_documento">
-      </div>
-      <div class="input-container">
-        <label>Fecha emisión:</label>
-        <input type="date" v-model="fecha_emision">
-      </div>
-    </div>
 
-    <!-- Espacio entre la división 3 y el botón -->
-    <div style="margin-top: 20px;"></div>
+      <!-- Datos del contribuyente -->
+      <div class="division-container">
+        <div class="field-group">
+          <label class="field-label">DPI / NIT / CF</label>
+          <input
+            type="text"
+            v-model="identificacion"
+            class="field-control"
+          />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Nombre / CF</label>
+          <input
+            type="text"
+            v-model="nombre"
+            class="field-control"
+          />
+        </div>
+        <div class="field-group full-width">
+          <label class="field-label">Observaciones de comprobante</label>
+          <input
+            type="text"
+            v-model="descripcion"
+            class="field-control"
+          />
+        </div>
+      </div>
 
-    <!-- Mensaje de error -->
-    <p v-if="error" class="text-danger">{{ error }}</p>
-    
-    <!-- Mensaje de éxito -->
-    <p v-if="success" class="text-success">{{ success }}</p>
+      <!-- Cuenta y monto -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Cuenta contable</label>
+          <select
+            v-model="cuentaCMB"
+            @change="cargarCuentas"
+            class="field-control"
+          >
+            <option disabled value="">Seleccione una cuenta</option>
+            <option
+              v-for="cuentab in cuentas"
+              :key="cuentab.cuenta"
+              :value="cuentab.cuenta"
+            >
+              {{ cuentab.cuenta }}
+            </option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Monto</label>
+          <input
+            type="text"
+            v-model="monto"
+            class="field-control"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
 
-    <!-- Botones -->
-    <button @click="enviarDatos">Guardar</button>
-    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
-  </div>
+      <!-- Datos del pago (solo si es bancos) -->
+      <div class="division-container division-block" v-if="mostrarDivisionCuatro">
+        <h3 class="division-title">Datos del pago</h3>
+
+        <div class="field-group">
+          <label class="field-label">Documento</label>
+          <select v-model="documento" class="field-control">
+            <option disabled value="">Seleccione el tipo de documento</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Depósitos">Depósitos</option>
+            <option value="Cheque">Cheque</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Cuenta bancaria</label>
+          <select
+            v-model="cuentaBName"
+            @change="cargarBancosNoCuenta"
+            class="field-control"
+          >
+            <option disabled value="">Seleccione una cuenta bancaria</option>
+            <option
+              v-for="cuentaN in cuentas_bancarias"
+              :key="cuentaN.cuenta_bancaria"
+              :value="cuentaN.cuenta_bancaria"
+            >
+              {{ cuentaN.banco_y_cuenta }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">No. documento</label>
+          <input
+            type="text"
+            v-model="numero_documento"
+            class="field-control"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Fecha de emisión</label>
+          <input
+            type="date"
+            v-model="fecha_emision"
+            class="field-control"
+          />
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="messages-container">
+        <p v-if="error" class="text-danger">{{ error }}</p>
+        <p v-if="success" class="text-success">{{ success }}</p>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="enviarDatos">
+          Guardar
+        </button>
+        <button class="btn-secondary" @click="limpiar">
+          Limpiar
+        </button>
+      </div>
+
+
 </template>
 
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted, watch } from 'vue';
-import '../../styles/css/EgresosIngresosC.css'
+import '../../styles/css/IngresosAgricola.css'
 
 export default {
   name: 'Accordion',

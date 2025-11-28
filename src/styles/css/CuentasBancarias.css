@@ -1,119 +1,182 @@
-/* Estilos para el contenedor principal */
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+/* Fondo general */
+.estado-wrapper {
+  background-color: #f7f7f7;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1.5rem;
 }
 
-/* Estilos para las divisiones */
-.division-container {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-/* Estilos para las etiquetas */
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-/* Estilos para los campos de entrada */
-input[type="text"],
-input[type="date"],
-select {
+/* Card principal */
+.estado-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
+  max-width: 1100px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
-/* Estilos para el botón */
-button {
-  padding: 10px 20px;
-  background-color: #14491b;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Encabezado */
+.estado-header {
+  margin-bottom: 1.5rem;
 }
 
-button:hover {
-  background-color: #475f27;
+.estado-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #292b57;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* Estilos para los campos de entrada de número y select */
-.numero-fecha-container {
+.estado-subtitle {
+  margin-top: 0.3rem;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+/* Contenedor del formulario */
+.nombre-fecha-container {
   display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  border-left: 4px solid #bd9f69;
+  margin-bottom: 1.3rem;
 }
 
-.numero-inputs,
-.fecha-inputs {
-  flex: 1;
-  margin-right: 10px;
+/* Filas */
+.row-inline {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
 }
 
-.numero-inputs label,
-.fecha-inputs label {
-  display: block;
+@media (max-width: 768px) {
+  .row-inline {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Estilos para los campos de entrada de número */
-.numero-input {
+/* Grupo de campos */
+.field-group {
   display: flex;
+  flex-direction: column;
 }
 
-.numero-input input[type="text"] {
-  margin-right: 10px;
+/* Labels e inputs */
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #292b57;
+  margin-bottom: 0.25rem;
 }
 
-/* Estilos para los campos de entrada de fecha */
-.fecha-container {
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-}
-
-.fecha-container label {
-  display: block;
-}
-
-.fecha-container select {
-  width: calc(100% - 10px);
-  border: none;
+.field-control {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d0d0d0;
+  font-size: 0.95rem;
   outline: none;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Estilos para los contenedores de entrada */
-.input-container {
-  display: flex;
-  align-items: center;
+.field-control:focus {
+  border-color: #bd9f69;
+  box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
+  background: #fffdf8;
 }
 
-.input-container label {
-  width: 150px; /* Ancho fijo para las etiquetas */
-  margin-right: 10px;
+.field-control:disabled {
+  background-color: #f1f1f1;
+  color: #888;
+  cursor: not-allowed;
 }
 
-.input-container select,
-.input-container input {
-  flex: 1;
+/* Mensajes */
+.messages-container {
+  min-height: 1.2rem;
+  margin-bottom: 0.8rem;
 }
 
-/* Estilos para el mensaje de error */
 .text-danger {
-  color: red;
-  font-weight: bold;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b3261e;
 }
 
-/* Estilos para el mensaje de éxito */
 .text-success {
-  color: green;
-  font-weight: bold;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1b5e20;
+}
+
+/* Botones */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* Botón primario */
+.btn-primary {
+  background: #a0834e;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: #bd9f69;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Botón secundario */
+.btn-secondary {
+  background: #f7f7f7;
+  color: #292b57;
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem;
+  border: 1px solid #bd9f69;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Botón fantasma */
+.btn-ghost {
+  background: transparent;
+  color: #41251c;
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem;
+  border: 1px dashed #bd9f69;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-ghost:hover {
+  background: #f7f7f7;
+  transform: translateY(-1px);
 }

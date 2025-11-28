@@ -1,107 +1,193 @@
-/* Estilos para el contenedor principal */
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+/* Fondo y centrado general */
+.egreso-wrapper {
+  background-color: #f7f7f7;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1.5rem;
 }
 
-/* Estilos para las divisiones */
-.division-container {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-/* Estilos para las etiquetas */
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-/* Estilos para los campos de entrada */
-input[type="text"],
-input[type="date"],
-select {
+/* Card principal */
+.egreso-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
   width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
+  max-width: 1100px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
-/* Estilos para el botón */
-button {
-  padding: 10px 20px;
-  background-color: #14491b;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #475f27;
-}
-
-/* Estilos para los campos de entrada de número y select */
-.numero-fecha-container {
+/* Encabezado */
+.egreso-header {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
 }
 
-.numero-inputs,
-.fecha-inputs {
-  flex: 1;
-  margin-right: 10px;
+.egreso-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #292b57; /* azul oscuro */
 }
 
-.numero-inputs label,
-.fecha-inputs label {
-  display: block;
+.egreso-subtitle {
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+  color: #6c757d;
 }
 
-/* Estilos para los campos de entrada de número */
-.numero-input {
+/* Contenedores de secciones */
+.division-container {
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  border-left: 4px solid #bd9f69; /* dorado suave */
   display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
 }
 
-.numero-input input[type="text"] {
-  margin-right: 10px;
-}
-
-/* Estilos para los campos de entrada de fecha */
-.fecha-container {
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-}
-
-.fecha-container label {
-  display: block;
-}
-
-.fecha-container select {
-  width: calc(100% - 10px);
-  border: none;
-  outline: none;
-}
-
-/* Estilos para los contenedores de entrada */
-.input-container {
-  display: flex;
+.division-inline {
   align-items: center;
 }
 
-.input-container label {
-  width: 150px; /* Ancho fijo para las etiquetas */
-  margin-right: 10px;
+.division-block {
+  flex-direction: column;
 }
 
-.input-container select,
-.input-container input {
+/* Título de sección dentro de la división */
+.division-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #41251c;
+  margin: 0 0 0.75rem 0;
+}
+
+/* Grupo de campos */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
   flex: 1;
+}
+
+.field-group.full-width {
+  flex-basis: 100%;
+}
+
+/* Etiquetas e inputs */
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #292b57;
+  margin-bottom: 0.3rem;
+}
+
+.field-control {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d0d0d0;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  background-color: #ffffff;
+}
+
+.field-control:focus {
+  border-color: #bd9f69;
+  box-shadow: 0 0 0 0.12rem rgba(189, 159, 105, 0.45);
+}
+
+/* Checkbox */
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group .field-label {
+  margin-bottom: 0;
+}
+
+/* Mensajes */
+.messages-container {
+  min-height: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.text-danger {
+  color: #d9534f;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.text-success {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Botones */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  border-radius: 999px;
+  padding: 0.45rem 1.4rem;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+/* Botón principal */
+.btn-primary {
+  background: #a0834e;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #bd9f69;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Botón secundario */
+.btn-secondary {
+  background: #f7f7f7;
+  color: #292b57;
+  border: 1px solid #bd9f69;
+}
+
+.btn-secondary:hover {
+  background: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .egreso-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .egreso-title {
+    font-size: 1.4rem;
+  }
+
+  .division-container {
+    padding: 0.9rem 1rem;
+  }
 }

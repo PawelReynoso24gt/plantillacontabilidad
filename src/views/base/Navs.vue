@@ -1,47 +1,90 @@
 <template>
-  <div>
-    <!-- Primera división -->
-    <div class="division-container">
+      <!-- Encabezado -->
+      <div class="estado-header">
+        <h2 class="estado-title">Gestión de cuentas bancarias</h2>
+        <p class="estado-subtitle">
+          Administra las cuentas bancarias registradas y actualiza su información.
+        </p>
+      </div>
+
+      <!-- Formulario principal -->
       <div class="nombre-fecha-container">
-        <div class="id-inputs">
-          <label>Cuentas Bancarias</label>
-          <select v-model="selectedProject" @change="cargarDatosCuenta">
-            <option v-for="project in projects" :key="project.id_cuentas_bancarias" :value="project.numero_cuenta">{{ project.numero_cuenta }}</option>
-          </select>
+        <!-- Fila 1 -->
+        <div class="row-inline">
+          <div class="field-group">
+            <label class="field-label">Cuentas registradas</label>
+            <select
+              v-model="selectedProject"
+              @change="cargarDatosCuenta"
+              class="field-control"
+            >
+              <option disabled value="">Seleccione una cuenta</option>
+              <option
+                v-for="project in projects"
+                :key="project.id_cuentas_bancarias"
+                :value="project.numero_cuenta"
+              >
+                {{ project.numero_cuenta }}
+              </option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Número de cuenta</label>
+            <input
+              type="text"
+              v-model="numero_cuenta"
+              class="field-control"
+              placeholder="Ej. 123456789"
+            />
+          </div>
         </div>
-        <div class="fecha-inputs">
-          <label>Numero de Cuenta</label>
-          <input type="text" v-model="numero_cuenta">
-        </div>
-        <div class="fecha-inputs">
-          <label>Estado</label>
-          <input type="text" v-model="estado" :disabled="isDisabled">
-        </div>
-        <div class="nombre-inputs">
-          <label>Bancos a asignar/editar</label>
-          <div class="numero-input">
-            <select v-model="banco">
-              <option v-for="banco in bancos" :key="banco.id" :value="banco.banco">{{ banco.banco }}</option>
+
+        <!-- Fila 2 -->
+        <div class="row-inline">
+          <div class="field-group">
+            <label class="field-label">Estado</label>
+            <input
+              type="text"
+              v-model="estado"
+              :disabled="isDisabled"
+              class="field-control"
+              placeholder="1 = Activo, 0 = Inactivo"
+            />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Banco asignado</label>
+            <select
+              v-model="banco"
+              class="field-control"
+            >
+              <option disabled value="">Seleccione un banco</option>
+              <option
+                v-for="bn in bancos"
+                :key="bn.id"
+                :value="bn.banco"
+              >
+                {{ bn.banco }}
+              </option>
             </select>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Mensaje de error -->
-    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-    
-    <!-- Mensaje de éxito -->
-    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      <!-- Mensajes -->
+      <div class="messages-container">
+        <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      </div>
 
-    <!-- Espacio entre la división 3 y el botón -->
-    <div style="margin-top: 20px;"></div>
-
-    <!-- Botones -->
-    <button @click="insertar">Guardar</button>
-    <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
-    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
-  </div>
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="insertar">Guardar</button>
+        <button class="btn-secondary" @click="actualizar">Actualizar</button>
+        <button class="btn-ghost" @click="limpiar">Limpiar</button>
+      </div>
+   
 </template>
 
 <script>

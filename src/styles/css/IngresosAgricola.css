@@ -1,5 +1,5 @@
-/* Fondo general */
-.retiros-wrapper {
+/* Fondo y centrado general */
+.ingreso-wrapper {
   background-color: #f7f7f7;
   min-height: calc(100vh - 100px);
   display: flex;
@@ -8,40 +8,45 @@
   padding: 2.5rem 1.5rem;
 }
 
-/* Card */
-.retiros-card {
+/* Card principal */
+.ingreso-card {
   background-color: #ffffff;
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0f0f0;
 }
 
 /* Encabezado */
-.retiros-title {
+.ingreso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.ingreso-title {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57; 
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  color: #292b57; /* azul oscuro */
 }
 
-.retiros-subtitle {
+.ingreso-subtitle {
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
   color: #6c757d;
 }
 
-/* División */
+/* Contenedores de secciones */
 .division-container {
   background-color: #fafafa;
   border-radius: 12px;
   padding: 1rem 1.2rem;
   margin-bottom: 1rem;
-  border-left: 4px solid #a0834e;
+  border-left: 4px solid #a0834e; /* dorado más oscuro para ingresos */
   display: flex;
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
@@ -51,16 +56,19 @@
   align-items: center;
 }
 
-/* Título interno */
+.division-block {
+  flex-direction: column;
+}
+
+/* Título de sección dentro de la división */
 .division-title {
   font-size: 1rem;
   font-weight: 600;
   color: #41251c;
-  margin-bottom: 0.6rem;
-  flex-basis: 100%;
+  margin: 0 0 0.75rem 0;
 }
 
-/* Inputs */
+/* Grupo de campos */
 .field-group {
   display: flex;
   flex-direction: column;
@@ -72,6 +80,7 @@
   flex-basis: 100%;
 }
 
+/* Etiquetas e inputs */
 .field-label {
   font-size: 0.9rem;
   font-weight: 600;
@@ -86,13 +95,24 @@
   border: 1px solid #d0d0d0;
   font-size: 0.95rem;
   outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   background-color: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .field-control:focus {
   border-color: #bd9f69;
   box-shadow: 0 0 0 0.12rem rgba(189, 159, 105, 0.45);
+}
+
+/* Checkbox */
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group .field-label {
+  margin-bottom: 0;
 }
 
 /* Mensajes */
@@ -104,11 +124,13 @@
 .text-danger {
   color: #d9534f;
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .text-success {
   color: #28a745;
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
 /* Botones */
@@ -130,34 +152,42 @@
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
-/* Botón Guardar */
+/* Botón principal */
 .btn-primary {
   background: #a0834e;
   color: #ffffff;
 }
+
 .btn-primary:hover {
   background: #bd9f69;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
 }
 
-/* Botón Limpiar */
+/* Botón secundario */
 .btn-secondary {
   background: #f7f7f7;
   color: #292b57;
   border: 1px solid #bd9f69;
 }
+
 .btn-secondary:hover {
   background: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
 
 /* Responsivo */
 @media (max-width: 768px) {
-  .retiros-card {
+  .ingreso-card {
     padding: 1.5rem 1.25rem;
   }
 
-  .retiros-title {
+  .ingreso-title {
     font-size: 1.4rem;
+  }
+
+  .division-container {
+    padding: 0.9rem 1rem;
   }
 }

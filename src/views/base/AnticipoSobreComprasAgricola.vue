@@ -1,94 +1,118 @@
 <template>
-    <div>
-        <h1>Anticipo sobre compras - Agrícola</h1>
-    </div>
-    <div>
-        <div class="division-container">
-            <div class="fecha-inputs">
-                <label>Egreso para:</label>
-                <select v-model="tipo">
-                    <option value="caja">caja</option>
-                    <option value="bancos">bancos</option>
-                </select>
-            </div>
+      <!-- Encabezado -->
+      <div class="anticipo-header">
+        <div>
+          <h2 class="anticipo-title">Anticipo sobre compras</h2>
+          <p class="anticipo-subtitle">
+            Registro de anticipos pagados para compras agrícolas.
+          </p>
         </div>
-        <!-- Primera división -->
-        <div class="division-container">
-            <div class="numero-fecha-container">
-                <div class="fecha-inputs">
-                    <label>Fecha</label>
-                    <input type="date" v-model="fecha">
-                </div>
-            </div>
+      </div>
+
+      <!-- Egreso para -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Egreso para</label>
+          <select v-model="tipo" class="field-control">
+            <option disabled value="">Seleccione</option>
+            <option value="caja">Caja</option>
+            <option value="bancos">Bancos</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Fecha -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Fecha</label>
+          <input type="date" v-model="fecha" class="field-control" />
+        </div>
+      </div>
+
+      <!-- Identificación -->
+      <div class="division-container">
+        <div class="field-group">
+          <label class="field-label">DPI/NIT/CF</label>
+          <input type="text" v-model="identificacion" class="field-control" />
         </div>
 
-        <!-- Segunda división -->
-        <div class="division-container">
-            <label>DPI/NIT/CF</label>
-            <input type="text" v-model="identificacion">
-            <label>Nombre/CF</label>
-            <input type="text" v-model="nombre">
-            <label>Observaciones de comprobante</label>
-            <input type="text" v-model="descripcion">
+        <div class="field-group">
+          <label class="field-label">Nombre/CF</label>
+          <input type="text" v-model="nombre" class="field-control" />
         </div>
 
-        <!-- Tercera división -->
-        <div class="division-container">
-            <div class="numero-fecha-container">
-                <div class="fecha-inputs">
-                    <label>Monto</label>
-                    <input type="text" v-model="monto">
-                </div>
-            </div>
+        <div class="field-group full-width">
+          <label class="field-label">Observaciones del comprobante</label>
+          <input type="text" v-model="descripcion" class="field-control" />
+        </div>
+      </div>
+
+      <!-- Monto -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Monto</label>
+          <input type="text" v-model="monto" class="field-control" />
+        </div>
+      </div>
+
+      <!-- Datos del pago -->
+      <div class="division-container" v-if="mostrarDivisionCuatro">
+        <h3 class="division-title">Datos del pago</h3>
+
+        <div class="field-group">
+          <label class="field-label">Documento</label>
+          <select v-model="documento" class="field-control">
+            <option disabled value="">Seleccione</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Depósitos">Depósitos</option>
+            <option value="Cheque">Cheque</option>
+          </select>
         </div>
 
-        <!-- Cuarta división -->
-        <div class="division-container" v-if="mostrarDivisionCuatro">
-            <label>DATOS DEL PAGO</label>
-            <div class="input-container">
-                <label>Documento:</label>
-                <select v-model="documento">
-                    <option value="Transferencia">Transferencia</option>
-                    <option value="Depósitos">Depósitos</option>
-                    <option value="Cheque">Cheque</option>
-                </select>
-            </div>
-            <div class="input-container">
-                <label>Cuenta Bancaria:</label>
-                 <select v-model.number="idCuentaBancaria">
-            <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">
-                {{ c.label }}
+        <div class="field-group">
+          <label class="field-label">Cuenta bancaria</label>
+          <select v-model.number="idCuentaBancaria" class="field-control">
+            <option disabled value="">Seleccione una cuenta</option>
+            <option
+              v-for="c in cuentas_bancarias"
+              :key="c.id"
+              :value="c.id"
+            >
+              {{ c.label }}
             </option>
-            </select>
-            </div>
-            <div class="input-container">
-                <label>No. Documento:</label>
-                <input type="text" v-model="numero_documento">
-            </div>
-            <div class="input-container">
-                <label>Fecha emisión:</label>
-                <input type="date" v-model="fecha_emision">
-            </div>
+          </select>
         </div>
 
-        <!-- Espacio entre la división 3 y el botón -->
-        <div style="margin-top: 20px;"></div>
+        <div class="field-group">
+          <label class="field-label">No. Documento</label>
+          <input type="text" v-model="numero_documento" class="field-control" />
+        </div>
 
-        <!-- Mensaje de error -->
+        <div class="field-group">
+          <label class="field-label">Fecha emisión</label>
+          <input type="date" v-model="fecha_emision" class="field-control" />
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="messages-container">
         <p v-if="error" class="text-danger">{{ error }}</p>
-
-        <!-- Mensaje de éxito -->
         <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      </div>
 
-        <!-- Botón Agregar -->
-        <button @click="enviarDatos">Guardar</button>
-        <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
-    </div>
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="enviarDatos">Guardar</button>
+        <button class="btn-secondary" @click="limpiar">Limpiar</button>
+      </div>
+   
+ 
 </template>
 
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted, watch } from 'vue';
+import '../../styles/css/AnticipoComprasA.css'
 
 export default {
     name: 'Accordion',
@@ -278,122 +302,3 @@ export default {
     },
 }
 </script>
-
-
-
-<style scoped>
-/* Estilos para el contenedor principal */
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Estilos para las divisiones */
-.division-container {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-top: 10px;
-}
-
-/* Estilos para las etiquetas */
-label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-/* Estilos para los campos de entrada */
-input[type="text"],
-input[type="date"],
-select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-/* Estilos para el botón */
-button {
-    padding: 10px 20px;
-    background-color: #14491b;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #475f27;
-}
-
-/* Estilos para los campos de entrada de número y select */
-.numero-fecha-container {
-    display: flex;
-}
-
-.numero-inputs,
-.fecha-inputs {
-    flex: 1;
-    margin-right: 10px;
-}
-
-.numero-inputs label,
-.fecha-inputs label {
-    display: block;
-}
-
-/* Estilos para los campos de entrada de número */
-.numero-input {
-    display: flex;
-}
-
-.numero-input input[type="text"] {
-    margin-right: 10px;
-}
-
-/* Estilos para los campos de entrada de fecha */
-.fecha-container {
-    flex: 1;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px;
-}
-
-.fecha-container label {
-    display: block;
-}
-
-.fecha-container select {
-    width: calc(100% - 10px);
-    border: none;
-    outline: none;
-}
-
-/* Estilos para los contenedores de entrada */
-.input-container {
-    display: flex;
-    align-items: center;
-}
-
-.input-container label {
-    width: 150px;
-    /* Ancho fijo para las etiquetas */
-    margin-right: 10px;
-}
-
-.input-container select,
-.input-container input {
-    flex: 1;
-}
-
-/* Estilo para el mensaje de error */
-.text-danger {
-    color: red;
-    font-weight: bold;
-}
-</style>

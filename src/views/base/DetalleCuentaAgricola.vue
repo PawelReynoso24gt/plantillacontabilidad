@@ -1,130 +1,137 @@
 <template>
-  <div>
-    <!-- Título principal -->
-    <label class="titulo-reporte">
-      LIBRO MAYOR
-    </label>
-
-    <!-- “Filtros” / info de contexto (solo lectura) -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="fecha-inputs">
-          <label>Cuenta</label>
-          <input
-            type="text"
-            :value="`${codigoCuenta} - ${nombreCuenta}`"
-            disabled
-          />
-        </div>
-        <div class="fecha-inputs">
-          <label>Período</label>
-          <input
-            type="text"
-            :value="`Anual ${year}`"
-            disabled
-          />
-        </div>
+      <!-- Encabezado principal -->
+      <div class="libro-header">
+        <h2 class="libro-title">Libro Mayor</h2>
+        <p class="libro-subtitle">
+          Detalle de movimientos de la cuenta seleccionada para el período anual {{ year }}.
+        </p>
       </div>
-    </div>
 
-    <!-- Espacio entre filtros y botones -->
-    <div style="margin-top: 20px;"></div>
-
-    <!-- Botones -->
-    <button @click="generarPDF">Generar PDF</button>
-    <button class="espacio" @click="volver">Regresar</button>
-
-    <!-- Encabezado tipo PDF / vista previa -->
-    <div v-if="ingresosEgresos.length" class="encabezado-container">
-      <div class="encabezado-box">
-        <div class="encabezado-titulo">
-          {{ nombreEncabezado }}
-        </div>
-        <div class="encabezado-direccion">
-          Dirección del Proyecto: {{ direccionProyecto }}
+      <!-- “Filtros” / info de contexto (solo lectura) -->
+      <div class="division-container">
+        <div class="numero-fecha-container">
+          <div class="fecha-inputs">
+            <label>Cuenta</label>
+            <input
+              class="field-control"
+              type="text"
+              :value="`${codigoCuenta} - ${nombreCuenta}`"
+              disabled
+            />
+          </div>
+          <div class="fecha-inputs">
+            <label>Período</label>
+            <input
+              class="field-control"
+              type="text"
+              :value="`Anual ${year}`"
+              disabled
+            />
+          </div>
         </div>
       </div>
 
-      <div class="encabezado-detalles">
-        <div><strong>REPORTE:</strong> LIBRO MAYOR</div>
-        <div>
-          <strong>CUENTA:</strong>
-           {{ nombreCuenta }}
+      <!-- Botones -->
+      <div class="form-actions">
+        <button @click="generarPDF" class="btn-primary">
+          Generar PDF
+        </button>
+        <button class="btn-ghost" @click="volver">
+          Regresar
+        </button>
+      </div>
+
+      <!-- Encabezado tipo PDF / vista previa -->
+      <div v-if="ingresosEgresos.length" class="encabezado-container">
+        <div class="encabezado-box">
+          <div class="encabezado-titulo">
+            {{ nombreEncabezado }}
+          </div>
+          <div class="encabezado-direccion">
+            Dirección del Proyecto: {{ direccionProyecto }}
+          </div>
         </div>
-        <div>
-          <strong>PERÍODO:</strong>
-          Anual {{ year }}
-        </div>
-        <div>
-          <strong>FECHA REPORTE:</strong>
-          {{ fechaHoy }}
+
+        <div class="encabezado-detalles">
+          <div><strong>REPORTE:</strong> LIBRO MAYOR</div>
+          <div>
+            <strong>CUENTA:</strong>
+            {{ nombreCuenta }}
+          </div>
+          <div>
+            <strong>PERÍODO:</strong>
+            Anual {{ year }}
+          </div>
+          <div>
+            <strong>FECHA REPORTE:</strong>
+            {{ fechaHoy }}
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tabla de movimientos -->
-    <div
-      v-if="ingresosEgresos.length"
-      class="tabla-wrapper"
-    >
-      <table class="tabla-libro">
-        <thead>
-          <tr>
-            <th>Conteo</th>
-            <th>Número de Documento</th>
-            <th>Fecha</th>
-            <th>Cuenta</th>
-            <th>Descripción</th>
-            <th class="right">Acredita</th>
-            <th class="right">Debita</th>
-            <th class="right">Saldo</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(fila, idx) in tablaFormateada"
-            :key="idx"
-            :class="{
-              'fila-resaltada':
-                fila.cuenta === 'Saldo inicial' ||
-                fila.cuenta === 'Suma total'
-            }"
-          >
-            <!-- Filas especiales (Saldo inicial / Suma total) -->
-            <template
-              v-if="fila.cuenta === 'Saldo inicial' || fila.cuenta === 'Suma total'"
+      <!-- Tabla de movimientos -->
+      <div v-if="ingresosEgresos.length" class="tabla-wrapper">
+        <table class="tabla-libro">
+          <thead>
+            <tr>
+              <th>Conteo</th>
+              <th>Número de Documento</th>
+              <th>Fecha</th>
+              <th>Cuenta</th>
+              <th>Descripción</th>
+              <th class="right">Acredita</th>
+              <th class="right">Debita</th>
+              <th class="right">Saldo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(fila, idx) in tablaFormateada"
+              :key="idx"
+              :class="{
+                'fila-resaltada':
+                  fila.cuenta === 'Saldo inicial' ||
+                  fila.cuenta === 'Suma total'
+              }"
             >
-              <td>{{ fila.nomenclatura }}</td>
-              <td>{{ fila.numero_documento }}</td>
-              <td>{{ fila.fecha || '' }}</td>
-              <td class="bold-text">{{ fila.cuenta }}</td>
-              <td class="descripcion-col bold-text">{{ fila.descripcion }}</td>
-              <td class="right bold-text"></td>
-              <td class="right bold-text"></td>
-              <td class="right bold-text">{{ fila.total }}</td>
-            </template>
+              <!-- Filas especiales (Saldo inicial / Suma total) -->
+              <template
+                v-if="fila.cuenta === 'Saldo inicial' || fila.cuenta === 'Suma total'"
+              >
+                <td>{{ fila.nomenclatura }}</td>
+                <td>{{ fila.numero_documento }}</td>
+                <td>{{ fila.fecha || '' }}</td>
+                <td class="bold-text">{{ fila.cuenta }}</td>
+                <td class="descripcion-col bold-text">
+                  {{ fila.descripcion }}
+                </td>
+                <td class="right bold-text"></td>
+                <td class="right bold-text"></td>
+                <td class="right bold-text">{{ fila.total }}</td>
+              </template>
 
-            <!-- Filas normales -->
-            <template v-else>
-              <td>{{ fila.nomenclatura }}</td>
-              <td>{{ fila.numero_documento }}</td>
-              <td>{{ fila.fecha }}</td>
-              <td>{{ fila.cuenta }}</td>
-              <td class="descripcion-col">{{ fila.descripcion }}</td>
-              <td class="right">{{ fila.acredita }}</td>
-              <td class="right">{{ fila.debita }}</td>
-              <td class="right">{{ fila.total }}</td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              <!-- Filas normales -->
+              <template v-else>
+                <td>{{ fila.nomenclatura }}</td>
+                <td>{{ fila.numero_documento }}</td>
+                <td>{{ fila.fecha }}</td>
+                <td>{{ fila.cuenta }}</td>
+                <td class="descripcion-col">{{ fila.descripcion }}</td>
+                <td class="right">{{ fila.acredita }}</td>
+                <td class="right">{{ fila.debita }}</td>
+                <td class="right">{{ fila.total }}</td>
+              </template>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <!-- Mensaje cuando no hay datos -->
-    <div v-else class="sin-datos">
-      No hay datos para mostrar. Esta cuenta no tiene movimientos para el período.
-    </div>
-  </div>
+      <!-- Mensaje cuando no hay datos -->
+      <div v-else class="sin-datos">
+        No hay datos para mostrar. Esta cuenta no tiene movimientos para el período.
+      </div>
+    
+
 </template>
 
 <script>
@@ -134,7 +141,7 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
-import '../../styles/css/LibroDiarioA.css'; // mismo CSS que usas en LibroDiario
+import '../../styles/css/LibroMayorA.css';
 
 export default {
   name: 'ReporteCuentaAgricolaCuenta',

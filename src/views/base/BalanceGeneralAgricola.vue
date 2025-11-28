@@ -1,107 +1,117 @@
 <template>
+      <!-- Título principal -->
+      <div class="reporte-header">
+        <h2 class="reporte-title">Balance General - Capilla</h2>
+        <p class="reporte-subtitle">
+          Resumen de saldos, ingresos y egresos del período seleccionado.
+        </p>
+      </div>
 
-    <div>
-        <h1>Balance General - Capilla</h1>
-    </div>
-    <!-- Filtros / encabezado del form -->
-    <div class="nombre-fecha-container">
-        <div class="id-inputs">
+      <!-- Filtros / encabezado del form -->
+      <div class="division-container">
+        <div class="nombre-fecha-container">
+          <div class="id-inputs">
             <div class="select-group">
-                <label>Período de informe</label>
-                <select v-model="selectedPeriodo" @change="actualizarMeses">
-                    <option v-for="periodo in periodos" :key="periodo" :value="periodo">
-                        {{ periodo }}
-                    </option>
-                </select>
+              <label>Período de informe</label>
+              <select v-model="selectedPeriodo" @change="actualizarMeses">
+                <option v-for="periodo in periodos" :key="periodo" :value="periodo">
+                  {{ periodo }}
+                </option>
+              </select>
             </div>
 
             <div class="select-group">
-                <label>Mes</label>
-                <select v-model="selectedMes">
-                    <option v-for="mes in meses" :key="mes" :value="mes">
-                        {{ mes }}
-                    </option>
-                </select>
+              <label>Mes</label>
+              <select v-model="selectedMes">
+                <option v-for="mes in meses" :key="mes" :value="mes">
+                  {{ mes }}
+                </option>
+              </select>
             </div>
+          </div>
         </div>
+      </div>
 
-        <!-- removed contador/responsables inputs as requested -->
-        
-    </div>
+      <!-- Botones -->
+      <div class="form-actions">
+        <button @click="generarPDF" class="btn-primary">
+          Generar PDF
+        </button>
+        <button @click="mostrarTabla" class="btn-secondary">
+          Vista previa
+        </button>
+        <button @click="limpiar" class="btn-ghost">
+          Limpiar
+        </button>
+      </div>
 
-
-    <!-- Botones -->
-    <div style="margin-top: 20px;"></div>
-    <button @click="generarPDF">Generar PDF</button>
-    <button @click="mostrarTabla" class="espacio">Vista previa</button>
-    <button @click="limpiar" class="espacio">Limpiar</button>
-
-    <!-- Vista previa del informe (solo si ya hay datos) -->
-    <div v-if="reporteData" class="encabezado-container">
+      <!-- Vista previa del informe (solo si ya hay datos) -->
+      <div v-if="reporteData" class="encabezado-container">
         <div class="encabezado-box">
-            <div class="encabezado-titulo">
-                REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
-                {{ currentYear }}
-            </div>
+          <div class="encabezado-titulo">
+            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
+            {{ currentYear }}
+          </div>
         </div>
 
         <div class="encabezado-detalles">
-            <div>
-                <strong>INFORME CORRESPONDIENTE AL:</strong>
-                {{ periodoTexto }}
-            </div>
-            <div><strong>AÑO:</strong> {{ currentYear }}</div>
-            <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA</div>
-            <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-            <div>
-                <strong>FECHA:</strong> {{ fechaHoy }}
-            </div>
+          <div>
+            <strong>INFORME CORRESPONDIENTE AL:</strong>
+            {{ periodoTexto }}
+          </div>
+          <div><strong>AÑO:</strong> {{ currentYear }}</div>
+          <div><strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA</div>
+          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+          <div>
+            <strong>FECHA:</strong> {{ fechaHoy }}
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Tabla principal (preview en pantalla) -->
-    <div v-if="reporteData" class="tabla-wrapper">
+      <!-- Tabla principal (preview en pantalla) -->
+      <div v-if="reporteData" class="tabla-wrapper">
         <table class="tabla-libro">
-            <thead>
-                <tr>
-                    <th>Descripción</th>
-                    <th>Detalle</th>
-                    <th class="right">Saldo suma</th>
-                    <th class="right">Suma</th>
-                </tr>
-            </thead>
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Detalle</th>
+              <th class="right">Saldo suma</th>
+              <th class="right">Suma</th>
+            </tr>
+          </thead>
 
-            <tbody>
-                <tr v-for="(fila, idx) in tablaPreview" :key="idx">
-                    <td class="bold-text" v-if="fila.tipo === 'heading'">
-                        {{ fila.col1 }}
-                    </td>
-                    <td v-if="fila.tipo === 'heading'"></td>
-                    <td v-if="fila.tipo === 'heading'" class="right bold-text">
-                        {{ fila.col3 || '' }}
-                    </td>
-                    <td v-if="fila.tipo === 'heading'" class="right bold-text">
-                        {{ fila.col4 || '' }}
-                    </td>
+          <tbody>
+            <tr v-for="(fila, idx) in tablaPreview" :key="idx">
+              <!-- fila tipo heading (título/sección) -->
+              <td class="bold-text" v-if="fila.tipo === 'heading'">
+                {{ fila.col1 }}
+              </td>
+              <td v-if="fila.tipo === 'heading'"></td>
+              <td v-if="fila.tipo === 'heading'" class="right bold-text">
+                {{ fila.col3 || '' }}
+              </td>
+              <td v-if="fila.tipo === 'heading'" class="right bold-text">
+                {{ fila.col4 || '' }}
+              </td>
 
-                    <!-- filas normales -->
-                    <template v-else>
-                        <td>{{ fila.col1 }}</td>
-                        <td>{{ fila.col2 }}</td>
-                        <td class="right">{{ fila.col3 }}</td>
-                        <td class="right">{{ fila.col4 }}</td>
-                    </template>
-                </tr>
-            </tbody>
+              <!-- filas normales -->
+              <template v-else>
+                <td>{{ fila.col1 }}</td>
+                <td>{{ fila.col2 }}</td>
+                <td class="right">{{ fila.col3 }}</td>
+                <td class="right">{{ fila.col4 }}</td>
+              </template>
+            </tr>
+          </tbody>
         </table>
-    </div>
+      </div>
 
-    <!-- firmas removed per request -->
-
-    <!-- Mensaje cuando aún no se ha pedido nada -->
-    <div v-else class="sin-datos">
-        No hay datos para mostrar. Selecciona período y mes y presiona "Vista previa".
-    </div>
+      <!-- Mensaje cuando aún no se ha pedido nada -->
+      <div v-else class="sin-datos">
+        No hay datos para mostrar. Selecciona período y mes y presiona
+        <strong>"Vista previa"</strong>.
+      </div>
+    
 
 </template>
 
@@ -111,6 +121,7 @@ import { ref, computed } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import '../../styles/css/BalanceGeneralCapilla.css';
 
 export default {
     name: 'ReporteAG',
@@ -620,212 +631,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #fdfdfd;
-    border: 1px solid #ccc;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        'Helvetica Neue', Arial, sans-serif;
-}
-
-.division-container {
-    border: 1px solid rgb(19, 19, 75);
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-top: 10px;
-    background-color: #fff;
-}
-
-.nombre-fecha-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    width: 100%;
-}
-
-.id-inputs {
-    flex: 1;
-    min-width: 260px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.select-group {
-    flex: 1 1 120px;
-    min-width: 140px;
-}
-
-.nombre-inputs {
-    flex: 2;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.numero-input {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 200px;
-}
-
-label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 4px;
-    display: block;
-}
-
-input[type='text'],
-select {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 0.9rem;
-    background-color: #fff;
-}
-
-button {
-    padding: 10px 16px;
-    background-color: #14491b;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    line-height: 1.2;
-}
-
-button:hover {
-    background-color: #475f27;
-}
-
-.espacio {
-    margin-left: 10px;
-}
-
-/* Encabezado visual */
-.encabezado-container {
-    margin-top: 30px;
-    border: 1px solid #133;
-    border-radius: 6px;
-    background-color: #fff;
-    padding: 16px;
-}
-
-.encabezado-box {
-    border: 2px solid #133;
-    border-radius: 4px;
-    padding: 10px;
-    text-align: center;
-    max-width: 480px;
-    margin: 0 auto 16px auto;
-}
-
-.encabezado-titulo {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #000;
-}
-
-.encabezado-detalles {
-    font-size: 0.8rem;
-    color: #000;
-    line-height: 1.4;
-    text-align: center;
-}
-
-/* Tabla */
-.tabla-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #fff;
-}
-
-.tabla-libro {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px;
-    font-size: 0.8rem;
-}
-
-.tabla-libro thead th {
-    background-color: rgb(41, 128, 185);
-    color: #fff;
-    text-align: center;
-    padding: 8px;
-    font-weight: 600;
-    border: 1px solid #999;
-    white-space: nowrap;
-}
-
-.tabla-libro tbody td {
-    border: 1px solid #ccc;
-    padding: 6px 8px;
-    vertical-align: middle;
-    text-align: center;
-    word-break: break-word;
-}
-
-.tabla-libro tbody td.bold-text {
-    font-weight: 600;
-}
-
-.right {
-    text-align: right !important;
-}
-
-/* Firmas */
-.firmas-wrapper {
-    margin-top: 30px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
-    justify-content: space-evenly;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #000;
-}
-
-.firma-col {
-    min-width: 200px;
-}
-
-.firma-line {
-    margin-bottom: 8px;
-    font-size: 0.8rem;
-    color: #000;
-}
-
-.firma-nombre {
-    font-weight: 600;
-}
-
-.firma-cargo {
-    font-size: 0.7rem;
-    color: #333;
-}
-
-.sin-datos {
-    margin-top: 30px;
-    font-size: 0.9rem;
-    color: #555;
-    text-align: center;
-    font-style: italic;
-}
-</style>
