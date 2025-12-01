@@ -8,12 +8,14 @@
       <div class="numero-fecha-container">
         <div class="fecha-inputs">
           <label>ID Ingreso/Egreso:</label>
+          <!-- Aqui se ingresa el ID para el buscador -->
           <input 
             type="number" 
-            v-model="idBuscado" 
+            v-model="idBuscado"  
             placeholder="Ingrese el ID"
             @keypress="handleKeyPress"
           >
+          <!-- -------------------------------------- -->
         </div>
       </div>
     </div>
@@ -43,7 +45,7 @@
         <div class="encabezado-box">
           <div class="encabezado-titulo">{{ partidaContable.proyecto }}</div>
           <div class="encabezado-direccion">
-            Sistema Contable - Partida Generada
+            {{ direccionProyecto }}
           </div>
         </div>
 
@@ -129,7 +131,7 @@ export default {
   name: 'GenerarPartidaSimple',
   setup() {
     // --- ESTADO ---
-    const idBuscado = ref('');
+    const idBuscado = ref(''); // variable para ingresar el ID
     const partidaContable = ref(null);
     const loading = ref(false);
     const error = ref('');
@@ -176,6 +178,25 @@ export default {
       }
     };
 
+    // --- DIRECCION DE PROYECTO ---
+    const direccionProyecto = computed(() => {
+      // Si no hay partida cargada, no mostramos nada
+      if (!partidaContable.value) return '';
+
+      // Obtenemos el ID del proyecto (Asegúrate que tu API devuelva 'proyecto_id')
+      // Si tu API usa otro nombre (ej: id_proyecto), cámbialo aquí.
+      const idProyecto = partidaContable.value.proyecto_id; 
+
+      if (idProyecto === 1) {
+        return '8va calle 5-21 zona 10, Quetzaltenango';
+      } else if (idProyecto === 2) {
+        return '15 avenida, entre 3a y 4a calle zona 3, Quetzaltenango';
+      } else {
+        // Dirección por defecto si el ID es otro
+        return 'Sistema Contable - Partida Generada'; 
+      }
+    });
+
     const handleKeyPress = (event) => {
       if (event.key === 'Enter') generarPartida();
     };
@@ -199,7 +220,7 @@ export default {
 
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
-        doc.text('Sistema Contable - Partida Generada', 105, 30, { align: 'center' });
+        doc.text(direccionProyecto.value, 105, 30, { align: 'center' });
 
         // 2. Detalles Informativos
         let yPos = 45;
@@ -293,7 +314,8 @@ export default {
 
     return {
       idBuscado, partidaContable, loading, error, mostrarNoEncontrado,
-      fechaActual, formatNumber, generarPartida, generarPDF, handleKeyPress
+      fechaActual, formatNumber, generarPartida, generarPDF, handleKeyPress,
+      direccionProyecto
     };
   }
 }
