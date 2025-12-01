@@ -6,8 +6,7 @@
   background-color: #fdfdfd;
   border: 1px solid #ccc;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .titulo-reporte {
@@ -18,6 +17,7 @@
   display: inline-block;
 }
 
+/* Filtros y Inputs */
 .division-container {
   border: 1px solid rgb(19, 19, 75);
   border-radius: 6px;
@@ -58,9 +58,10 @@ select {
   background-color: #fff;
 }
 
+/* Botones */
 button {
   padding: 10px 16px;
-  background-color: #14491b;
+  background-color: #14491b; /* Verde oscuro del diseño original */
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -75,34 +76,12 @@ button:hover:not(:disabled) {
 }
 
 button:disabled {
-  background-color: #cccccc;
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
 .espacio {
   margin-left: 10px;
-}
-
-.loading {
-  color: #007bff;
-  font-style: italic;
-  margin: 10px 0;
-}
-
-.error {
-  color: #dc3545;
-  background-color: #f8d7da;
-  padding: 10px;
-  border-radius: 4px;
-  margin: 10px 0;
-}
-
-.no-results {
-  color: #856404;
-  background-color: #fff3cd;
-  padding: 10px;
-  border-radius: 4px;
-  margin: 10px 0;
 }
 
 /* Encabezado visual tipo PDF */
@@ -140,9 +119,10 @@ button:disabled {
   color: #000;
   line-height: 1.4;
   text-align: center;
+  /* Grid para que se vea ordenado como en la partida */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 /* Tabla */
@@ -158,7 +138,7 @@ button:disabled {
 .tabla-libro {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 800px;
   font-size: 0.8rem;
 }
 
@@ -180,6 +160,12 @@ button:disabled {
   word-break: break-word;
 }
 
+.tabla-libro tbody td.descripcion-col {
+  text-align: left;
+  color: #555;
+  font-style: italic;
+}
+
 .right {
   text-align: right !important;
 }
@@ -189,76 +175,58 @@ button:disabled {
   font-weight: 600;
 }
 
-.balance-correcto {
-  background-color: #e8f5e8 !important;
-}
-
 .bold-text {
   font-weight: 600;
 }
 
-/* Colores para débito y crédito */
+/* Mensajes de error / alerta */
+.mensaje-error {
+  color: #721c24;
+  background-color: #f8d7da;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  border: 1px solid #f5c6cb;
+}
+
+.mensaje-alerta {
+  color: #856404;
+  background-color: #fff3cd;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  border: 1px solid #ffeeba;
+}
+
+/* Estilos específicos para Partida (Colores de números) */
 .debito {
-  color: #dc3545;
-  font-weight: bold;
+  color: #c0392b; /* Rojo suave */
+  font-family: monospace;
 }
-
 .credito {
-  color: #28a745;
-  font-weight: bold;
+  color: #27ae60; /* Verde suave */
+  font-family: monospace;
 }
 
-.diferencia-cero {
-  color: #28a745;
+.texto-verde { color: #27ae60; }
+.texto-rojo { color: #c0392b; }
+
+.balance-correcto {
+  background-color: #e8f5e8 !important; /* Fondo verde muy claro */
 }
 
-.diferencia-error {
-  color: #dc3545;
-}
-
-.status-icon {
-  margin-left: 5px;
-}
-
-/* Información adicional */
-.info-adicional {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
-}
-
-.info-item {
-  margin-bottom: 8px;
+/* Resumen final simple */
+.resumen-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 4px;
   font-size: 0.9rem;
 }
-
-.estado-balanceada {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.estado-desbalanceada {
-  color: #dc3545;
-  font-weight: bold;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .numero-fecha-container {
-    flex-direction: column;
-  }
-  
-  .fecha-inputs {
-    min-width: 100%;
-  }
-  
-  .encabezado-detalles {
-    grid-template-columns: 1fr;
-  }
-  
-  .tabla-wrapper {
-    overflow-x: auto;
-  }
+.resumen-item .label {
+  color: #666;
+  margin-right: 5px;
 }
