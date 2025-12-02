@@ -62,6 +62,7 @@
     <table class="tabla-libro">
       <thead>
         <tr>
+          <th>Cuenta</th> 
           <th>Descripción</th>
           <th>Detalle</th>
           <th class="right">Saldo suma</th>
@@ -69,33 +70,52 @@
         </tr>
       </thead>
 
-      <tbody>
-        <tr v-for="(fila, idx) in tablaPreview" :key="idx" :class="{ 'fila-resaltada': fila.tipo === 'heading' }">
-          <!-- fila tipo heading (título/sección/gran total) -->
-          <template v-if="fila.tipo === 'heading'">
-            <td class="bold-text">{{ fila.col1 }}</td>
-            <td></td>
-            <td class="right bold-text">
-              {{ fila.col3 || '' }}
-            </td>
-            <td class="right bold-text">
-              {{ fila.col4 || '' }}
-            </td>
-          </template>
+        <tbody>
+            <tr
+              v-for="(fila, idx) in tablaPreview"
+              :key="idx"
+              :class="{ 'fila-resaltada': fila.tipo === 'heading' }"
+                >
 
-          <!-- fila normal -->
-          <template v-else>
-            <td>{{ fila.col1 }}</td>
-            <td>{{ fila.col2 }}</td>
-            <td class="right">{{ fila.col3 }}</td>
-            <td class="right">{{ fila.col4 }}</td>
-          </template>
-        </tr>
-      </tbody>
+      <td class="right bold-text">
+        <span
+          v-if="fila.esCuenta && fila.cuenta"
+          class="link-cuenta"
+          @click="irDetalleCuenta(fila.cuenta, fila.col1)"  
+        >
+          {{ fila.cuenta }} <!-- aquí SIGUES mostrando el código -->
+        </span>
+        <span v-else>
+          {{ fila.cuenta || '' }}
+        </span>
+     </td>
+
+            <!-- fila tipo heading (título/sección/gran total) -->
+        <template v-if="fila.tipo === 'heading'">
+          <td class="bold-text">{{ fila.col1 }}</td>
+          <td></td>
+          <td class="right bold-text">
+            {{ fila.col3 || '' }}
+          </td>
+          <td class="right bold-text">
+            {{ fila.col4 || '' }}
+          </td>
+        </template>
+
+        <!-- fila normal -->
+        <template v-else>
+          <td>
+          {{ fila.col1 }}
+        </td>
+          <td>{{ fila.col2 }}</td>
+          <td class="right">{{ fila.col3 }}</td>
+          <td class="right">{{ fila.col4 }}</td>
+        </template>
+      </tr>
+    </tbody>
+
     </table>
   </div>
-
-  <!-- Firmas removed per request -->
 
   <!-- Mensaje si no hay datos todavía -->
   <div v-else class="sin-datos">
@@ -109,25 +129,25 @@ import { ref, computed } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { useRouter } from 'vue-router';   
+import { aplicarNumeracion } from '../../../utils/numeracion';
 
 export default {
-  name: 'ReporteCapillaFinal',
+  name: 'ReporteAgricolaFinal',          
   setup() {
-  // Form fields
+    const router = useRouter();          
+
     const selectedPeriodo = ref('');
     const selectedMes = ref('');
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
     const meses = ref([]);
 
-    // Datos que regresa el backend cuando consultás
     const reporteData = ref(null);
 
-    // Año y fecha actual
     const now = new Date();
     const currentYear = now.getFullYear();
     const fechaHoy = now.toLocaleDateString('es-ES');
 
-    // Lógica de período -> texto humano (igual a tu PDF)
     const periodoTexto = computed(() => {
       if (selectedPeriodo.value === 'Mensual') {
         return `RESUMEN DE ${selectedMes.value?.toUpperCase?.() || ''}`;
@@ -149,7 +169,6 @@ export default {
       return '';
     });
 
-    // llenar <select> de Mes según Período
     const actualizarMeses = () => {
       switch (selectedPeriodo.value) {
         case 'Mensual':
@@ -183,7 +202,6 @@ export default {
       }
     };
 
-    // helper parse and formato dinero (maneja comas en strings)
     const parseNumber = (v) => {
       if (v === null || v === undefined || v === '') return 0;
       const s = String(v).replace(/,/g, '');
@@ -193,9 +211,6 @@ export default {
 
     const formatQ = (n) => {
       const num = parseNumber(n);
-      if (num === 0 && (n === null || n === undefined || n === '' || String(n).trim() === '0' || String(n).trim() === '0.0')) {
-        // return consistent empty for zero/empty when requested elsewhere; still show 0 as Q 0.00 when explicit
-      }
       return (
         'Q ' +
         num.toLocaleString('es-GT', {
@@ -205,45 +220,147 @@ export default {
       );
     };
 
-    // Tabla que mostramos en pantalla: construida con reporteData (SOLO EGRESOS)
+      const irDetalleCuenta = (codigoCuenta, nombreCuenta) => {
+      router.push({
+        name: 'ReporteCuentaAgricolaCuenta',
+        params: {
+          codigo: codigoCuenta,   
+          cuenta: nombreCuenta    
+        }
+      });
+    };
+
     const tablaPreview = computed(() => {
       if (!reporteData.value) return [];
 
       const d = reporteData.value;
-
       const rows = [];
 
       // SALDO INICIAL
-      rows.push({ tipo: 'heading', col1: 'SALDO INICIAL', col2: '', col3: '', col4: formatQ(d.saldo_inicial) });
-      rows.push({ tipo: 'normal', col1: 'SALDO INICIAL EN CAJA GENERAL', col2: '', col3: formatQ(d.saldo_inicial_caja), col4: '' });
-      rows.push({ tipo: 'normal', col1: 'SALDO INICIAL EN BANCO', col2: '', col3: formatQ(d.saldo_inicial_bancos), col4: '' });
+      rows.push({
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'SALDO INICIAL',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.saldo_inicial)
+      });
 
-      // EGRESOS (solo cuentas con valor > 0)
-      rows.push({ tipo: 'heading', col1: 'EGRESOS', col2: '', col3: '', col4: formatQ(d.total_general_egresos) });
-      rows.push({ tipo: 'normal', col1: 'CAJA GENERAL', col2: '', col3: formatQ(d.total_egresos_caja), col4: '' });
+      rows.push({
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO INICIAL EN CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.saldo_inicial_caja),
+        col4: ''
+      });
+
+      rows.push({
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO INICIAL EN BANCO',
+        col2: '',
+        col3: formatQ(d.saldo_inicial_bancos),
+        col4: ''
+      });
+
+      // EGRESOS
+      rows.push({
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'EGRESOS',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.total_general_egresos)
+      });
+
+      rows.push({
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.total_egresos_caja),
+        col4: ''
+      });
+
       (d.data_caja || [])
         .filter((item) => parseNumber(item.egresos) > 0)
         .forEach((eg) => {
-          rows.push({ tipo: 'normal', col1: eg.cuenta, col2: formatQ(eg.egresos), col3: '', col4: '' });
+          rows.push({
+            tipo: 'normal',
+            nivel: 3,
+            esCuenta: true,          // 👈 para poner link
+            col1: eg.cuenta,
+            col2: formatQ(eg.egresos),
+            col3: '',
+            col4: ''
+          });
         });
 
-      rows.push({ tipo: 'normal', col1: 'BANCO', col2: '', col3: formatQ(d.total_egresos_bancos), col4: '' });
+      rows.push({
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'BANCO',
+        col2: '',
+        col3: formatQ(d.total_egresos_bancos),
+        col4: ''
+      });
+
       (d.data_bancos || [])
         .filter((item) => parseNumber(item.egresos) > 0)
         .forEach((eg) => {
-          rows.push({ tipo: 'normal', col1: eg.cuenta, col2: formatQ(eg.egresos), col3: '', col4: '' });
+          rows.push({
+            tipo: 'normal',
+            nivel: 3,
+            esCuenta: true,
+            col1: eg.cuenta,
+            col2: formatQ(eg.egresos),
+            col3: '',
+            col4: ''
+          });
         });
 
       // SALDO FINAL
-      rows.push({ tipo: 'heading', col1: 'SALDO FINAL', col2: '', col3: '', col4: formatQ(d.total_saldo_final) });
-      rows.push({ tipo: 'normal', col1: 'SALDO FINAL EN CAJA GENERAL', col2: '', col3: formatQ(d.total_saldo_final_caja), col4: '' });
-      rows.push({ tipo: 'normal', col1: 'SALDO FINAL EN BANCO', col2: '', col3: formatQ(d.total_saldo_final_bancos), col4: '' });
+      rows.push({
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'SALDO FINAL',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.total_saldo_final)
+      });
+
+      rows.push({
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO FINAL EN CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.total_saldo_final_caja),
+        col4: ''
+      });
+
+      rows.push({
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO FINAL EN BANCO',
+        col2: '',
+        col3: formatQ(d.total_saldo_final_bancos),
+        col4: ''
+      });
 
       // SUMAS IGUALES
-      rows.push({ tipo: 'heading', col1: 'SUMAS IGUALES', col2: '', col3: formatQ(d.total_saldo_final), col4: formatQ(d.total_saldo_final) });
+      rows.push({
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'SUMAS IGUALES',
+        col2: '',
+        col3: formatQ(d.total_saldo_final),
+        col4: formatQ(d.total_saldo_final)
+      });
 
-      return rows;
+      return aplicarNumeracion(rows);
     });
+
 
     const mostrarTabla = async () => {
       try {
@@ -252,10 +369,8 @@ export default {
           {
             tipo: selectedPeriodo.value.toLowerCase(),
             mes: selectedMes.value.toLowerCase(),
-            // only tipo and mes required for this report
           }
         );
-
         reporteData.value = response.data || null;
       } catch (error) {
         console.error('Error al obtener datos del reporte:', error);
@@ -263,7 +378,6 @@ export default {
       }
     };
 
-    // Limpiar formulario y preview
     const limpiar = () => {
       selectedPeriodo.value = '';
       selectedMes.value = '';
@@ -271,180 +385,29 @@ export default {
       reporteData.value = null;
     };
 
-    // Generar PDF (tu lógica original con firmas)
     const generarPDF = async () => {
-      try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase()
-          }
-        );
-        const data = response.data;
-
-  const doc = new jsPDF();
-        let yOffset = 20;
-        const pageHeight = doc.internal.pageSize.height;
-        const pageMargin = 20;
-
-        const addPageIfNeeded = () => {
-          if (yOffset > pageHeight - pageMargin) {
-            doc.addPage();
-            yOffset = 20;
-          }
-        };
-
-        const addTable = (head, body) => {
-          doc.autoTable({
-            head: [head],
-            body: body,
-            startY: yOffset,
-            theme: 'grid',
-            styles: {
-              cellPadding: 2.5,
-              fontSize: 8,
-              halign: 'center',
-              valign: 'middle',
-              overflow: 'linebreak'
-            },
-            headStyles: {
-              fillColor: [41, 128, 185],
-              textColor: [255, 255, 255]
-            }
-          });
-          yOffset = doc.autoTable.previous.finalY + 10;
-        };
-
-  // Determinar texto de periodo (mismo que periodoTexto)
-        let periodoTextoPDF;
-        if (selectedPeriodo.value === 'Mensual') {
-          periodoTextoPDF = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
-        } else if (selectedPeriodo.value === 'Trimestral') {
-          const trimestre = {
-            Enero: 'PRIMER TRIMESTRE',
-            Abril: 'SEGUNDO TRIMESTRE',
-            Julio: 'TERCER TRIMESTRE',
-            Octubre: 'CUARTO TRIMESTRE'
-          };
-          periodoTextoPDF = `RESUMEN ${trimestre[selectedMes.value] || ''
-            }`;
-        } else if (selectedPeriodo.value === 'Semestral') {
-          periodoTextoPDF =
-            selectedMes.value === 'Enero'
-              ? 'RESUMEN PRIMER SEMESTRE'
-              : 'RESUMEN SEGUNDO SEMESTRE';
-        } else if (selectedPeriodo.value === 'Anual') {
-          periodoTextoPDF = 'RESUMEN ANUAL';
-        }
-
-        // Encabezado
-        doc.setFontSize(16);
-        doc.text(
-          `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
-          105,
-          27,
-          { align: 'center' }
-        );
-        doc.setLineWidth(0.5);
-        doc.line(60, 32, 150, 32);
-
-        doc.setFontSize(12);
-        yOffset = 40;
-        doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
-        doc.text(periodoTextoPDF, 91, 40);
-        doc.text(`DE`, 165, 40);
-        doc.text(`${currentYear}`, 175, 40);
-        doc.text(
-          `PROYECTO CAPILLA HOGAR SANTA LUISA`,
-          20,
-          50
-        );
-        doc.text(`LUGAR:`, 130, 50);
-        doc.text(`QUETZALTENANGO`, 155, 50);
-        doc.text(`GUATEMALA`, 20, 60);
-        doc.text(`FECHA:`, 130, 60);
-        doc.text(fechaHoy, 160, 60);
-
-        // Tabla (SOLO EGRESOS). Construimos filas solo con egresos > 0
-        yOffset = 75;
-
-        const parseNumber = (v) => {
-          if (v === null || v === undefined || v === '') return 0;
-          const s = String(v).replace(/,/g, '');
-          const n = parseFloat(s);
-          return isNaN(n) ? 0 : n;
-        };
-
-        const tableData = [];
-
-        // SALDO INICIAL
-        tableData.push(['SALDO INICIAL', '', '', formatQ(parseNumber(data.saldo_inicial))]);
-        tableData.push(['SALDO INICIAL EN CAJA GENERAL', '', formatQ(parseNumber(data.saldo_inicial_caja)), '']);
-        tableData.push(['SALDO INICIAL EN BANCO', '', formatQ(parseNumber(data.saldo_inicial_bancos)), '']);
-
-        // EGRESOS - CAJA
-        tableData.push(['EGRESOS', '', '', formatQ(parseNumber(data.total_general_egresos))]);
-        tableData.push(['CAJA GENERAL', '', formatQ(parseNumber(data.total_egresos_caja)), '']);
-        data.data_caja
-          .filter((item) => parseNumber(item.egresos) > 0)
-          .forEach((eg) => {
-            tableData.push([eg.cuenta, formatQ(parseNumber(eg.egresos)), '', '']);
-          });
-
-        // EGRESOS - BANCOS
-        tableData.push(['BANCO', '', formatQ(parseNumber(data.total_egresos_bancos)), '']);
-        data.data_bancos
-          .filter((item) => parseNumber(item.egresos) > 0)
-          .forEach((eg) => {
-            tableData.push([eg.cuenta, formatQ(parseNumber(eg.egresos)), '', '']);
-          });
-
-        // SALDO FINAL
-        tableData.push(['SALDO FINAL', '', '', formatQ(parseNumber(data.total_saldo_final))]);
-        tableData.push(['SALDO FINAL EN CAJA GENERAL', '', formatQ(parseNumber(data.total_saldo_final_caja)), '']);
-        tableData.push(['SALDO FINAL EN BANCO', '', formatQ(parseNumber(data.total_saldo_final_bancos)), '']);
-
-        // SUMAS IGUALES
-        tableData.push(['SUMAS IGUALES', '', formatQ(parseNumber(data.total_saldo_final)), formatQ(parseNumber(data.total_saldo_final))]);
-
-        const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
-        addTable(tableHeaders, tableData);
-
-        // (Se eliminaron las firmas de la versión PDF)
-
-        const blob = doc.output('blob');
-        saveAs(blob, 'informe_final_capilla.pdf');
-      } catch (error) {
-        console.error('Error al generar el PDF:', error);
-      }
     };
 
     return {
-      // formulario
       selectedPeriodo,
       selectedMes,
       periodos,
       meses,
-
-      // derivados para UI
       currentYear,
       fechaHoy,
       periodoTexto,
       tablaPreview,
-
-      // data del backend
       reporteData,
-
-      // acciones
       actualizarMeses,
       mostrarTabla,
       limpiar,
-      generarPDF
+      generarPDF,
+      irDetalleCuenta      
     };
   }
 };
 </script>
+
 
 <style scoped>
 .container {
@@ -658,4 +621,15 @@ button:hover {
   text-align: center;
   font-style: italic;
 }
+
+.link-cuenta {
+  color: #0a53be;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-cuenta:hover {
+  color: #063a83;
+}
+
 </style>
