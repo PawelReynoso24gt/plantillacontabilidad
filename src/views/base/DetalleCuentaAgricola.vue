@@ -106,7 +106,15 @@
 
             <!-- Filas normales -->
             <template v-else>
-              <td>{{ fila.nomenclatura }}</td>
+              <!-- AQUI ESTÁ EL CAMBIO: Link en Nomenclatura -->
+              <td
+                class="link-cuenta"
+                @click="irAPartida(fila.idIngresoEgreso)"
+                title="Ver Partida"
+              >
+                {{ fila.nomenclatura }}
+              </td>
+
               <td>{{ fila.numero_documento }}</td>
               <td>{{ fila.fecha }}</td>
               <td>{{ fila.cuenta }}</td>
@@ -133,8 +141,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { saveAs } from 'file-saver';
-import '../../styles/css/LibroDiarioA.css'; // mismo CSS que usas en LibroDiario
+import '../../styles/css/LibroDiarioA.css'; 
 
 export default {
   name: 'ReporteCuentaAgricolaCuenta',
@@ -178,6 +185,7 @@ export default {
           item.cuenta === 'Saldo inicial' || item.cuenta === 'Suma total';
 
         return {
+          idIngresoEgreso: item.id_ingresos_egresos,
           nomenclatura: item.nomenclatura,
           numero_documento: item.numero_documento || '-',
           fecha: item.fecha || '',
@@ -220,6 +228,17 @@ export default {
       } finally {
         loading.value = false;
       }
+    };
+
+    // --- NUEVA FUNCIÓN PARA EL LINK ---
+    const irAPartida = (idIngresoEgreso) => {
+        // Redirige a la ruta 'Partidas' definida en tu router
+        router.push({ 
+            name: 'Partidas',
+            // Opcional: Enviamos el numero de documento como query param
+            // por si quieres filtrar al llegar a esa vista.
+            query: { id: idIngresoEgreso } 
+        });
     };
 
     const generarPDF = () => {
@@ -337,7 +356,8 @@ export default {
       loading,
       error,
       generarPDF,
-      volver
+      volver,
+      irAPartida // Retornamos la nueva función
     };
   }
 };

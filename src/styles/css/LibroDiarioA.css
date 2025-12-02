@@ -174,3 +174,15 @@ button:hover {
   text-align: center;
   font-style: italic;
 }
+
+/* Libro Mayor links */
+.tabla-libro td.link-cuenta {
+  color: #0a53be !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+  font-weight: 600;
+}
+
+.tabla-libro td.link-cuenta:hover {
+  color: #063a83 !important;
+}

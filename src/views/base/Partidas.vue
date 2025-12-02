@@ -4,32 +4,31 @@
     <label class="titulo-reporte">GENERADOR DE PARTIDAS CONTABLES</label>
 
     <!-- Sección de Filtros (Estilo Libro Diario) -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="fecha-inputs">
-          <label>ID Ingreso/Egreso:</label>
-          <!-- Aqui se ingresa el ID para el buscador -->
-          <input 
-            type="number" 
-            v-model="idBuscado"  
-            placeholder="Ingrese el ID"
-            @keypress="handleKeyPress"
-          >
-          <!-- -------------------------------------- -->
-        </div>
+  <!-- div class="division-container">
+    <div class="numero-fecha-container">
+      <div class="fecha-inputs">
+        <label>ID Ingreso/Egreso:</label>
+        <input 
+          type="number" 
+          v-model="idBuscado"  
+          placeholder="Ingrese el ID"
+          @keypress="handleKeyPress"
+        >
       </div>
     </div>
+  </div -->
 
     <!-- Espacio entre filtros y botones -->
     <div style="margin-top: 20px;"></div>
 
     <!-- Botones (Estilo verde del Libro Diario) -->
-    <button @click="generarPartida" :disabled="loading">
-      {{ loading ? 'Buscando...' : 'Generar Partida' }}
-    </button>
+  <!-- <button @click="generarPartida" :disabled="loading">
+    {{ loading ? 'Buscando...' : 'Generar Partida' }}
+  </button> -->
     <button @click="generarPDF" :disabled="!partidaContable" class="espacio">
       Generar PDF
     </button>
+    <button class="espacio" @click="volver">Regresar</button>
 
     <!-- Mensajes de Estado -->
     <div v-if="error" class="mensaje-error">{{ error }}</div>
@@ -121,15 +120,18 @@
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { useRoute, useRouter } from 'vue-router'; 
 import '../../styles/css/PartidasCSS.css';
 
 export default {
   name: 'GenerarPartidaSimple',
   setup() {
+    const route = useRoute();
+    const router = useRouter();
     // --- ESTADO ---
     const idBuscado = ref(''); // variable para ingresar el ID
     const partidaContable = ref(null);
@@ -145,6 +147,10 @@ export default {
       if (value === null || value === undefined) return '0.00';
       const num = parseFloat(value);
       return isNaN(num) ? '0.00' : num.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    const volver = () => {
+      router.back();
     };
 
     // --- LÓGICA DE API ---
@@ -200,6 +206,14 @@ export default {
     const handleKeyPress = (event) => {
       if (event.key === 'Enter') generarPartida();
     };
+
+      onMounted(() => {
+      const idFromQuery = route.query.id;
+      if (idFromQuery) {
+        idBuscado.value = idFromQuery;
+        generarPartida(); // llama automáticamente al cargar la página
+      }
+    });
 
     // --- LÓGICA DE PDF (INTACTA) ---
     const generarPDF = () => {
@@ -315,7 +329,7 @@ export default {
     return {
       idBuscado, partidaContable, loading, error, mostrarNoEncontrado,
       fechaActual, formatNumber, generarPartida, generarPDF, handleKeyPress,
-      direccionProyecto
+      direccionProyecto, volver
     };
   }
 }
