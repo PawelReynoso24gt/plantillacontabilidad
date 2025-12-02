@@ -1,9 +1,98 @@
-.large-image {
-  width: 500px;
-  height: auto;
+.capilla-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;     
+  justify-content: center;
+   padding: 4.5rem 1.5rem 3rem;
+  background-color: #ffffff;
 }
 
-.small-image {
-  width: 600px;
-  height: auto;
+/* 📌 HEADER CENTRADO */
+.project-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.75rem;
+  padding-bottom: 1rem;
+}
+
+.project-logo {
+  width: 200px;
+  object-fit: contain;
+}
+
+.project-title-block {
+  text-align: center;
+}
+
+.project-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #292b57;
+  letter-spacing: 2px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.project-subtitle {
+  color: #41251c;
+  margin: 0.25rem 0;
+}
+
+.project-divider {
+  width: 120px;
+  height: 4px;
+  border-radius: 50px;
+  margin: 0.5rem auto;
+  background: linear-gradient(90deg, #bd9f69, #a0834e);
+}
+
+/* 📌 CONTENIDO PRINCIPAL CENTRADO */
+.project-content {
+  margin-top: 2.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* 📌 Imagen principal */
+.project-main-image-wrapper {
+  flex: 1.8;
+  min-width: 290px;
+}
+
+.project-main-image {
+  width: 100%;
+  border-radius: 14px;
+  border: 3px solid #a0834e;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+/* 📌 Imagen lateral + texto */
+.project-side-content {
+  flex: 1.2;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.project-side-image {
+  width: 100%;
+  border-radius: 14px;
+  border: 2px solid #bd9f69;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.project-text-box {
+  background: #ffffff;
+  border-left: 4px solid #bd9f69;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
 }

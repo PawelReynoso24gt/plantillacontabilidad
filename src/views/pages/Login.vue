@@ -104,7 +104,7 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import axios from 'axios';
 // importa tu css global de login
-import '../../styles/css/Login.css';
+import '../../styles/css/LoginPrincipal.css';
 
 export default {
   name: 'Login',

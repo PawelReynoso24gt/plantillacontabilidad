@@ -1,152 +1,200 @@
 <template>
-    <!-- Formulario -->
-      <div class="nombre-fecha-container">
-        <div class="id-inputs">
-          <div class="select-group">
-            <label>Período de informe</label>
-            <select v-model="selectedPeriodo" @change="actualizarMeses">
-              <option
-                v-for="periodo in periodos"
-                :key="periodo"
-                :value="periodo"
-              >
-                {{ periodo }}
-              </option>
-            </select>
-          </div>
-
-          <div class="select-group">
-            <label>Mes</label>
-            <select v-model="selectedMes">
-              <option
-                v-for="mes in meses"
-                :key="mes"
-                :value="mes"
-              >
-                {{ mes }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="nombre-inputs">
-          <div class="numero-input">
-            <label>Responsable de Capilla</label>
-            <input type="text" v-model="responsable" />
-          </div>
-          <div class="numero-input">
-            <label>Hermana Sirviente</label>
-            <input type="text" v-model="hermanaSirviente" />
-          </div>
-          <div class="numero-input">
-            <label>Economa Provincial</label>
-            <input type="text" v-model="economaProvincial" />
-          </div>
-        </div>
-      </div>
-   
-
-    <!-- Botones -->
-    <div style="margin-top: 20px;"></div>
-    <button @click="generarPDF">Generar PDF</button>
-    <button @click="mostrarTabla" class="espacio">Vista previa</button>
-    <button @click="limpiar" class="espacio">Limpiar</button>
-
-    <!-- Encabezado tipo PDF / vista previa -->
-    <div v-if="reporteData" class="encabezado-container">
-      <div class="encabezado-box">
-        <div class="encabezado-titulo">
-          REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
-        </div>
-      </div>
-
-      <div class="encabezado-detalles">
+      <!-- Encabezado -->
+      <div class="libro-header">
         <div>
-          <strong>INFORME CORRESPONDIENTE AL:</strong>
-          {{ periodoTexto }}
+          <h2 class="libro-title">Informe final - Capilla</h2>
+          <p class="libro-subtitle">
+            Genera el reporte final de ingresos y egresos por período.
+          </p>
         </div>
-        <div><strong>AÑO:</strong> {{ currentYear }}</div>
-        <div>
-          <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
-        </div>
-        <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-        <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
       </div>
-    </div>
 
-    <!-- Tabla resumen -->
-    <div v-if="reporteData" class="tabla-wrapper">
-      <table class="tabla-libro">
-        <thead>
-          <tr>
-            <th>Descripción</th>
-            <th>Detalle</th>
-            <th class="right">Saldo suma</th>
-            <th class="right">Suma</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            v-for="(fila, idx) in tablaPreview"
-            :key="idx"
-            :class="{'fila-resaltada': fila.tipo === 'heading'}"
+      <!-- Formulario: período + mes -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Período de informe</label>
+          <select
+            v-model="selectedPeriodo"
+            @change="actualizarMeses"
+            class="field-control"
           >
-            <!-- fila tipo heading (título/sección/gran total) -->
-            <template v-if="fila.tipo === 'heading'">
-              <td class="bold-text">{{ fila.col1 }}</td>
-              <td></td>
-              <td class="right bold-text">
-                {{ fila.col3 || '' }}
-              </td>
-              <td class="right bold-text">
-                {{ fila.col4 || '' }}
-              </td>
-            </template>
-
-            <!-- fila normal -->
-            <template v-else>
-              <td>{{ fila.col1 }}</td>
-              <td>{{ fila.col2 }}</td>
-              <td class="right">{{ fila.col3 }}</td>
-              <td class="right">{{ fila.col4 }}</td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Firmas -->
-    <div v-if="reporteData" class="firmas-wrapper">
-      <div class="firma-col">
-        <div class="firma-line">(f) _____________________________</div>
-        <div class="firma-nombre">{{ reporteData.responsable || responsable }}</div>
-        <div class="firma-cargo">Responsable de Capilla</div>
-      </div>
-
-      <div class="firma-col">
-        <div class="firma-line">(f) _____________________________</div>
-        <div class="firma-nombre">
-          Vo.Bo. {{ reporteData.sirviente || hermanaSirviente }}
+            <option disabled value="">Seleccione un período</option>
+            <option
+              v-for="periodo in periodos"
+              :key="periodo"
+              :value="periodo"
+            >
+              {{ periodo }}
+            </option>
+          </select>
         </div>
-        <div class="firma-cargo">Hermana Sirviente</div>
-      </div>
 
-      <div class="firma-col firma-centro">
-        <div class="firma-line">(f) _____________________________</div>
-        <div class="firma-nombre">
-          {{ reporteData.economa || economaProvincial }}
+        <div class="field-group">
+          <label class="field-label">Mes</label>
+          <select
+            v-model="selectedMes"
+            class="field-control"
+          >
+            <option disabled value="">Seleccione un mes</option>
+            <option
+              v-for="mes in meses"
+              :key="mes"
+              :value="mes"
+            >
+              {{ mes }}
+            </option>
+          </select>
         </div>
-        <div class="firma-cargo">Economa Provincial</div>
       </div>
-    </div>
 
-    <!-- Mensaje si no hay datos todavía -->
-    <div v-else class="sin-datos">
-      No hay datos para mostrar. Selecciona período y mes, llena
-      responsables y presiona "Vista previa".
-    </div>
+      <!-- Formulario: responsables -->
+      <div class="division-container division-block">
+        <p class="division-title">Responsables del informe</p>
 
+        <div class="field-group">
+          <label class="field-label">Responsable de Capilla</label>
+          <input
+            type="text"
+            v-model="responsable"
+            class="field-control"
+            placeholder="Nombre de la responsable de capilla"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Hermana Sirviente</label>
+          <input
+            type="text"
+            v-model="hermanaSirviente"
+            class="field-control"
+            placeholder="Nombre de la hermana sirviente"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Economa Provincial</label>
+          <input
+            type="text"
+            v-model="economaProvincial"
+            class="field-control"
+            placeholder="Nombre de la economa provincial"
+          />
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button @click="mostrarTabla" class="btn-secondary">
+          Vista previa
+        </button>
+        <button @click="limpiar" class="btn-secondary">
+          Limpiar
+        </button>
+        <button @click="generarPDF" class="btn-primary">
+          Generar PDF
+        </button>
+      </div>
+
+      <!-- Encabezado tipo PDF / vista previa -->
+      <div v-if="reporteData" class="encabezado-container">
+        <div class="encabezado-box">
+          <div class="encabezado-titulo">
+            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
+          </div>
+        </div>
+
+        <div class="encabezado-detalles">
+          <div>
+            <strong>INFORME CORRESPONDIENTE AL:</strong>
+            {{ periodoTexto }}
+          </div>
+          <div><strong>AÑO:</strong> {{ currentYear }}</div>
+          <div>
+            <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
+          </div>
+          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+          <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
+        </div>
+      </div>
+
+      <!-- Tabla resumen -->
+      <div v-if="reporteData" class="tabla-wrapper">
+        <table class="tabla-libro">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th>Detalle</th>
+              <th class="right">Saldo suma</th>
+              <th class="right">Suma</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              v-for="(fila, idx) in tablaPreview"
+              :key="idx"
+              :class="{ 'fila-resaltada': fila.tipo === 'heading' }"
+            >
+              <!-- fila tipo heading (título/sección/gran total) -->
+              <template v-if="fila.tipo === 'heading'">
+                <td class="bold-text">{{ fila.col1 }}</td>
+                <td></td>
+                <td class="right bold-text">
+                  {{ fila.col3 || '' }}
+                </td>
+                <td class="right bold-text">
+                  {{ fila.col4 || '' }}
+                </td>
+              </template>
+
+              <!-- fila normal -->
+              <template v-else>
+                <td>{{ fila.col1 }}</td>
+                <td>{{ fila.col2 }}</td>
+                <td class="right">{{ fila.col3 }}</td>
+                <td class="right">{{ fila.col4 }}</td>
+              </template>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Firmas -->
+      <div v-if="reporteData" class="firmas-wrapper">
+        <div class="firma-col">
+          <div class="firma-line">(f) _____________________________</div>
+          <div class="firma-nombre">
+            {{ reporteData.responsable || responsable }}
+          </div>
+          <div class="firma-cargo">Responsable de Capilla</div>
+        </div>
+
+        <div class="firma-col">
+          <div class="firma-line">(f) _____________________________</div>
+          <div class="firma-nombre">
+            Vo.Bo. {{ reporteData.sirviente || hermanaSirviente }}
+          </div>
+          <div class="firma-cargo">Hermana Sirviente</div>
+        </div>
+
+        <div class="firma-col firma-centro">
+          <div class="firma-line">(f) _____________________________</div>
+          <div class="firma-nombre">
+            {{ reporteData.economa || economaProvincial }}
+          </div>
+          <div class="firma-cargo">Economa Provincial</div>
+        </div>
+      </div>
+
+      <!-- Mensaje si no hay datos todavía -->
+      <div v-else class="sin-datos">
+        No hay datos para mostrar.  
+        Selecciona período y mes, llena los responsables y presiona
+        <strong>Vista previa</strong>.
+      </div>
+
+   
+  
 </template>
 
 <script>

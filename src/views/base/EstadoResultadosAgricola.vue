@@ -312,7 +312,7 @@ export default {
           rows.push({
             tipo: 'normal',
             nivel: 3,
-            esCuenta: true,          // 👈 para poner link
+            esCuenta: true,         
             col1: eg.cuenta,
             col2: formatQ(eg.egresos),
             col3: '',

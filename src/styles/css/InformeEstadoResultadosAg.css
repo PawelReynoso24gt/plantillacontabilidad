@@ -17,6 +17,8 @@
   max-width: 1100px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0f0f0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Encabezado */
@@ -53,17 +55,6 @@
 
 .division-inline {
   align-items: center;
-}
-
-.division-block {
-  flex-direction: column;
-}
-
-.division-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #41251c;
-  margin: 0 0 0.75rem 0;
 }
 
 /* Campos */
@@ -195,65 +186,42 @@
 }
 
 .tabla-libro thead th {
-  background-color: #292b57;
+  background-color: rgb(41, 128, 185);
   color: #ffffff;
   padding: 0.6rem 0.5rem;
-  text-align: left;
+  text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .tabla-libro tbody td {
-  padding: 0.5rem;
+  padding: 0.5rem 0.6rem;
   border-bottom: 1px solid #eeeeee;
-}
-
-.tabla-libro tbody tr:last-child td {
-  border-bottom: none;
+  text-align: center;
+  word-break: break-word;
 }
 
 .right {
-  text-align: right;
-}
-
-.fila-resaltada {
-  background-color: #fdf7e9;
+  text-align: right !important;
 }
 
 .bold-text {
   font-weight: 700;
 }
 
-/* Firmas */
-.firmas-wrapper {
-  margin-top: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: space-between;
+.fila-resaltada {
+  background-color: #fdf7e9;
 }
 
-.firma-col {
-  flex: 1 1 200px;
-  text-align: center;
+/* Enlace de cuenta */
+.link-cuenta {
+  color: #0a53be;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-.firma-centro {
-  flex: 1 1 220px;
-}
-
-.firma-line {
-  margin-bottom: 0.5rem;
-}
-
-.firma-nombre {
-  font-weight: 600;
-  margin-bottom: 0.2rem;
-}
-
-.firma-cargo {
-  font-size: 0.85rem;
-  color: #6c757d;
+.link-cuenta:hover {
+  color: #063a83;
 }
 
 /* Mensaje sin datos */
@@ -285,10 +253,5 @@
   .tabla-libro {
     font-size: 0.8rem;
     min-width: 650px;
-  }
-
-  .firmas-wrapper {
-    flex-direction: column;
-    align-items: center;
   }
 }

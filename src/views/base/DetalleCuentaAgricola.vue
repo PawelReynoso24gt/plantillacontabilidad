@@ -301,7 +301,7 @@ export default {
     });
 
     doc.autoTable({
-      columns,          // 👈 antes ponías "columnas" sin existir, aquí ya está bien
+      columns,         
       body: filas,
       startY: 80,
       theme: 'grid',

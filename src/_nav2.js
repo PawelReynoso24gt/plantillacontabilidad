@@ -39,19 +39,7 @@ export default function useNavCapilla() {
         }
       ],
     },
-    {
-      component: 'DetalleCuentaCapilla',
-      name: 'DetalleCuentas',
-      to: '/DetalleCu',
-      icon: 'cilCash',
-      items: [
-        {
-          component: 'CNavItem',
-          name: 'Ingreso Capilla',
-          to: '/base/DetalleCuentaCapilla',
-        }
-      ],
-    },
+
     {
       component: 'CNavGroup',
       name: 'Traslados Internos',

@@ -1,0 +1,214 @@
+/* Fondo general de la página */
+.login-page {
+  background: #f7f7f7; /* #F7F7F7 */
+}
+
+/* Grupo principal de la tarjeta */
+.login-card-group {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+/* Lado del logo / marca */
+.login-card-brand .login-logo {
+  width: 260px !important;
+  height: auto !important;
+  max-width: 260px !important;
+}
+
+
+.login-logo {
+  max-width: 200px;
+  max-height: 140px;
+  object-fit: contain;
+}
+
+.login-brand-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.login-brand-subtitle {
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+/* Lado del formulario */
+.login-card-form {
+  background: #ffffff; /* #FFFFFF */
+  border: none;
+}
+
+.login-title {
+  color: #080808; /* #080808 */
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.login-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* Inputs */
+.login-input {
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  font-size: 0.95rem;
+}
+
+.login-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.15rem rgba(189, 159, 105, 0.35);
+  border-color: #bd9f69;
+}
+
+/* Iconos */
+.input-icon {
+  background-color: #f7f7f7;
+  border-radius: 999px 0 0 999px;
+  border-right: none;
+  color: #a0834e;
+}
+
+.input-icon-clickable {
+  cursor: pointer;
+  border-radius: 0 999px 999px 0;
+  border-left: none;
+}
+
+/* Botón principal */
+.login-btn.btn-primary {
+  background-color: #a0834e;
+  border-color: #a0834e;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.login-btn.btn-primary:hover,
+.login-btn.btn-primary:focus {
+  background-color: #bd9f69;
+  border-color: #bd9f69;
+}
+
+/* Mensaje de error */
+.text-danger {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+/* Responsive: en pantallas pequeñas solo se muestra el formulario redondeado */
+@media (max-width: 767.98px) {
+  .login-card-form {
+    border-radius: 18px;
+  }
+}
+/* Fondo general de la página */
+.login-page {
+  background: #f7f7f7; /* #F7F7F7 */
+}
+
+/* Grupo principal de la tarjeta */
+.login-card-group {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+/* Lado del logo / marca */
+.login-card-brand {
+  background: linear-gradient(135deg, #bd9f69, #a0834e); /* #BD9F69 y #A0834E */
+  color: #ffffff;
+  min-width: 40%;
+  border: none;
+}
+
+.login-logo {
+  max-width: 140px;
+  max-height: 140px;
+  object-fit: contain;
+}
+
+.login-brand-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.login-brand-subtitle {
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+/* Lado del formulario */
+.login-card-form {
+  background: #ffffff; /* #FFFFFF */
+  border: none;
+}
+
+.login-title {
+  color: #080808; /* #080808 */
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.login-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* Inputs */
+.login-input {
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  font-size: 0.95rem;
+}
+
+.login-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.15rem rgba(189, 159, 105, 0.35);
+  border-color: #bd9f69;
+}
+
+/* Iconos */
+.input-icon {
+  background-color: #f7f7f7;
+  border-radius: 999px 0 0 999px;
+  border-right: none;
+  color: #a0834e;
+}
+
+.input-icon-clickable {
+  cursor: pointer;
+  border-radius: 0 999px 999px 0;
+  border-left: none;
+}
+
+/* Botón principal */
+.login-btn.btn-primary {
+  background-color: #a0834e;
+  border-color: #a0834e;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.login-btn.btn-primary:hover,
+.login-btn.btn-primary:focus {
+  background-color: #bd9f69;
+  border-color: #bd9f69;
+}
+
+/* Mensaje de error */
+.text-danger {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+/* Responsive: en pantallas pequeñas solo se muestra el formulario redondeado */
+@media (max-width: 767.98px) {
+  .login-card-form {
+    border-radius: 18px;
+  }
+}

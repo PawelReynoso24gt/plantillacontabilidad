@@ -1,47 +1,97 @@
 <template>
-  <div>
-    <label>DEPOSITOS DE CAJA</label>
-    <!-- Primera división -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="numero-inputs">
-          <label>Banco:</label>
-          <div class="numero-input">
-            <select v-model="cuentaBName" @change="cargarBancosNoCuenta">
-              <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
-            </select>
-          </div>
-          <label>Numero de documento:</label>
-          <input type="text" v-model="numero_documento">  
-        </div>     
-        <div class="fecha-inputs">
-          <label>Fecha</label>
-          <input type="date" v-model="fecha">
+  <div class="dep-wrapper">
+    <div class="dep-card">
+      <!-- Encabezado -->
+      <div class="dep-header">
+        <div>
+          <h2 class="dep-title">Depósitos de caja - Capilla</h2>
+          <p class="dep-subtitle">
+            Registra los depósitos desde caja hacia una cuenta bancaria.
+          </p>
         </div>
       </div>
+
+      <!-- Sección: banco + número documento + fecha -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Banco / Cuenta bancaria</label>
+          <select
+            v-model="cuentaBName"
+            @change="cargarBancosNoCuenta"
+            class="field-control"
+          >
+            <option disabled value="">Seleccione banco y cuenta</option>
+            <option
+              v-for="cuentaN in cuentas_bancarias"
+              :key="cuentaN.cuenta_bancaria"
+              :value="cuentaN.cuenta_bancaria"
+            >
+              {{ cuentaN.banco_y_cuenta }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Número de documento</label>
+          <input
+            type="text"
+            v-model="numero_documento"
+            class="field-control"
+            placeholder="Número de boleta / referencia"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Fecha</label>
+          <input
+            type="date"
+            v-model="fecha"
+            class="field-control"
+          />
+        </div>
+      </div>
+
+      <!-- Sección: monto + observaciones -->
+      <div class="division-container division-block">
+        <p class="division-title">Monto a depositar</p>
+
+        <div class="field-group">
+          <label class="field-label">Valor a depositar</label>
+          <input
+            type="text"
+            v-model="monto"
+            class="field-control"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="field-group full-width">
+          <label class="field-label">Observaciones</label>
+          <input
+            type="text"
+            v-model="descripcion"
+            class="field-control"
+            placeholder="Detalle del depósito (opcional)"
+          />
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="messages-container">
+        <p v-if="error" class="text-danger">{{ error }}</p>
+        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="insertar">
+          Guardar
+        </button>
+        <button class="btn-secondary" @click="limpiar">
+          Limpiar
+        </button>
+      </div>
     </div>
-    
-    <!-- Segunda división -->
-    <div class="division-container">
-      <label>MONTO A RETIRAR BANCOS</label>
-      <label>Valor a retirar:</label>
-      <input type="text" v-model="monto">
-      <label>Observaciones</label>
-      <input type="text" v-model="descripcion">
-    </div>
-    
-    <!-- Espacio entre la división 3 y el botón -->
-    <div style="margin-top: 20px;"></div>
-
-    <!-- Mensaje de error -->
-    <p v-if="error" class="text-danger">{{ error }}</p>
-
-    <!-- Mensaje de éxito -->
-    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
-
-    <!-- Botón Agregar -->
-    <button @click="insertar">Guardar</button>
-    <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
   </div>
 </template>
 

@@ -1,3 +1,17 @@
+/* Números de cuenta con estilo de link */
+.link-cuenta {
+  color: #1a73e8;          /* azul tipo enlace */
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Efecto hover para que se sienta clickeable */
+.link-cuenta:hover {
+  text-decoration: underline;
+  color: #0b5ed7;          /* un azul un poco más fuerte al pasar el mouse */
+}
+
 .reporte-wrapper {
   background-color: #f7f7f7;
   min-height: calc(100vh - 100px);
