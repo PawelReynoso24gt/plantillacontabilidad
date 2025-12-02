@@ -91,12 +91,12 @@ export default function useNavCapilla() {
         },
         {
           component: 'CNavItem',
-          name: 'Estado de Resultados',
+          name: 'Estado de Resultados Capilla',
           to: '/base/EstadoResultadosCapilla',
         },
         {
           component: 'CNavItem',
-          name: 'Balance General',
+          name: 'Balance General Capilla',
           to: '/base/BalanceGeneralCapilla',
         }
       ],

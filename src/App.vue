@@ -37,5 +37,5 @@ export default {
 // Import Main styles for this application
 @use 'styles/style';
 // We use those styles to show code examples, you should remove them in your application.
-@use 'styles/examples';
+//@use 'styles/examples';
 </style>

@@ -90,12 +90,12 @@ export default function useNavAgricola() {
         },
         {
           component: 'CNavItem',
-          name: 'Estado de Resultados',
+          name: 'Estado de Resultados Agrícola',
           to: '/base/EstadoResultadosAgricola',
         },
         {
           component: 'CNavItem',
-          name: 'Balance General',
+          name: 'Balance General Agrícola',
           to: '/base/BalanceGeneralAgricola',
         }
       ],

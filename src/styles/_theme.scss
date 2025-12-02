@@ -11,8 +11,8 @@
   width: 100%;
   @include core.ltr-rtl("padding-left", var(--cui-sidebar-occupy-start, 0));
   @include core.ltr-rtl("padding-right", var(--cui-sidebar-occupy-end, 0));
-  will-change: auto;
-  @include bs.transition(padding .15s);
+ //will-change: auto;
+  //@include bs.transition(padding .15s);
 }
 
 .header > .container-fluid,

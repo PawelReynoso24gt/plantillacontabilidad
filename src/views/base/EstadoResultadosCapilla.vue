@@ -1,153 +1,150 @@
 <template>
-      <!-- Encabezado -->
-      <div class="libro-header">
-        <div>
-          <h2 class="libro-title">Estado de Resultados - Agrícola</h2>
-          <p class="libro-subtitle">
-            Consulta el estado de resultados por período y genera la vista previa o PDF.
-          </p>
-        </div>
-      </div>
+  <!-- Encabezado -->
+  <div class="libro-header">
+    <div>
+      <h2 class="libro-title">Estado de Resultados - Capilla</h2>
+      <p class="libro-subtitle">
+        Consulta el estado de resultados por período y genera la vista previa o PDF.
+      </p>
+    </div>
+  </div>
 
-      <!-- Formulario: período + mes -->
-      <div class="division-container division-inline">
-        <div class="field-group">
-          <label class="field-label">Período de informe</label>
-          <select
-            v-model="selectedPeriodo"
-            @change="actualizarMeses"
-            class="field-control"
-          >
-            <option disabled value="">Seleccione un período</option>
-            <option
-              v-for="periodo in periodos"
-              :key="periodo"
-              :value="periodo"
+  <!-- Formulario: período + mes -->
+  <div class="division-container division-inline">
+    <div class="field-group">
+      <label class="field-label">Período de informe</label>
+      <select
+        v-model="selectedPeriodo"
+        @change="actualizarMeses"
+        class="field-control"
+      >
+        <option disabled value="">Seleccione un período</option>
+        <option
+          v-for="periodo in periodos"
+          :key="periodo"
+          :value="periodo"
+        >
+          {{ periodo }}
+        </option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Mes</label>
+      <select
+        v-model="selectedMes"
+        class="field-control"
+      >
+        <option disabled value="">Seleccione un mes</option>
+        <option
+          v-for="mes in meses"
+          :key="mes"
+          :value="mes"
+        >
+          {{ mes }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="form-actions">
+    <button @click="mostrarTabla" class="btn-secondary">
+      Vista previa
+    </button>
+    <button @click="limpiar" class="btn-secondary">
+      Limpiar
+    </button>
+    <button @click="generarPDF" class="btn-primary">
+      Generar PDF
+    </button>
+  </div>
+
+  <!-- Encabezado tipo PDF / vista previa -->
+  <div v-if="reporteData" class="encabezado-container">
+    <div class="encabezado-box">
+      <div class="encabezado-titulo">
+        ESTADO DE RESULTADOS {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
+      </div>
+    </div>
+
+    <div class="encabezado-detalles">
+      <div>
+        <strong>INFORME CORRESPONDIENTE AL:</strong>
+        {{ periodoTexto }}
+      </div>
+      <div><strong>AÑO:</strong> {{ currentYear }}</div>
+      <div>
+        <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
+      </div>
+      <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+      <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
+    </div>
+  </div>
+
+  <!-- Tabla resumen -->
+  <div v-if="reporteData" class="tabla-wrapper">
+    <table class="tabla-libro">
+      <thead>
+        <tr>
+          <th>Cuenta</th>
+          <th>Descripción</th>
+          <th>Detalle</th>
+          <th class="right">Saldo suma</th>
+          <th class="right">Suma</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          v-for="(fila, idx) in tablaPreview"
+          :key="idx"
+          :class="{ 'fila-resaltada': fila.tipo === 'heading' }"
+        >
+          <!-- Columna Cuenta (muestra código y manda código+nombre) -->
+          <td class="right bold-text">
+            <span
+              v-if="fila.esCuenta && fila.cuenta"
+              class="link-cuenta"
+              @click="irDetalleCuenta(fila.cuenta, fila.col1)"
             >
-              {{ periodo }}
-            </option>
-          </select>
-        </div>
+              {{ fila.cuenta }}
+            </span>
+            <span v-else>
+              {{ fila.cuenta || '' }}
+            </span>
+          </td>
 
-        <div class="field-group">
-          <label class="field-label">Mes</label>
-          <select
-            v-model="selectedMes"
-            class="field-control"
-          >
-            <option disabled value="">Seleccione un mes</option>
-            <option
-              v-for="mes in meses"
-              :key="mes"
-              :value="mes"
-            >
-              {{ mes }}
-            </option>
-          </select>
-        </div>
-      </div>
+          <!-- fila tipo heading (título/sección/gran total) -->
+          <template v-if="fila.tipo === 'heading'">
+            <td class="bold-text">{{ fila.col1 }}</td>
+            <td></td>
+            <td class="right bold-text">
+              {{ fila.col3 || '' }}
+            </td>
+            <td class="right bold-text">
+              {{ fila.col4 || '' }}
+            </td>
+          </template>
 
-      <!-- Botones -->
-      <div class="form-actions">
-        <button @click="mostrarTabla" class="btn-secondary">
-          Vista previa
-        </button>
-        <button @click="limpiar" class="btn-secondary">
-          Limpiar
-        </button>
-        <button @click="generarPDF" class="btn-primary">
-          Generar PDF
-        </button>
-      </div>
+          <!-- fila normal -->
+          <template v-else>
+            <td>{{ fila.col1 }}</td>
+            <td>{{ fila.col2 }}</td>
+            <td class="right">{{ fila.col3 }}</td>
+            <td class="right">{{ fila.col4 }}</td>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-      <!-- Encabezado tipo PDF / vista previa -->
-      <div v-if="reporteData" class="encabezado-container">
-        <div class="encabezado-box">
-          <div class="encabezado-titulo">
-            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
-          </div>
-        </div>
-
-        <div class="encabezado-detalles">
-          <div>
-            <strong>INFORME CORRESPONDIENTE AL:</strong>
-            {{ periodoTexto }}
-          </div>
-          <div><strong>AÑO:</strong> {{ currentYear }}</div>
-          <div>
-            <strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA
-          </div>
-          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-          <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
-        </div>
-      </div>
-
-      <!-- Tabla resumen -->
-      <div v-if="reporteData" class="tabla-wrapper">
-        <table class="tabla-libro">
-          <thead>
-            <tr>
-              <th>Cuenta</th>
-              <th>Descripción</th>
-              <th>Detalle</th>
-              <th class="right">Saldo suma</th>
-              <th class="right">Suma</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr
-              v-for="(fila, idx) in tablaPreview"
-              :key="idx"
-              :class="{ 'fila-resaltada': fila.tipo === 'heading' }"
-            >
-              <!-- Columna Cuenta (muestra código y manda código+nombre) -->
-              <td class="right bold-text">
-                <span
-                  v-if="fila.esCuenta && fila.cuenta"
-                  class="link-cuenta"
-                  @click="irDetalleCuenta(fila.cuenta, fila.col1)"
-                >
-                  {{ fila.cuenta }} <!-- código: 2.1.1, etc. -->
-                </span>
-                <span v-else>
-                  {{ fila.cuenta || '' }}
-                </span>
-              </td>
-
-              <!-- fila tipo heading (título/sección/gran total) -->
-              <template v-if="fila.tipo === 'heading'">
-                <td class="bold-text">{{ fila.col1 }}</td>
-                <td></td>
-                <td class="right bold-text">
-                  {{ fila.col3 || '' }}
-                </td>
-                <td class="right bold-text">
-                  {{ fila.col4 || '' }}
-                </td>
-              </template>
-
-              <!-- fila normal -->
-              <template v-else>
-                <td>{{ fila.col1 }}</td>
-                <td>{{ fila.col2 }}</td>
-                <td class="right">{{ fila.col3 }}</td>
-                <td class="right">{{ fila.col4 }}</td>
-              </template>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Mensaje si no hay datos todavía -->
-      <div v-else class="sin-datos">
-        No hay datos para mostrar.  
-        Selecciona período y mes y presiona
-        <strong>Vista previa</strong>.
-      </div>
-
-   
-
+  <!-- Mensaje si no hay datos todavía -->
+  <div v-else class="sin-datos">
+    No hay datos para mostrar.  
+    Selecciona período y mes y presiona
+    <strong>Vista previa</strong>.
+  </div>
 </template>
 
 <script>
@@ -158,10 +155,10 @@ import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import { useRouter } from 'vue-router';
 import { aplicarNumeracion } from '../../../utils/numeracion';
-import '../../styles/css/InformeEstadoResultadosAg.css'; // 👈 estilo externo
+import '../../styles/css/InformeEstadoResultadosAg.css'; 
 
 export default {
-  name: 'ReporteAgricolaFinal',
+  name: 'EstadoResultadosCapilla',
   setup() {
     const router = useRouter();
 
@@ -239,12 +236,13 @@ export default {
       );
     };
 
+    // 👉 Ir al libro mayor de Capilla
     const irDetalleCuenta = (codigoCuenta, nombreCuenta) => {
       router.push({
-        name: 'ReporteCuentaAgricolaCuenta',
+        name: 'ReporteCuentaCapillaCuenta',
         params: {
-          codigo: codigoCuenta,   // código contable
-          cuenta: nombreCuenta    // nombre de la cuenta
+          codigo: codigoCuenta,
+          cuenta: nombreCuenta
         }
       });
     };
@@ -309,7 +307,7 @@ export default {
             tipo: 'normal',
             nivel: 3,
             esCuenta: true,
-            col1: eg.cuenta,             // nombre
+            col1: eg.cuenta,
             col2: formatQ(eg.egresos),
             col3: '',
             col4: ''
@@ -377,14 +375,14 @@ export default {
         col4: formatQ(d.total_saldo_final)
       });
 
-      // aplicarNumeracion agregará algo como fila.cuenta (1, 1.1, etc.)
+      // Numeración jerárquica (agrega fila.cuenta)
       return aplicarNumeracion(rows);
     });
 
     const mostrarTabla = async () => {
       try {
         const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
+          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosCA', 
           {
             tipo: selectedPeriodo.value.toLowerCase(),
             mes: selectedMes.value.toLowerCase()
@@ -407,7 +405,7 @@ export default {
     const generarPDF = async () => {
       try {
         const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
+          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosCA', 
           {
             tipo: selectedPeriodo.value.toLowerCase(),
             mes: selectedMes.value.toLowerCase()
@@ -417,8 +415,6 @@ export default {
 
         const doc = new jsPDF();
         let yOffset = 20;
-        const pageHeight = doc.internal.pageSize.height;
-        const pageMargin = 20;
 
         const addTable = (head, body) => {
           doc.autoTable({
@@ -480,7 +476,7 @@ export default {
         doc.text(`DE`, 165, 40);
         doc.text(`${currentYear}`, 175, 40);
         doc.text(
-          `PROYECTO AGRÍCOLA HOGAR SANTA LUISA`,
+          `PROYECTO CAPILLA HOGAR SANTA LUISA`,
           20,
           50
         );
@@ -492,7 +488,6 @@ export default {
 
         yOffset = 75;
 
-        // Tabla (mismo orden que tu tablaPreview: saldo inicial, egresos, saldo final, sumas iguales)
         const tableData = [
           // SALDO INICIAL
           ['SALDO INICIAL', '', '', formatQ(data.saldo_inicial)],
@@ -578,7 +573,7 @@ export default {
         addTable(tableHeaders, tableData);
 
         const blob = doc.output('blob');
-        saveAs(blob, 'estado_resultados_agricola.pdf');
+        saveAs(blob, 'estado_resultados_capilla.pdf');
       } catch (error) {
         console.error('Error al generar el PDF:', error);
       }
