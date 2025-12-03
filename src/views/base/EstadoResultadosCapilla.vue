@@ -102,18 +102,18 @@
           :class="{ 'fila-resaltada': fila.tipo === 'heading' }"
         >
           <!-- Columna Cuenta (muestra código y manda código+nombre) -->
-          <td class="right bold-text">
-            <span
-              v-if="fila.esCuenta && fila.cuenta"
-              class="link-cuenta"
-              @click="irDetalleCuenta(fila.cuenta, fila.col1)"
-            >
-              {{ fila.cuenta }}
-            </span>
-            <span v-else>
-              {{ fila.cuenta || '' }}
-            </span>
-          </td>
+         <td class="right bold-text">
+          <span
+            v-if="fila.esCuenta"
+            class="link-cuenta"
+            @click="irDetalleCuenta(fila.cuenta || fila.col1, fila.col1)"
+          >
+            {{ fila.cuenta || fila.col1 }}
+          </span>
+          <span v-else>
+            {{ fila.cuenta || '' }}
+          </span>
+        </td>
 
           <!-- fila tipo heading (título/sección/gran total) -->
           <template v-if="fila.tipo === 'heading'">
@@ -307,6 +307,7 @@ export default {
             tipo: 'normal',
             nivel: 3,
             esCuenta: true,
+            cuenta: eg.cuenta,
             col1: eg.cuenta,
             col2: formatQ(eg.egresos),
             col3: '',
@@ -330,6 +331,7 @@ export default {
             tipo: 'normal',
             nivel: 3,
             esCuenta: true,
+            cuenta: eg.cuenta, 
             col1: eg.cuenta,
             col2: formatQ(eg.egresos),
             col3: '',

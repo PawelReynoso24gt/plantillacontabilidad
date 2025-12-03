@@ -1,280 +1,280 @@
 <template>
-  <!-- Encabezado -->
-  <div class="anticipo-header">
-    <div>
-      <h2 class="anticipo-title">Anticipo sobre compras</h2>
-      <p class="anticipo-subtitle">
-        Registro de anticipos pagados para compras agrícolas.
-      </p>
-    </div>
-  </div>
-
-  <!-- Egreso para -->
-  <div class="division-container division-inline">
-    <div class="field-group">
-      <label class="field-label">Egreso para</label>
-      <select v-model="tipo" class="field-control">
-        <option disabled value="">Seleccione</option>
-        <option value="caja">Caja</option>
-        <option value="bancos">Bancos</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Fecha -->
-  <div class="division-container division-inline">
-    <div class="field-group">
-      <label class="field-label">Fecha</label>
-      <input type="date" v-model="fecha" class="field-control" />
-    </div>
-  </div>
-
-  <!-- Identificación / nombre / observaciones -->
-  <div class="division-container">
-    <div class="field-group">
-      <label class="field-label">DPI/NIT/CF</label>
-      <input type="text" v-model="identificacion" class="field-control" />
-    </div>
-
-    <div class="field-group">
-      <label class="field-label">Nombre/CF</label>
-      <input type="text" v-model="nombre" class="field-control" />
-    </div>
-
-    <div class="field-group full-width">
-      <label class="field-label">Observaciones del comprobante</label>
-      <input type="text" v-model="descripcion" class="field-control" />
-    </div>
-  </div>
-
-  <!-- Monto -->
-  <div class="division-container division-inline">
-    <div class="field-group">
-      <label class="field-label">Monto</label>
-      <input type="text" v-model="monto" class="field-control" />
-    </div>
-  </div>
-
-  <!-- Datos del pago (solo cuando es bancos) -->
-  <div class="division-container" v-if="mostrarDivisionCuatro">
-    <h3 class="division-title">Datos del pago</h3>
-
-    <div class="field-group">
-      <label class="field-label">Documento</label>
-      <select v-model="documento" class="field-control">
-        <option disabled value="">Seleccione</option>
-        <option value="Transferencia">Transferencia</option>
-        <option value="Depósitos">Depósitos</option>
-        <option value="Cheque">Cheque</option>
-      </select>
-    </div>
-
-    <div class="field-group">
-      <label class="field-label">Cuenta bancaria</label>
-      <select v-model.number="idCuentaBancaria" class="field-control">
-        <option disabled value="">Seleccione una cuenta</option>
-        <option
-          v-for="c in cuentas_bancarias"
-          :key="c.id"
-          :value="c.id"
-        >
-          {{ c.label }}
-        </option>
-      </select>
-    </div>
-
-    <div class="field-group">
-      <label class="field-label">No. Documento</label>
-      <input
-        type="text"
-        v-model="numero_documento"
-        class="field-control"
-      />
-    </div>
-
-    <div class="field-group">
-      <label class="field-label">Fecha emisión</label>
-      <input
-        type="date"
-        v-model="fecha_emision"
-        class="field-control"
-      />
-    </div>
-  </div>
-
-  <!-- Mensajes -->
-  <div class="messages-container">
-    <p v-if="error" class="text-danger">{{ error }}</p>
-    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
-  </div>
-
-  <!-- Botones principales -->
-  <div class="form-actions">
-    <button class="btn-primary" @click="enviarDatos">Guardar</button>
-    <button class="btn-secondary" @click="limpiar">Limpiar</button>
-    <button class="btn-ghost" @click="toggleMostrarTabla">
-      {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
-    </button>
-  </div>
-
-  <!-- Tabla de anticipos (colapsable) -->
-  <div v-if="showTabla" class="tabla-anticipos">
-    <div class="tabla-header">
-      <h3 class="tabla-title">Anticipos registrados</h3>
-      <span v-if="loading" class="tabla-badge">Cargando...</span>
-    </div>
-
-    <p v-if="!loading && anticipoRows.length === 0" class="tabla-empty">
-      No hay registros.
-    </p>
-
-    <table
-      v-if="!loading && anticipoRows.length"
-      class="table-anticipo"
-    >
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Nomenclatura</th>
-          <th>Nombre</th>
-          <th>Cuenta</th>
-          <th>Tipo</th>
-          <th class="right">Monto</th>
-          <th class="right">Monto faltante</th>
-          <th class="center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(r, idx) in anticipoRows" :key="idx">
-          <td>{{ r.fecha }}</td>
-          <td>{{ r.nomenclatura }}</td>
-          <td>{{ r.nombre }}</td>
-          <td>{{ r.id_cuentas }}</td>
-          <td>{{ r.tipo }}</td>
-          <td class="right">{{ formatMonto(r.monto) }}</td>
-          <td class="right">{{ formatMonto(r.monto_faltante) }}</td>
-          <td class="center">
-            <button class="btn-link" @click="openSaldarModal(r)">
-              Saldar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Modal para saldar -->
-  <div v-if="showModal" class="modal-overlay">
-    <div class="modal-box">
-      <h3>Saldar registro</h3>
-
-      <div
-        class="modal-id-row"
-      >
-        <label>ID cuenta:</label>
-        <span>
-          {{
-            modalData.id_ingresos_egresos !== null &&
-            modalData.id_ingresos_egresos !== undefined
-              ? modalData.id_ingresos_egresos
-              : '-'
-          }}
-        </span>
+     <!-- Encabezado -->
+      <div class="anticipo-header">
+        <div>
+          <h2 class="anticipo-title">Anticipo sobre compras</h2>
+          <p class="anticipo-subtitle">
+            Registro de anticipos pagados para compras agrícolas.
+          </p>
+        </div>
       </div>
 
-      <div class="modal-form">
-        <div class="input-container">
-          <label>Nomenclatura</label>
-          <input type="text" v-model="modalData.nomenclatura" />
+      <!-- Egreso para -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Egreso para</label>
+          <select v-model="tipo" class="field-control">
+            <option disabled value="">Seleccione</option>
+            <option value="caja">Caja</option>
+            <option value="bancos">Bancos</option>
+          </select>
         </div>
-        <div class="input-container">
-          <label>Cuenta</label>
-          <input type="text" v-model="modalData.id_cuentas" />
+      </div>
+
+      <!-- Fecha -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Fecha</label>
+          <input type="date" v-model="fecha" class="field-control" />
         </div>
-        <div class="input-container">
-          <label>Fecha</label>
-          <input type="date" v-model="modalData.fecha" />
+      </div>
+
+      <!-- Identificación / nombre / observaciones -->
+      <div class="division-container">
+        <div class="field-group">
+          <label class="field-label">DPI/NIT/CF</label>
+          <input type="text" v-model="identificacion" class="field-control" />
         </div>
-        <div class="input-container">
-          <label>DPI/NIT/CF</label>
-          <input type="text" v-model="modalData.identificacion" />
+
+        <div class="field-group">
+          <label class="field-label">Nombre/CF</label>
+          <input type="text" v-model="nombre" class="field-control" />
         </div>
-        <div class="input-container">
-          <label>Nombre</label>
-          <input type="text" v-model="modalData.nombre" />
+
+        <div class="field-group full-width">
+          <label class="field-label">Observaciones del comprobante</label>
+          <input type="text" v-model="descripcion" class="field-control" />
         </div>
-        <div class="input-container">
-          <label>Observaciones</label>
-          <input type="text" v-model="modalData.descripcion" />
+      </div>
+
+      <!-- Monto -->
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Monto</label>
+          <input type="text" v-model="monto" class="field-control" />
         </div>
-        <div class="input-container">
-          <label>Monto</label>
-          <input type="text" v-model="modalData.monto" />
-        </div>
-        <div class="input-container">
-          <label>Monto a abonar</label>
-          <input
-            type="text"
-            v-model="modalData.monto_abono"
-            placeholder="0.00"
-          />
-        </div>
-        <div class="input-container">
-          <label>Tipo</label>
-          <select v-model="modalData.tipo">
-            <option value="caja">caja</option>
-            <option value="bancos">bancos</option>
+      </div>
+
+      <!-- Datos del pago (solo cuando es bancos) -->
+      <div class="division-container division-block" v-if="mostrarDivisionCuatro">
+        <h3 class="division-title">Datos del pago</h3>
+
+        <div class="field-group">
+          <label class="field-label">Documento</label>
+          <select v-model="documento" class="field-control">
+            <option disabled value="">Seleccione</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Depósitos">Depósitos</option>
+            <option value="Cheque">Cheque</option>
           </select>
         </div>
 
-        <template v-if="modalData.tipo === 'bancos'">
-          <div class="input-container">
-            <label>Documento</label>
-            <select v-model="modalData.documento">
-              <option value="Transferencia">Transferencia</option>
-              <option value="Depósitos">Depósitos</option>
-              <option value="Cheque">Cheque</option>
-            </select>
-          </div>
-          <div class="input-container">
-            <label>Cuenta bancaria</label>
-            <select v-model.number="modalData.idCuentaBancaria">
-              <option
-                v-for="c in cuentas_bancarias"
-                :key="c.id"
-                :value="c.id"
-              >
-                {{ c.label }}
-              </option>
-            </select>
-          </div>
-          <div class="input-container">
-            <label>No. Documento</label>
-            <input
-              type="text"
-              v-model="modalData.numero_documento"
-            />
-          </div>
-          <div class="input-container">
-            <label>Fecha emisión</label>
-            <input
-              type="date"
-              v-model="modalData.fecha_emision"
-            />
-          </div>
-        </template>
+        <div class="field-group">
+          <label class="field-label">Cuenta bancaria</label>
+          <select v-model.number="idCuentaBancaria" class="field-control">
+            <option disabled value="">Seleccione una cuenta</option>
+            <option
+              v-for="c in cuentas_bancarias"
+              :key="c.id"
+              :value="c.id"
+            >
+              {{ c.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">No. Documento</label>
+          <input
+            type="text"
+            v-model="numero_documento"
+            class="field-control"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Fecha emisión</label>
+          <input
+            type="date"
+            v-model="fecha_emision"
+            class="field-control"
+          />
+        </div>
       </div>
 
-      <div class="modal-actions">
-        <button class="btn-primary" @click="saldarRegistroConfirm">
-          Confirmar
-        </button>
-        <button class="btn-secondary" @click="closeModal">
-          Cancelar
+      <!-- Mensajes -->
+      <div class="messages-container">
+        <p v-if="error" class="text-danger">{{ error }}</p>
+        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      </div>
+
+      <!-- Botones principales -->
+      <div class="form-actions">
+        <button class="btn-primary" @click="enviarDatos">Guardar</button>
+        <button class="btn-secondary" @click="limpiar">Limpiar</button>
+        <button class="btn-ghost" @click="toggleMostrarTabla">
+          {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
         </button>
       </div>
-    </div>
-  </div>
+
+      <!-- Tabla de anticipos (colapsable) -->
+      <div v-if="showTabla" class="tabla-anticipos">
+        <div class="tabla-header">
+          <h3 class="tabla-title">Anticipos registrados</h3>
+          <span v-if="loading" class="tabla-badge">Cargando...</span>
+        </div>
+
+        <p v-if="!loading && anticipoRows.length === 0" class="tabla-empty">
+          No hay registros.
+        </p>
+
+        <table
+          v-if="!loading && anticipoRows.length"
+          class="table-anticipo"
+        >
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Nomenclatura</th>
+              <th>Nombre</th>
+              <th>Cuenta</th>
+              <th>Tipo</th>
+              <th class="right">Monto</th>
+              <th class="right">Monto faltante</th>
+              <th class="center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(r, idx) in anticipoRows" :key="idx">
+              <td>{{ r.fecha }}</td>
+              <td>{{ r.nomenclatura }}</td>
+              <td>{{ r.nombre }}</td>
+              <td>{{ r.id_cuentas }}</td>
+              <td>{{ r.tipo }}</td>
+              <td class="right">{{ formatMonto(r.monto) }}</td>
+              <td class="right">{{ formatMonto(r.monto_faltante) }}</td>
+              <td class="center">
+                <button class="btn-link" @click="openSaldarModal(r)">
+                  Saldar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal para saldar -->
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal-box">
+          <h3>Saldar registro</h3>
+
+          <div class="modal-id-row">
+            <label>ID cuenta:</label>
+            <span>
+              {{
+                modalData.id_ingresos_egresos !== null &&
+                modalData.id_ingresos_egresos !== undefined
+                  ? modalData.id_ingresos_egresos
+                  : '-'
+              }}
+            </span>
+          </div>
+
+          <div class="modal-form">
+            <div class="input-container">
+              <label>Nomenclatura</label>
+              <input type="text" v-model="modalData.nomenclatura" />
+            </div>
+            <div class="input-container">
+              <label>Cuenta</label>
+              <input type="text" v-model="modalData.id_cuentas" />
+            </div>
+            <div class="input-container">
+              <label>Fecha</label>
+              <input type="date" v-model="modalData.fecha" />
+            </div>
+            <div class="input-container">
+              <label>DPI/NIT/CF</label>
+              <input type="text" v-model="modalData.identificacion" />
+            </div>
+            <div class="input-container">
+              <label>Nombre</label>
+              <input type="text" v-model="modalData.nombre" />
+            </div>
+            <div class="input-container">
+              <label>Observaciones</label>
+              <input type="text" v-model="modalData.descripcion" />
+            </div>
+            <div class="input-container">
+              <label>Monto</label>
+              <input type="text" v-model="modalData.monto" />
+            </div>
+            <div class="input-container">
+              <label>Monto a abonar</label>
+              <input
+                type="text"
+                v-model="modalData.monto_abono"
+                placeholder="0.00"
+              />
+            </div>
+            <div class="input-container">
+              <label>Tipo</label>
+              <select v-model="modalData.tipo">
+                <option value="caja">caja</option>
+                <option value="bancos">bancos</option>
+              </select>
+            </div>
+
+            <template v-if="modalData.tipo === 'bancos'">
+              <div class="input-container">
+                <label>Documento</label>
+                <select v-model="modalData.documento">
+                  <option value="Transferencia">Transferencia</option>
+                  <option value="Depósitos">Depósitos</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+              </div>
+              <div class="input-container">
+                <label>Cuenta bancaria</label>
+                <select v-model.number="modalData.idCuentaBancaria">
+                  <option
+                    v-for="c in cuentas_bancarias"
+                    :key="c.id"
+                    :value="c.id"
+                  >
+                    {{ c.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="input-container">
+                <label>No. Documento</label>
+                <input
+                  type="text"
+                  v-model="modalData.numero_documento"
+                />
+              </div>
+              <div class="input-container">
+                <label>Fecha emisión</label>
+                <input
+                  type="date"
+                  v-model="modalData.fecha_emision"
+                />
+              </div>
+            </template>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-primary" @click="saldarRegistroConfirm">
+              Confirmar
+            </button>
+            <button class="btn-secondary" @click="closeModal">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+   <!-- anticipo-card -->
+
 </template>
 
 <script>
