@@ -183,142 +183,176 @@
  
 
   <!-- pendientes -->
-  <div>
-    <h3 style="margin-top: 30px;">Cuentas Pendientes por Cobrar (Proyecto Capilla)</h3>
+  <div class="division-container" style="margin-top: 40px; padding: 1.5rem;">
+    <h3 class="division-title">Cuentas Pendientes por Cobrar (Proyecto Capilla)</h3>
     
     <p v-if="mensajeVacio" class="text-danger" style="margin-top: 10px;">{{ mensajeVacio }}</p>
 
     <div v-if="pendientes.length > 0" style="margin-top: 20px;">
-        <h4>Deudas Pendientes Encontradas ({{ pendientes.length }})</h4>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h4 style="margin: 0; color: #292b57;">Deudas Pendientes Encontradas ({{ pendientes.length }})</h4>
+        <button @click="cargarPendientes" class="btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">
+          Actualizar
+        </button>
+      </div>
+      
+      <div style="overflow-x: auto;">
         <table class="pendientes-table">
-            <thead>
-                <tr>
-                    <!-- <th>ID</th> -->
-                    <th>Fecha</th>
-                    <th>Nomenclatura</th>
-                    <th>Nombre</th>
-                    <th>Cuenta Contable</th>
-                    <th>Tipo</th>
-                    <th>Monto Deuda (Q)</th>
-                    <th>Tipo de Saldo</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
-                    <!-- <td>{{ item.id_ingresos_egresos }}</td> -->
-                    <td>{{ item.fecha }}</td>
-                    <td>{{ item.nomenclatura }}</td>
-                    <td>{{ item.nombre }}</td>
-                    <td>{{ item.cuentas.cuenta }}</td>
-                    <td>{{ item.tipo }}</td>
-                    <td>Q {{ item.saldo_pendiente }}</td>
-                    <td>
-                        <!-- Usamos los montos originales para determinar el tipo de saldo -->
-                        <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
-                        <span v-else class="saldo-haber">HABER</span>
-                    </td>
-                    <td><button @click="abrirModalSaldado(item)">Saldar</button></td>
-                </tr>
-            </tbody>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Nomenclatura</th>
+              <th>Nombre</th>
+              <th>Cuenta Contable</th>
+              <th>Tipo</th>
+              <th>Monto Deuda (Q)</th>
+              <th>Tipo de Saldo</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
+              <td>{{ item.fecha }}</td>
+              <td>{{ item.nomenclatura }}</td>
+              <td>{{ item.nombre }}</td>
+              <td>{{ item.cuentas.cuenta }}</td>
+              <td>{{ item.tipo }}</td>
+              <td>Q {{ item.saldo_pendiente }}</td>
+              <td>
+                <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
+                <span v-else class="saldo-haber">HABER</span>
+              </td>
+              <td><button @click="abrirModalSaldado(item)">Saldar</button></td>
+            </tr>
+          </tbody>
         </table>
+      </div>
     </div>
   </div>
 
 <!-- ******* MODAL DE SALDADO ******* -->
   <div v-if="mostrarModalSaldado" class="modal-overlay">
-      <div class="modal-content">
-          <h3>Saldar Deuda Pendiente</h3>
-          <p><strong>ID Deuda:</strong> {{ formSaldar.deuda_original_id }}</p>
-          <p><strong>Cuenta Contable:</strong> {{ formSaldar.nombre_cuenta_visual }}</p>
-          
-          <!-- Formulario dentro del Modal -->
-          <div class="division-container">
-              <div class="fecha-inputs">
-                  <label>Fecha de Pago:</label>
-                  <input type="date" v-model="formSaldar.fecha">
-              </div>
-          </div>
-
-          <div class="division-container">
-              <label>DPI/NIT/CF:</label>
-              <input type="text" v-model="formSaldar.identificacion">
-              <label>Nombre/CF:</label>
-              <input type="text" v-model="formSaldar.nombre">
-              <label>Observaciones:</label>
-              <input type="text" v-model="formSaldar.descripcion">
-          </div>
-
-          <div class="division-container">
-                <div class="numero-fecha-container">
-                  <div class="numero-inputs">
-                      <label>Medio de Pago:</label>
-                        <select v-model="formSaldar.tipo"> 
-                            <option value="caja">Caja</option>
-                            <option value="bancos">Bancos</option>  
-                        </select>
-                  </div>
-                  <div class="fecha-inputs">
-                      <label>Monto a Pagar (Q):</label>
-                      <input type="text" v-model="formSaldar.monto">
-                  </div>
-              </div>
-          </div>
-
-          <!-- Sección Bancaria Condicional (Dentro del Modal) -->
-          <div class="division-container" v-if="formSaldar.tipo === 'bancos'">
-                <label>DATOS BANCARIOS</label>
-                <div class="input-container">
-                  <label>Documento:</label>
-                  <select v-model="formSaldar.documento">
-                    <option value="Transferencia">Transferencia</option> 
-                    <option value="Depósitos">Depósitos</option>
-                    <option value="Cheque">Cheque</option> 
-                  </select>
-                </div>
-                <div class="input-container">
-                  <label>Cuenta Bancaria:</label>
-                  <!-- Reutilizamos la lista de cuentas bancarias cargada -->
-                  <select v-model="formSaldar.cuenta_bancaria">
-                    <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">{{ cuentaN.banco_y_cuenta }}</option> 
-                  </select>
-                </div>
-                <div class="input-container">
-                  <label>No. Documento:</label>
-                  <input type="text" v-model="formSaldar.numero_documento">
-                </div>
-                <div class="input-container">
-                  <label>Fecha Emisión:</label>
-                  <input type="date" v-model="formSaldar.fecha_emision">
-                </div>
-          </div>
-
-          <!-- Botones del Modal -->
-          <div class="modal-actions" style="margin-top: 20px; text-align: right;">
-              <button @click="cerrarModal" style="background-color: #ccc; color: #333; margin-right: 10px;">Cancelar</button>
-              <button @click="enviarSaldado">Confirmar Pago</button>
-          </div>
+    <div class="modal-content ingreso-card" style="max-width: 700px;">
+      <div class="ingreso-header">
+        <div>
+          <h3 class="ingreso-title">Saldar Deuda Pendiente</h3>
+          <p class="ingreso-subtitle">
+            Complete los datos del pago para registrar el abono.
+          </p>
+        </div>
       </div>
+      
+      <div class="division-container" style="margin-top: 0; background: transparent;">
+        <div class="field-group">
+          <label class="field-label">ID Deuda</label>
+          <input type="text" :value="formSaldar.deuda_original_id" class="field-control" disabled>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Cuenta Contable</label>
+          <input type="text" :value="formSaldar.nombre_cuenta_visual" class="field-control" disabled>
+        </div>
+      </div>
+
+      <!-- Formulario dentro del Modal -->
+      <div class="division-container">
+        <div class="field-group">
+          <label class="field-label">Fecha de Pago</label>
+          <input type="date" v-model="formSaldar.fecha" class="field-control">
+        </div>
+      </div>
+
+      <div class="division-container">
+        <div class="field-group">
+          <label class="field-label">DPI/NIT/CF</label>
+          <input type="text" v-model="formSaldar.identificacion" class="field-control">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Nombre/CF</label>
+          <input type="text" v-model="formSaldar.nombre" class="field-control">
+        </div>
+        <div class="field-group full-width">
+          <label class="field-label">Observaciones</label>
+          <input type="text" v-model="formSaldar.descripcion" class="field-control">
+        </div>
+      </div>
+
+      <div class="division-container division-inline">
+        <div class="field-group">
+          <label class="field-label">Medio de Pago</label>
+          <select v-model="formSaldar.tipo" class="field-control"> 
+            <option value="caja">Caja</option>
+            <option value="bancos">Bancos</option>  
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Monto a Pagar (Q)</label>
+          <input type="text" v-model="formSaldar.monto" class="field-control" placeholder="0.00">
+        </div>
+      </div>
+
+      <!-- Sección Bancaria Condicional -->
+      <div class="division-container division-block" v-if="formSaldar.tipo === 'bancos'">
+        <h3 class="division-title">Datos del pago</h3>
+        
+        <div class="field-group">
+          <label class="field-label">Documento</label>
+          <select v-model="formSaldar.documento" class="field-control">
+            <option value="Transferencia">Transferencia</option> 
+            <option value="Depósitos">Depósitos</option>
+            <option value="Cheque">Cheque</option> 
+          </select>
+        </div>
+        
+        <div class="field-group">
+          <label class="field-label">Cuenta Bancaria</label>
+          <select v-model="formSaldar.cuenta_bancaria" class="field-control">
+            <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">
+              {{ cuentaN.banco_y_cuenta }}
+            </option> 
+          </select>
+        </div>
+        
+        <div class="field-group">
+          <label class="field-label">No. Documento</label>
+          <input type="text" v-model="formSaldar.numero_documento" class="field-control">
+        </div>
+        
+        <div class="field-group">
+          <label class="field-label">Fecha Emisión</label>
+          <input type="date" v-model="formSaldar.fecha_emision" class="field-control">
+        </div>
+      </div>
+
+      <!-- Botones del Modal -->
+      <div class="form-actions" style="margin-top: 1.5rem;">
+        <button class="btn-secondary" @click="cerrarModal">Cancelar</button>
+        <button class="btn-primary" @click="enviarSaldado">Confirmar Pago</button>
+      </div>
+    </div>
   </div>
 
-  <!-- ******* MODAL DE ÉXITO ******* -->
+<!-- ******* MODAL DE ÉXITO ******* -->
   <div v-if="mostrarModalExito" class="modal-overlay">
-      <div class="modal-content" style="max-width: 400px; text-align: center;">
-          <h3 style="color: #14491b;">¡Pago Exitoso!</h3>
-          
-          <div style="margin: 20px 0;">
-              <p style="font-size: 1.1em;">El abono se ha registrado correctamente.</p>
-              
-              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 10px;">
-                  <p style="margin: 0; color: #666;">Saldo Pendiente Restante:</p>
-                  <h2 style="margin: 5px 0; color: #cc0000;">Q {{ datosExito.saldo }}</h2>
-              </div>
-          </div>
-
-          <div class="modal-actions" style="text-align: center;">
-              <button @click="cerrarModalExito">Aceptar</button>
-          </div>
+    <div class="modal-content ingreso-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Pago Exitoso!</h3>
+        <p style="color: #6c757d;">{{ datosExito.mensaje || 'El abono se ha registrado correctamente.' }}</p>
       </div>
+      
+      <div class="division-container" style="background-color: #f9f9f9; margin-bottom: 1.5rem;">
+        <div style="text-align: center; width: 100%;">
+          <p style="margin: 0; color: #666; font-size: 0.9rem;">Saldo Pendiente Restante</p>
+          <h2 style="margin: 0.5rem 0; color: #292b57; font-size: 1.8rem;">Q {{ datosExito.saldo }}</h2>
+        </div>
+      </div>
+
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExito" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 

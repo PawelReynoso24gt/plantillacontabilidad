@@ -215,82 +215,152 @@
     margin: 0; /* Elimina cualquier margen residual */
 }
 
-/* Estilo para asegurar que la tabla ocupe todo el ancho disponible */
+/* --- Estilos mejorados para tabla de pendientes --- */
 .pendientes-table {
-    width: 100%; /* Ocupa el ancho completo del contenedor padre */
-    border-collapse: collapse; /* Asegura que las celdas se unan */
-    margin-top: 20px;
-    font-size: 0.9em;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Estilo para las celdas y cabeceras (la línea que buscas) */
-.pendientes-table th, 
+.pendientes-table thead {
+  background-color: #292b57;
+}
+
+.pendientes-table th {
+  color: white;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .pendientes-table td {
-    border: 1px solid #ccc; /* Define el borde visible */
-    padding: 8px 12px; /* Espacio interno para mejor legibilidad */
-    text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
 }
 
-/* Estilo para la cabecera (Background y Fuente) */
-.pendientes-table thead th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-    text-transform: uppercase;
+.pendientes-table tbody tr:hover {
+  background-color: #f9f9f9;
 }
 
-/* Estilo para la columna de Monto para alineación */
+.pendientes-table tbody tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+/* Estilo para la columna de monto */
 .pendientes-table td:nth-last-child(2) {
-    /* Selecciona la columna "Monto Deuda (Q)" */
-    text-align: right;
-    font-weight: bold;
+  text-align: right;
+  font-weight: 600;
+  color: #292b57;
 }
 
-/* Estilo para el botón dentro de la tabla */
+/* Estilo para botones en la tabla */
 .pendientes-table button {
-    padding: 5px 10px;
-    font-size: 0.8em;
-    margin: 0;
+  background-color: #a0834e;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-/* Estilos para resaltar el tipo de saldo */
+.pendientes-table button:hover {
+  background-color: #bd9f69;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Etiquetas de saldo */
 .saldo-debe {
-    font-weight: bold;
-    color: #002fff; /* Rojo/Oscuro para DEBE (Activo/Pasivo, según tu lógica) */
+  font-weight: bold;
+  color: #002fff;
+  background-color: rgba(0, 47, 255, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 
 .saldo-haber {
-    font-weight: bold;
-    color: #b90000; /* Verde/Negro para HABER (Activo/Pasivo, según tu lógica) */
+  font-weight: bold;
+  color: #b90000;
+  background-color: rgba(185, 0, 0, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 
-/* Estilos del Modal */
+/* Responsividad para tabla */
+@media (max-width: 768px) {
+  .pendientes-table {
+    font-size: 0.8rem;
+  }
+  
+  .pendientes-table th,
+  .pendientes-table td {
+    padding: 0.6rem 0.8rem;
+  }
+}
+
+/* Fondo oscuro que cubre TODA la pantalla */
 .modal-overlay {
-  position: fixed;
+  position: fixed;  /* ← ESTA ES LA CLAVE */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1000; /* Alto z-index para estar sobre todo */
+  animation: fadeIn 0.3s ease;
 }
 
+/* Contenido del modal */
 .modal-content {
   background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 2rem;
+  border-radius: 18px;
   width: 90%;
-  max-width: 600px; /* Mismo ancho que tu formulario */
+  max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+  z-index: 1001;
 }
 
-.modal-content h3 {
-    margin-top: 0;
-    color: #14491b;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Para el modal de éxito (más pequeño) */
+.modal-overlay .modal-content[style*="max-width: 450px"] {
+  max-width: 450px;
+  text-align: center;
 }

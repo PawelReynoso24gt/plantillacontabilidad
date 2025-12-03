@@ -69,7 +69,7 @@
         {{ periodoTexto }}
       </div>
       <div><strong>AÑO:</strong> {{ currentYear }}</div>
-      <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA</div>
+      <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA - HOGAR SANTA LUISA DE MARILLAC</div>
       <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
       <div>
         <strong>FECHA:</strong> {{ fechaHoy }}

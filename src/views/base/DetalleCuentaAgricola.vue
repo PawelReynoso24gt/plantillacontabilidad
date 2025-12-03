@@ -36,7 +36,7 @@
         <button @click="generarPDF" class="btn-primary">
           Generar PDF
         </button>
-        <button class="btn-ghost" @click="volver">
+        <button class="btn-primary" @click="volver">
           Regresar
         </button>
       </div>

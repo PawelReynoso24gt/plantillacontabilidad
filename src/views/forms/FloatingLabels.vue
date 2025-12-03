@@ -168,7 +168,7 @@ export default {
     const fechaInicial = ref('');
     const fechaFinal = ref('');
     const nombreEncabezado = ref('PROYECTO CAPILLA');
-    const direccionProyecto = ref('Dirección del Proyecto');
+    const direccionProyecto = ref('15 avenida, entre 3a y 4a calle zona 3, Quetzaltenango');
 
     const cuentas_bancarias = reactive([]);
     const cuentaBName = ref('');
