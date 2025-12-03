@@ -274,185 +274,327 @@ export default {
     };
 
     // 👉 Tabla con numeración jerárquica + marca de cuentas (esCuenta)
-    const tablaPreview = computed(() => {
-      if (!reporteData.value) return [];
+  const tablaPreview = computed(() => {
+    if (!reporteData.value) return [];
 
-      const d = reporteData.value;
+    const d = reporteData.value;
 
-      const rows = [
-        // SALDO INICIAL
-        {
-          tipo: 'heading',
-          nivel: 1,
-          col1: 'SALDO INICIAL',
-          col2: '',
-          col3: '',
-          col4: formatQ(d.saldo_inicial)
-        },
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'SALDO INICIAL EN CAJA GENERAL',
-          col2: '',
-          col3: formatQ(d.saldo_inicial_caja),
-          col4: ''
-        },
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'SALDO INICIAL EN BANCO',
-          col2: '',
-          col3: formatQ(d.saldo_inicial_bancos),
-          col4: ''
-        },
+    // Función para filtrar cuentas por tipo y corriente
+    const filtrarCuentas = (dataArray, tipoCuenta, corriente, campo) => {
+      return (dataArray || []).filter(item => 
+        item.tipo_cuenta == tipoCuenta && 
+        item.corriente == corriente && 
+        item[campo] && 
+        parseFloat(item[campo]) > 0
+      );
+    };
 
-        // INGRESOS
-        {
-          tipo: 'heading',
-          nivel: 1,
-          col1: 'INGRESOS',
-          col2: '',
-          col3: '',
-          col4: formatQ(d.total_general_ingresos)
-        },
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'CAJA GENERAL',
-          col2: '',
-          col3: formatQ(d.total_ingresos_caja),
-          col4: ''
-        },
+    // Filtrar ingresos (ACTIVO = 1)
+    const ingresosCajaCorriente = filtrarCuentas(d.data_caja, 1, 1, 'ingresos');
+    const ingresosCajaNoCorriente = filtrarCuentas(d.data_caja, 1, 0, 'ingresos');
+    const ingresosBancosCorriente = filtrarCuentas(d.data_bancos, 1, 1, 'ingresos');
+    const ingresosBancosNoCorriente = filtrarCuentas(d.data_bancos, 1, 0, 'ingresos');
 
-        ...(d.data_caja || [])
-          .filter(
-            (item) => item.ingresos && parseFloat(item.ingresos) > 0
-          )
-          .map((ingreso) => ({
-            tipo: 'normal',
-            nivel: 3,
-            esCuenta: true,
-            col1: ingreso.cuenta,
-            col2: formatQ(ingreso.ingresos),
-            col3: '',
-            col4: ''
-          })),
+    // Filtrar egresos (PASIVO = 2)
+    const egresosCajaCorriente = filtrarCuentas(d.data_caja, 2, 1, 'egresos');
+    const egresosCajaNoCorriente = filtrarCuentas(d.data_caja, 2, 0, 'egresos');
+    const egresosBancosCorriente = filtrarCuentas(d.data_bancos, 2, 1, 'egresos');
+    const egresosBancosNoCorriente = filtrarCuentas(d.data_bancos, 2, 0, 'egresos');
 
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'BANCO',
-          col2: '',
-          col3: formatQ(d.total_ingresos_bancos),
-          col4: ''
-        },
+    const rows = [
+      // SALDO INICIAL (mantener igual)
+      {
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'SALDO INICIAL',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.saldo_inicial)
+      },
+      {
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO INICIAL EN CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.saldo_inicial_caja),
+        col4: ''
+      },
+      {
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO INICIAL EN BANCO',
+        col2: '',
+        col3: formatQ(d.saldo_inicial_bancos),
+        col4: ''
+      },
 
-        ...(d.data_bancos || [])
-          .filter(
-            (item) => item.ingresos && parseFloat(item.ingresos) > 0
-          )
-          .map((ingreso) => ({
-            tipo: 'normal',
-            nivel: 3,
-            esCuenta: true,
-            col1: ingreso.cuenta,
-            col2: formatQ(ingreso.ingresos),
-            col3: '',
-            col4: ''
-          })),
+      // INGRESOS - ACTIVO
+      {
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'INGRESOS',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.total_general_ingresos)
+      },
+      {
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'ACTIVO',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      
+      // CAJA GENERAL - INGRESOS
+      {
+        tipo: 'normal',
+        nivel: 3,
+        col1: 'CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.total_ingresos_caja),
+        col4: ''
+      },
+      
+      // CORRIENTE - CAJA
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...ingresosCajaCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.ingresos),
+        col3: '',
+        col4: ''
+      })),
+      
+      // NO CORRIENTE - CAJA
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'NO CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...ingresosCajaNoCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.ingresos),
+        col3: '',
+        col4: ''
+      })),
 
-        // EGRESOS
-        {
-          tipo: 'heading',
-          nivel: 1,
-          col1: 'EGRESOS',
-          col2: '',
-          col3: '',
-          col4: formatQ(d.total_general_egresos)
-        },
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'CAJA GENERAL',
-          col2: '',
-          col3: formatQ(d.total_egresos_caja),
-          col4: ''
-        },
-        ...(d.data_caja || [])
-          .filter(
-            (item) => item.egresos && parseFloat(item.egresos) > 0
-          )
-          .map((egreso) => ({
-            tipo: 'normal',
-            nivel: 3,
-            esCuenta: true,
-            col1: egreso.cuenta,
-            col2: formatQ(egreso.egresos),
-            col3: '',
-            col4: ''
-          })),
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'BANCO',
-          col2: '',
-          col3: formatQ(d.total_egresos_bancos),
-          col4: ''
-        },
-        ...(d.data_bancos || [])
-          .filter(
-            (item) => item.egresos && parseFloat(item.egresos) > 0
-          )
-          .map((egreso) => ({
-            tipo: 'normal',
-            nivel: 3,
-            esCuenta: true,
-            col1: egreso.cuenta,
-            col2: formatQ(egreso.egresos),
-            col3: '',
-            col4: ''
-          })),
+      // BANCOS - INGRESOS
+      {
+        tipo: 'normal',
+        nivel: 3,
+        col1: 'BANCOS',
+        col2: '',
+        col3: formatQ(d.total_ingresos_bancos),
+        col4: ''
+      },
+      
+      // CORRIENTE - BANCOS
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...ingresosBancosCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.ingresos),
+        col3: '',
+        col4: ''
+      })),
+      
+      // NO CORRIENTE - BANCOS
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'NO CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...ingresosBancosNoCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.ingresos),
+        col3: '',
+        col4: ''
+      })),
 
-        // SALDO FINAL
-        {
-          tipo: 'heading',
-          nivel: 1,
-          col1: 'SALDO FINAL',
-          col2: '',
-          col3: '',
-          col4: formatQ(d.total_saldo_final)
-        },
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'SALDO FINAL EN CAJA GENERAL',
-          col2: '',
-          col3: formatQ(d.total_saldo_final_caja),
-          col4: ''
-        },
-        {
-          tipo: 'normal',
-          nivel: 2,
-          col1: 'SALDO FINAL EN BANCO',
-          col2: '',
-          col3: formatQ(d.total_saldo_final_bancos),
-          col4: ''
-        },
+      // EGRESOS - PASIVO
+      {
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'EGRESOS',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.total_general_egresos)
+      },
+      {
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'PASIVO',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      
+      // CAJA GENERAL - EGRESOS
+      {
+        tipo: 'normal',
+        nivel: 3,
+        col1: 'CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.total_egresos_caja),
+        col4: ''
+      },
+      
+      // CORRIENTE - CAJA
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...egresosCajaCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.egresos),
+        col3: '',
+        col4: ''
+      })),
+      
+      // NO CORRIENTE - CAJA
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'NO CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...egresosCajaNoCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.egresos),
+        col3: '',
+        col4: ''
+      })),
 
-        // SUMAS IGUALES
-        {
-          tipo: 'heading',
-          nivel: 1,
-          col1: 'SUMAS IGUALES',
-          col2: '',
-          col3: formatQ(d.total_saldo_final),
-          col4: formatQ(d.total_saldo_final)
-        }
-      ];
+      // BANCOS - EGRESOS
+      {
+        tipo: 'normal',
+        nivel: 3,
+        col1: 'BANCOS',
+        col2: '',
+        col3: formatQ(d.total_egresos_bancos),
+        col4: ''
+      },
+      
+      // CORRIENTE - BANCOS
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...egresosBancosCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.egresos),
+        col3: '',
+        col4: ''
+      })),
+      
+      // NO CORRIENTE - BANCOS
+      {
+        tipo: 'normal',
+        nivel: 4,
+        col1: 'NO CORRIENTE',
+        col2: '',
+        col3: '',
+        col4: ''
+      },
+      ...egresosBancosNoCorriente.map((item) => ({
+        tipo: 'normal',
+        nivel: 5,
+        esCuenta: true,
+        col1: item.cuenta,
+        col2: formatQ(item.egresos),
+        col3: '',
+        col4: ''
+      })),
 
-      // 🔢 Aplica numeración jerárquica (agrega fila.cuenta)
-      return aplicarNumeracion(rows);
-    });
+      // SALDO FINAL (mantener igual)
+      {
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'SALDO FINAL',
+        col2: '',
+        col3: '',
+        col4: formatQ(d.total_saldo_final)
+      },
+      {
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO FINAL EN CAJA GENERAL',
+        col2: '',
+        col3: formatQ(d.total_saldo_final_caja),
+        col4: ''
+      },
+      {
+        tipo: 'normal',
+        nivel: 2,
+        col1: 'SALDO FINAL EN BANCO',
+        col2: '',
+        col3: formatQ(d.total_saldo_final_bancos),
+        col4: ''
+      },
+
+      // SUMAS IGUALES
+      {
+        tipo: 'heading',
+        nivel: 1,
+        col1: 'SUMAS IGUALES',
+        col2: '',
+        col3: formatQ(d.total_saldo_final),
+        col4: formatQ(d.total_saldo_final)
+      }
+    ];
+
+    return aplicarNumeracion(rows);
+  });
 
     const limpiar = () => {
       selectedPeriodo.value = '';
@@ -578,11 +720,14 @@ export default {
       tableData.push(['SALDO INICIAL EN CAJA GENERAL', '', formatQ(data.saldo_inicial_caja), '']);
       tableData.push(['SALDO INICIAL EN BANCO', '', formatQ(data.saldo_inicial_bancos), '']);
 
+      // Dentro de la función generarPDF, modifica la sección donde construyes tableData:
+
       // INGRESOS / ACTIVOS
       tableData.push(['INGRESOS', '', '', formatQ(data.total_general_ingresos)]);
       tableData.push(['ACTIVO', '', '', '']);
 
       tableData.push(['CAJA GENERAL', '', formatQ(data.total_ingresos_caja), '']);
+      tableData.push(['CORRIENTE', '', '', '']);
       const caja_corriente = getItems(data, data.data_caja, 'activos', 'corriente', 'ingresos');
       caja_corriente.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
       tableData.push(['NO CORRIENTE', '', '', '']);
@@ -590,6 +735,7 @@ export default {
       caja_no.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
 
       tableData.push(['BANCOS', '', formatQ(data.total_ingresos_bancos), '']);
+      tableData.push(['CORRIENTE', '', '', '']);
       const bancos_corriente = getItems(data, data.data_bancos, 'activos', 'corriente', 'ingresos');
       bancos_corriente.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
       tableData.push(['NO CORRIENTE', '', '', '']);
@@ -601,6 +747,7 @@ export default {
       tableData.push(['PASIVO', '', '', '']);
 
       tableData.push(['CAJA GENERAL', '', formatQ(data.total_egresos_caja), '']);
+      tableData.push(['CORRIENTE', '', '', '']);
       const caja_corriente_e = getItems(data, data.data_caja, 'pasivos', 'corriente', 'egresos');
       caja_corriente_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
       tableData.push(['NO CORRIENTE', '', '', '']);
@@ -608,6 +755,7 @@ export default {
       caja_no_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
 
       tableData.push(['BANCOS', '', formatQ(data.total_egresos_bancos), '']);
+      tableData.push(['CORRIENTE', '', '', '']);
       const bancos_corriente_e = getItems(data, data.data_bancos, 'pasivos', 'corriente', 'egresos');
       bancos_corriente_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
       tableData.push(['NO CORRIENTE', '', '', '']);
