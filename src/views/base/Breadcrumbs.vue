@@ -30,15 +30,17 @@
         </div>
     </div>
 
-    <!-- Primera división -->
-    <div class="division-container">
-      <div class="numero-fecha-container">
-        <div class="fecha-inputs">
-            <label>Fecha</label>
-            <input type="date" v-model="fecha">
-        </div>
-      </div>
+  <div class="division-container division-inline">
+    <div class="field-group">
+      <label class="field-label">Fecha</label>
+      <input
+        type="date"
+        v-model="fecha"
+        class="field-control"
+      />
     </div>
+  </div>
+
       <!-- Sección: Datos del beneficiario / comprobante -->
       <div class="division-container division-block">
         <div class="field-group">
