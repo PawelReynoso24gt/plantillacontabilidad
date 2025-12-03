@@ -76,7 +76,6 @@
   flex: 1;
 }
 
-<<<<<<< HEAD
 .field-group.full-width {
   flex-basis: 100%;
 }
@@ -192,7 +191,6 @@
     padding: 0.9rem 1rem;
   }
 }
-=======
 /* --- Nuevo estilo para el checkbox a la par del label --- */
 .checkbox-line-container {
     display: flex; /* Habilita el flexbox */
@@ -296,4 +294,3 @@
     border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
 }
->>>>>>> ca42cb9d7342d9f2a1e004c44095f57d009062a3
