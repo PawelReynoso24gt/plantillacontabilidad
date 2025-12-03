@@ -214,6 +214,7 @@
 .sin-datos {
   margin-top: 1rem;
   text-align: center;
+<<<<<<< HEAD
   font-size: 0.95rem;
   color: #6c757d;
 }
@@ -241,3 +242,19 @@
     flex-direction: column;
   }
 }
+=======
+  font-style: italic;
+}
+
+/* Libro Mayor links */
+.tabla-libro td.link-cuenta {
+  color: #0a53be !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+  font-weight: 600;
+}
+
+.tabla-libro td.link-cuenta:hover {
+  color: #063a83 !important;
+}
+>>>>>>> ca42cb9d7342d9f2a1e004c44095f57d009062a3

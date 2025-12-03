@@ -176,6 +176,12 @@ const routes = [
             name: 'Anticipo sobre Compras Capilla',
             component: () => import('@/views/base/AnticipoSobreComprasCapilla.vue'),
             meta: { requiresAuth: true }
+          },
+          {
+            path: '/base/Partidas',
+            name: 'Partidas',
+            component: () => import('@/views/base/Partidas.vue'),
+            meta: { requiresAuth: true }
           }
         ],
       },

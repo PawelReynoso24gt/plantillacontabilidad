@@ -242,6 +242,38 @@ export default {
       }
     };
 
+        // helper: parse numbers robustly (accepts '1,234.56' and 'Q 1,234.56')
+        const parseNumberString = (v) => {
+            if (v === null || v === undefined || v === '') return 0;
+            if (typeof v === 'number') return v;
+            const s = String(v).replace(/[^0-9\.-]+/g, '');
+            const n = parseFloat(s);
+            return isNaN(n) ? 0 : n;
+        };
+
+        // getItems: prefer nested container[cat][sub] arrays; otherwise filter flatArray by flags
+        const getItems = (container, flatArray, cat, sub, field) => {
+            try {
+                if (container && container[cat] && container[cat][sub] && Array.isArray(container[cat][sub])) {
+                    return container[cat][sub].filter((it) => parseNumberString(it[field]) > 0);
+                }
+
+                if (Array.isArray(flatArray)) {
+                    return flatArray.filter((it) => {
+                        const tipo = it.tipoCuenta ?? it.tipo_cuenta ?? it.tipo ?? null; // 1=ACTIVO,0=PASIVO
+                        const corriente = it.corriente ?? it.es_corriente ?? null; // 1=CORRIENTE,0=NO
+                        const tipoMatch = cat === 'activos' ? tipo == 1 : tipo == 0;
+                        const subMatch = sub === 'corriente' ? corriente == 1 : corriente == 0;
+                        return tipoMatch && subMatch && parseNumberString(it[field]) > 0;
+                    });
+                }
+
+                return [];
+            } catch (e) {
+                return [];
+            }
+        };
+
     // 👉 Ir al Libro Mayor de Capilla
     const irDetalleCuenta = (codigoCuenta, nombreCuenta) => {
       router.push({

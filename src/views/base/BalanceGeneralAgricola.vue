@@ -9,6 +9,7 @@
 
   <!-- Filtros / encabezado del form -->
   <div class="division-container">
+    <!-- Filtros / encabezado del form -->
     <div class="nombre-fecha-container">
       <div class="id-inputs">
         <div class="select-group">
@@ -229,6 +230,38 @@ export default {
       }
     };
 
+        // helper: parse numbers robustly (accepts '1,234.56' and 'Q 1,234.56')
+        const parseNumberString = (v) => {
+            if (v === null || v === undefined || v === '') return 0;
+            if (typeof v === 'number') return v;
+            const s = String(v).replace(/[^0-9\.-]+/g, '');
+            const n = parseFloat(s);
+            return isNaN(n) ? 0 : n;
+        };
+
+        // getItems: prefer nested container[cat][sub] arrays; otherwise filter flatArray by flags
+        const getItems = (container, flatArray, cat, sub, field) => {
+            try {
+                if (container && container[cat] && container[cat][sub] && Array.isArray(container[cat][sub])) {
+                    return container[cat][sub].filter((it) => parseNumberString(it[field]) > 0);
+                }
+
+                if (Array.isArray(flatArray)) {
+                    return flatArray.filter((it) => {
+                        const tipo = it.tipoCuenta ?? it.tipo_cuenta ?? it.tipo ?? null; // 1=ACTIVO,0=PASIVO
+                        const corriente = it.corriente ?? it.es_corriente ?? null; // 1=CORRIENTE,0=NO
+                        const tipoMatch = cat === 'activos' ? tipo == 1 : tipo == 0;
+                        const subMatch = sub === 'corriente' ? corriente == 1 : corriente == 0;
+                        return tipoMatch && subMatch && parseNumberString(it[field]) > 0;
+                    });
+                }
+
+                return [];
+            } catch (e) {
+                return [];
+            }
+        };
+
     // 👉 Ir al libro mayor de la cuenta (Agrícola)
     const irDetalleCuenta = (codigoCuenta, nombreCuenta) => {
       router.push({
@@ -446,223 +479,158 @@ export default {
     };
 
     const generarPDF = async () => {
-      try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase()
-          }
-        );
-        const data = response.data;
-
-        const doc = new jsPDF();
-        let yOffset = 20;
-        const pageHeight = doc.internal.pageSize.height;
-        const pageMargin = 20;
-
-        const addTable = (head, body) => {
-          doc.autoTable({
-            head: [head],
-            body: body,
-            startY: yOffset,
-            theme: 'grid',
-            styles: {
-              cellPadding: 2.5,
-              fontSize: 8,
-              halign: 'center',
-              valign: 'middle',
-              overflow: 'linebreak'
-            },
-            headStyles: {
-              fillColor: [41, 128, 185],
-              textColor: [255, 255, 255]
-            }
-          });
-          yOffset = doc.autoTable.previous.finalY + 10;
-        };
-
-        let periodoTextoPDF = '';
-        if (selectedPeriodo.value === 'Mensual') {
-          periodoTextoPDF = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
-        } else if (selectedPeriodo.value === 'Trimestral') {
-          const trimestre = {
-            Enero: 'PRIMER TRIMESTRE',
-            Abril: 'SEGUNDO TRIMESTRE',
-            Julio: 'TERCER TRIMESTRE',
-            Octubre: 'CUARTO TRIMESTRE'
-          };
-          periodoTextoPDF = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
-        } else if (selectedPeriodo.value === 'Semestral') {
-          periodoTextoPDF =
-            selectedMes.value === 'Enero'
-              ? 'RESUMEN PRIMER SEMESTRE'
-              : 'RESUMEN SEGUNDO SEMESTRE';
-        } else if (selectedPeriodo.value === 'Anual') {
-          periodoTextoPDF = 'RESUMEN ANUAL';
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
+        {
+          tipo: selectedPeriodo.value.toLowerCase(),
+          mes: selectedMes.value.toLowerCase()
         }
+      );
+      const data = response.data;
 
-        // Encabezado PDF
-        doc.setFontSize(16);
-        doc.text(
-          `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
-          105,
-          27,
-          { align: 'center' }
-        );
-        doc.setLineWidth(0.5);
-        doc.line(60, 32, 150, 32);
+      const doc = new jsPDF();
+      let yOffset = 20;
+      const pageHeight = doc.internal.pageSize.height;
+      const pageMargin = 20;
 
-        doc.setFontSize(12);
-        yOffset = 40;
-        doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
-        doc.text(periodoTextoPDF, 91, 40);
-        doc.text(`DE`, 165, 40);
-        doc.text(`${currentYear}`, 175, 40);
-        doc.text(
-          `PROYECTO AGRÍCOLA HOGAR SANTA LUISA`,
-          20,
-          50
-        );
-        doc.text(`LUGAR:`, 130, 50);
-        doc.text(`QUETZALTENANGO`, 155, 50);
-        doc.text(`GUATEMALA`, 20, 60);
-        doc.text(`FECHA:`, 130, 60);
-        doc.text(fechaHoy, 160, 60);
+      const addPageIfNeeded = () => {
+        if (yOffset > pageHeight - pageMargin) {
+          doc.addPage();
+          yOffset = 20;
+        }
+      };
 
-        yOffset = 75;
+      const addTable = (head, body) => {
+        doc.autoTable({
+          head: [head],
+          body: body,
+          startY: yOffset,
+          theme: 'grid',
+          styles: {
+            cellPadding: 2.5,
+            fontSize: 8,
+            halign: 'center',
+            valign: 'middle',
+            overflow: 'linebreak'
+          },
+          headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255]
+          }
+        });
+        yOffset = doc.autoTable.previous.finalY + 10;
+        addPageIfNeeded();
+      };
 
-        const tableData = [
-          ['SALDO INICIAL', '', '', formatQ(data.saldo_inicial)],
-          [
-            'SALDO INICIAL EN CAJA GENERAL',
-            '',
-            formatQ(data.saldo_inicial_caja),
-            ''
-          ],
-          [
-            'SALDO INICIAL EN BANCO',
-            '',
-            formatQ(data.saldo_inicial_bancos),
-            ''
-          ],
-          [
-            'INGRESOS',
-            '',
-            '',
-            formatQ(data.total_general_ingresos)
-          ],
-          [
-            'CAJA GENERAL',
-            '',
-            formatQ(data.total_ingresos_caja),
-            ''
-          ],
-          ...data.data_caja
-            .filter(
-              (item) => item.ingresos && parseFloat(item.ingresos) > 0
-            )
-            .map((ingreso) => [
-              ingreso.cuenta,
-              formatQ(ingreso.ingresos),
-              '',
-              ''
-            ]),
-          [
-            'BANCO',
-            '',
-            formatQ(data.total_ingresos_bancos),
-            ''
-          ],
-          ...data.data_bancos
-            .filter(
-              (item) => item.ingresos && parseFloat(item.ingresos) > 0
-            )
-            .map((ingreso) => [
-              ingreso.cuenta,
-              formatQ(ingreso.ingresos),
-              '',
-              ''
-            ]),
-          [
-            'EGRESOS',
-            '',
-            '',
-            formatQ(data.total_general_egresos)
-          ],
-          [
-            'CAJA GENERAL',
-            '',
-            formatQ(data.total_egresos_caja),
-            ''
-          ],
-          ...data.data_caja
-            .filter(
-              (item) => item.egresos && parseFloat(item.egresos) > 0
-            )
-            .map((egreso) => [
-              egreso.cuenta,
-              formatQ(egreso.egresos),
-              '',
-              ''
-            ]),
-          [
-            'BANCO',
-            '',
-            formatQ(data.total_egresos_bancos),
-            ''
-          ],
-          ...data.data_bancos
-            .filter(
-              (item) => item.egresos && parseFloat(item.egresos) > 0
-            )
-            .map((egreso) => [
-              egreso.cuenta,
-              formatQ(egreso.egresos),
-              '',
-              ''
-            ]),
-          [
-            'SALDO FINAL',
-            '',
-            '',
-            formatQ(data.total_saldo_final)
-          ],
-          [
-            'SALDO FINAL EN CAJA GENERAL',
-            '',
-            formatQ(data.total_saldo_final_caja),
-            ''
-          ],
-          [
-            'SALDO FINAL EN BANCO',
-            '',
-            formatQ(data.total_saldo_final_bancos),
-            ''
-          ],
-          [
-            'SUMAS IGUALES',
-            '',
-            formatQ(data.total_saldo_final),
-            formatQ(data.total_saldo_final)
-          ]
-        ];
-
-        const tableHeaders = [
-          'Descripción',
-          'Detalle',
-          'Saldo suma',
-          'Suma'
-        ];
-
-        addTable(tableHeaders, tableData);
-
-        const blob = doc.output('blob');
-        saveAs(blob, 'reporte_balance_agricola.pdf');
-      } catch (error) {
-        console.error('Error al generar el PDF:', error);
+      // Texto de periodo
+      let periodoTextoPDF = '';
+      if (selectedPeriodo.value === 'Mensual') {
+        periodoTextoPDF = `RESUMEN DE ${selectedMes.value.toUpperCase()}`;
+      } else if (selectedPeriodo.value === 'Trimestral') {
+        const trimestre = {
+          Enero: 'PRIMER TRIMESTRE',
+          Abril: 'SEGUNDO TRIMESTRE',
+          Julio: 'TERCER TRIMESTRE',
+          Octubre: 'CUARTO TRIMESTRE'
+        };
+        periodoTextoPDF = `RESUMEN ${trimestre[selectedMes.value] || ''}`;
+      } else if (selectedPeriodo.value === 'Semestral') {
+        periodoTextoPDF =
+          selectedMes.value === 'Enero'
+            ? 'RESUMEN PRIMER SEMESTRE'
+            : 'RESUMEN SEGUNDO SEMESTRE';
+      } else if (selectedPeriodo.value === 'Anual') {
+        periodoTextoPDF = 'RESUMEN ANUAL';
       }
-    };
+
+      // Encabezado PDF
+      doc.setFontSize(16);
+      doc.text(
+        `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
+        105,
+        27,
+        { align: 'center' }
+      );
+      doc.setLineWidth(0.5);
+      doc.line(60, 32, 150, 32);
+
+      doc.setFontSize(12);
+      yOffset = 40;
+      doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
+      doc.text(periodoTextoPDF, 91, 40);
+      doc.text(`DE`, 165, 40);
+      doc.text(`${currentYear}`, 175, 40);
+      doc.text(`PROYECTO AGRÍCOLA HOGAR SANTA LUISA`, 20, 50);
+      doc.text(`LUGAR:`, 130, 50);
+      doc.text(`QUETZALTENANGO`, 155, 50);
+      doc.text(`GUATEMALA`, 20, 60);
+      doc.text(`FECHA:`, 130, 60);
+      doc.text(fechaHoy, 160, 60);
+
+      yOffset = 75;
+
+      // 👇👇 AQUÍ SOLO UNA VEZ tableData
+      const tableData = [];
+
+      // SALDO INICIAL
+      tableData.push(['SALDO INICIAL', '', '', formatQ(data.saldo_inicial)]);
+      tableData.push(['SALDO INICIAL EN CAJA GENERAL', '', formatQ(data.saldo_inicial_caja), '']);
+      tableData.push(['SALDO INICIAL EN BANCO', '', formatQ(data.saldo_inicial_bancos), '']);
+
+      // INGRESOS / ACTIVOS
+      tableData.push(['INGRESOS', '', '', formatQ(data.total_general_ingresos)]);
+      tableData.push(['ACTIVO', '', '', '']);
+
+      tableData.push(['CAJA GENERAL', '', formatQ(data.total_ingresos_caja), '']);
+      const caja_corriente = getItems(data, data.data_caja, 'activos', 'corriente', 'ingresos');
+      caja_corriente.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+      tableData.push(['NO CORRIENTE', '', '', '']);
+      const caja_no = getItems(data, data.data_caja, 'activos', 'no_corriente', 'ingresos');
+      caja_no.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+
+      tableData.push(['BANCOS', '', formatQ(data.total_ingresos_bancos), '']);
+      const bancos_corriente = getItems(data, data.data_bancos, 'activos', 'corriente', 'ingresos');
+      bancos_corriente.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+      tableData.push(['NO CORRIENTE', '', '', '']);
+      const bancos_no = getItems(data, data.data_bancos, 'activos', 'no_corriente', 'ingresos');
+      bancos_no.forEach((it) => tableData.push([it.cuenta, formatQ(it.ingresos), '', '']));
+
+      // EGRESOS / PASIVOS
+      tableData.push(['EGRESOS', '', '', formatQ(data.total_general_egresos)]);
+      tableData.push(['PASIVO', '', '', '']);
+
+      tableData.push(['CAJA GENERAL', '', formatQ(data.total_egresos_caja), '']);
+      const caja_corriente_e = getItems(data, data.data_caja, 'pasivos', 'corriente', 'egresos');
+      caja_corriente_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+      tableData.push(['NO CORRIENTE', '', '', '']);
+      const caja_no_e = getItems(data, data.data_caja, 'pasivos', 'no_corriente', 'egresos');
+      caja_no_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+
+      tableData.push(['BANCOS', '', formatQ(data.total_egresos_bancos), '']);
+      const bancos_corriente_e = getItems(data, data.data_bancos, 'pasivos', 'corriente', 'egresos');
+      bancos_corriente_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+      tableData.push(['NO CORRIENTE', '', '', '']);
+      const bancos_no_e = getItems(data, data.data_bancos, 'pasivos', 'no_corriente', 'egresos');
+      bancos_no_e.forEach((it) => tableData.push([it.cuenta, formatQ(it.egresos), '', '']));
+
+      // SALDO FINAL
+      tableData.push(['SALDO FINAL', '', '', formatQ(data.total_saldo_final)]);
+      tableData.push(['SALDO FINAL EN CAJA GENERAL', '', formatQ(data.total_saldo_final_caja), '']);
+      tableData.push(['SALDO FINAL EN BANCO', '', formatQ(data.total_saldo_final_bancos), '']);
+      tableData.push(['SUMAS IGUALES', '', formatQ(data.total_saldo_final), formatQ(data.total_saldo_final)]);
+
+      const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
+
+      addTable(tableHeaders, tableData);
+
+      const blob = doc.output('blob');
+      saveAs(blob, 'reporte_balance_agricola.pdf');
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
+    }
+  };
+
 
     return {
       selectedPeriodo,

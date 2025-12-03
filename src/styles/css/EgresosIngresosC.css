@@ -76,6 +76,7 @@
   flex: 1;
 }
 
+<<<<<<< HEAD
 .field-group.full-width {
   flex-basis: 100%;
 }
@@ -191,3 +192,108 @@
     padding: 0.9rem 1rem;
   }
 }
+=======
+/* --- Nuevo estilo para el checkbox a la par del label --- */
+.checkbox-line-container {
+    display: flex; /* Habilita el flexbox */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 10px; /* Espacio entre el label y el checkbox */
+    padding: 5px 0; /* Espacio interno vertical */
+}
+
+.checkbox-line-container label {
+    /* Sobrescribe el display: block forzado por otros estilos */
+    display: inline-block; 
+    margin-bottom: 0; /* Elimina el margen inferior */
+    flex-grow: 1; /* Permite que el label ocupe el espacio antes del checkbox */
+}
+
+/* --- Estilo para aumentar el tamaño del checkbox --- */
+.checkbox-line-container input[type="checkbox"] {
+    /* Sobrescribe los estilos genéricos para input que pusiste */
+    width: 20px !important; /* Ajusta el ancho */
+    height: 20px !important; /* Ajusta la altura */
+    min-width: 20px; /* Asegura que no se haga más pequeño */
+    margin: 0; /* Elimina cualquier margen residual */
+}
+
+/* Estilo para asegurar que la tabla ocupe todo el ancho disponible */
+.pendientes-table {
+    width: 100%; /* Ocupa el ancho completo del contenedor padre */
+    border-collapse: collapse; /* Asegura que las celdas se unan */
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+/* Estilo para las celdas y cabeceras (la línea que buscas) */
+.pendientes-table th, 
+.pendientes-table td {
+    border: 1px solid #ccc; /* Define el borde visible */
+    padding: 8px 12px; /* Espacio interno para mejor legibilidad */
+    text-align: left;
+}
+
+/* Estilo para la cabecera (Background y Fuente) */
+.pendientes-table thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Estilo para la columna de Monto para alineación */
+.pendientes-table td:nth-last-child(2) {
+    /* Selecciona la columna "Monto Deuda (Q)" */
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Estilo para el botón dentro de la tabla */
+.pendientes-table button {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    margin: 0;
+}
+
+/* Estilos para resaltar el tipo de saldo */
+.saldo-debe {
+    font-weight: bold;
+    color: #002fff; /* Rojo/Oscuro para DEBE (Activo/Pasivo, según tu lógica) */
+}
+
+.saldo-haber {
+    font-weight: bold;
+    color: #b90000; /* Verde/Negro para HABER (Activo/Pasivo, según tu lógica) */
+}
+
+/* Estilos del Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px; /* Mismo ancho que tu formulario */
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #14491b;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+>>>>>>> ca42cb9d7342d9f2a1e004c44095f57d009062a3
