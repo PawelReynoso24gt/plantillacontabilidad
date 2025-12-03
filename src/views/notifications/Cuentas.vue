@@ -7,62 +7,42 @@
             Crea, actualiza y administra las cuentas usadas en los reportes contables.
           </p>
         </div>
-        <div class="tipo_cuenta">
-          <label for="tipo_cuenta">Tipo Cuenta</label>
-          <div class="tipo-cuenta-select">
-            <select id="tipo_cuenta" v-model="tipo_cuenta">
-              <option disabled value="">-- Selecciona --</option>
-              <option value="ACTIVO">ACTIVO</option>
-              <option value="PASIVO">PASIVO</option>
-            </select>
-          </div>
-        </div>
-        <div class="corriente">
-          <label for="corriente">Corriente</label>
-          <div class="corriente-select">
-            <select id="corriente" v-model="corriente">
-              <option disabled value="">-- Selecciona --</option>
-              <option value="CORRIENTE">CORRIENTE</option>
-              <option value="NO CORRIENTE">NO CORRIENTE</option>
-            </select>
-          </div>
-        </div>
       </div>
 
-      <!-- Formulario principal -->
-      <div class="nombre-fecha-container">
-        <!-- Fila 1: selección de cuenta + nombre de cuenta -->
-        <div class="row-inline">
-          <!-- Select de cuentas -->
-          <div class="field-group">
-            <label class="field-label">Cuentas registradas</label>
-            <select
-              v-model="selectedProject"
-              @change="cargarDatosProyecto"
-              class="field-control"
-            >
-              <option disabled value="">Seleccione una cuenta</option>
-              <option
-                v-for="project in projects"
-                :key="project.id_cuentas"
-                :value="project.cuenta"
-              >
-                {{ project.cuenta }}
-              </option>
-            </select>
-          </div>
+<!-- Formulario principal -->
+  <div class="nombre-fecha-container">
+    <!-- Fila 1: selección de cuenta + nombre de cuenta -->
+    <div class="row-inline">
+      <!-- Select de cuentas - MODIFICADO -->
+      <div class="field-group">
+        <label class="field-label">Cuentas registradas</label>
+        <select
+          v-model="selectedProject"
+          @change="cargarDatosProyecto"
+          class="field-control"
+        >
+          <option disabled :value="null">Seleccione una cuenta</option>
+          <option
+            v-for="project in projects"
+            :key="project.id_cuentas"
+            :value="{ nombre: project.cuenta, id: project.id_cuentas }"
+          >
+            {{ project.cuenta }} ({{ project.codigo }}) - {{ project.proyecto }}
+          </option>
+        </select>
+      </div>
 
-          <!-- Nombre de la cuenta -->
-          <div class="field-group">
-            <label class="field-label">Nombre de la cuenta</label>
-            <input
-              type="text"
-              v-model="cuenta"
-              class="field-control"
-              placeholder="Ingrese el nombre de la cuenta"
-            />
-          </div>
-        </div>
+      <!-- Nombre de la cuenta -->
+      <div class="field-group">
+        <label class="field-label">Nombre de la cuenta</label>
+        <input
+          type="text"
+          v-model="cuenta"
+          class="field-control"
+          placeholder="Ingrese el nombre de la cuenta"
+        />
+      </div>
+    </div>
 
         <!-- Fila 2: estado + código -->
         <div class="row-inline">
@@ -128,6 +108,28 @@
             </select>
           </div>
         </div>
+        <div class="row-inline">
+          <div class="tipo_cuenta">
+            <label class="field-label">Tipo Cuenta</label>
+            <div class="tipo-cuenta-select">
+              <select id="tipo_cuenta" v-model="tipo_cuenta" class="field-control">
+                <option disabled value="">Seleccione</option>
+                <option value="ACTIVO">ACTIVO</option>
+                <option value="PASIVO">PASIVO</option>
+              </select>
+            </div>
+          </div>
+          <div class="corriente">
+            <label class="field-label">Corriente</label>
+            <div class="corriente-select">
+              <select id="corriente" v-model="corriente" class="field-control">
+                <option disabled value="">Seleccione</option>
+                <option value="CORRIENTE">CORRIENTE</option>
+                <option value="NO CORRIENTE">NO CORRIENTE</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Mensajes -->
@@ -174,6 +176,9 @@ export default {
     const isEstadoEnabled = ref(false);
     const tipo_cuenta = ref('');
     const corriente = ref('');
+    
+    // Variable para almacenar el id_cuentas seleccionado
+    const selectedIdCuentas = ref('');
 
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/cuentas/get')
@@ -207,8 +212,20 @@ export default {
 
     const cargarDatosProyecto = () => {
       if (!selectedProject.value) return;
-      axios.get(`http://127.0.0.1:8000/cuentas/getCrud/${selectedProject.value}`)
-        .then(response => {
+      
+      // selectedProject.value ahora será un objeto con nombre e id
+      const nombreCuenta = selectedProject.value.nombre;
+      const idCuentas = selectedProject.value.id;
+      
+      // Llamar al endpoint con nombre y id_cuentas
+      axios.get(`http://127.0.0.1:8000/cuentas/getCrud/${nombreCuenta}`, {
+        params: {
+          id_cuentas: idCuentas
+        }
+      })
+      .then(response => {
+        // Ahora debería devolver solo un resultado (el específico)
+        if (response.data && response.data.length > 0) {
           const proyecto = response.data[0];
           cuenta.value = proyecto.cuenta;
           estado.value = proyecto.estado ? proyecto.estado.toString() : '';
@@ -217,11 +234,16 @@ export default {
           selectedTipoProyecto.value = proyecto.proyecto;
           isEstadoEnabled.value = true;
           tipo_cuenta.value = proyecto.tipo_cuenta === 1 ? 'ACTIVO' : proyecto.tipo_cuenta === 0 ? 'PASIVO' : '';
-          corriente.value = proyecto.corriente === 1 ? 'CORRIENTE' : proyecto .corriente === 0 ? 'NO CORRIENTE' : '';
-        })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar los datos del proyecto.';
-        });
+          corriente.value = proyecto.corriente === 1 ? 'CORRIENTE' : proyecto.corriente === 0 ? 'NO CORRIENTE' : '';
+          selectedIdCuentas.value = proyecto.id_cuentas;
+        } else {
+          errorMessage.value = 'No se encontró la cuenta especificada.';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        errorMessage.value = 'Error al cargar los datos del proyecto.';
+      });
     };
 
     const insertar = () => {
@@ -233,7 +255,6 @@ export default {
         return;
       }
 
-      // map select labels to numeric flags expected by backend
       const tipo_cuentaFlag = tipo_cuenta.value === 'ACTIVO' ? 1 : tipo_cuenta.value === 'PASIVO' ? 0 : null;
       const corrienteFlag = corriente.value === 'CORRIENTE' ? 1 : corriente.value === 'NO CORRIENTE' ? 0 : null;
 
@@ -241,17 +262,16 @@ export default {
         cuenta: cuenta.value,
         codigo: codigo.value,
         clasificacion: selectedClasificacion.value,
-        proyecto: selectedTipoProyecto.value
+        proyecto: selectedTipoProyecto.value,
+        tipo_cuenta: tipo_cuentaFlag,
+        corriente: corrienteFlag
       };
-
-      if (tipo_cuentaFlag !== null) datos.tipo_cuenta = tipo_cuentaFlag;
-      if (corrienteFlag !== null) datos.corriente = corrienteFlag;
 
       axios.post('http://127.0.0.1:8000/cuentas/create', datos)
         .then(response => {
           successMessage.value = 'Cuenta guardada correctamente.';
-          //limpiar();
           cargarProyectos();
+          limpiar();
         })
         .catch(error => {
           if (error.response && error.response.data) {
@@ -263,8 +283,8 @@ export default {
     };
 
     const actualizar = () => {
-      if (!selectedProject.value) {
-        errorMessage.value = 'Por favor, selecciona una cuenta.';
+      if (!selectedIdCuentas.value) {
+        errorMessage.value = 'Por favor, selecciona una cuenta para actualizar.';
         return;
       }
 
@@ -305,10 +325,10 @@ export default {
         return;
       }
 
-      axios.put(`http://127.0.0.1:8000/cuentas/update/${selectedProject.value}`, datos)
+      // Actualizar usando el id_cuentas
+      axios.put(`http://127.0.0.1:8000/cuentas/updateById/${selectedIdCuentas.value}`, datos)
         .then(response => {
           successMessage.value = 'Cuenta actualizada correctamente.';
-          //limpiar();
           cargarProyectos();
         })
         .catch(error => {
@@ -328,6 +348,7 @@ export default {
       errorMessage.value = '';
       successMessage.value = '';
       isEstadoEnabled.value = false;
+      selectedIdCuentas.value = '';
     };
 
     onMounted(() => {
@@ -338,6 +359,9 @@ export default {
 
     watch(selectedProject, () => {
       isEstadoEnabled.value = !!selectedProject.value;
+      if (selectedProject.value) {
+        cargarDatosProyecto();
+      }
     });
 
     return {
