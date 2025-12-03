@@ -296,10 +296,10 @@ export default {
     const ingresosBancosNoCorriente = filtrarCuentas(d.data_bancos, 1, 0, 'ingresos');
 
     // Filtrar egresos (PASIVO = 2)
-    const egresosCajaCorriente = filtrarCuentas(d.data_caja, 2, 1, 'egresos');
-    const egresosCajaNoCorriente = filtrarCuentas(d.data_caja, 2, 0, 'egresos');
-    const egresosBancosCorriente = filtrarCuentas(d.data_bancos, 2, 1, 'egresos');
-    const egresosBancosNoCorriente = filtrarCuentas(d.data_bancos, 2, 0, 'egresos');
+    const egresosCajaCorriente = filtrarCuentas(d.data_caja, 0, 1, 'egresos');
+    const egresosCajaNoCorriente = filtrarCuentas(d.data_caja, 0, 0, 'egresos');
+    const egresosBancosCorriente = filtrarCuentas(d.data_bancos, 0, 1, 'egresos');
+    const egresosBancosNoCorriente = filtrarCuentas(d.data_bancos, 0, 0, 'egresos');
 
     const rows = [
       // SALDO INICIAL (mantener igual)
