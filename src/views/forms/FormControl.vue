@@ -137,7 +137,7 @@ export default {
       })
       .then(response => {
         successMessage.value = 'Datos enviados correctamente';
-        console.log(response.data); 
+      //  console.log(response.data); 
       })
       .catch(error => {
         console.error(error);

@@ -223,17 +223,17 @@ export default {
       loading.value = true;
       error.value = false;
       try {
-        console.log('[CAPILLA] cuenta (NOMBRE) enviada al backend:', nombreCuenta.value);
+       // console.log('[CAPILLA] cuenta (NOMBRE) enviada al backend:', nombreCuenta.value);
 
         const resp = await axios.post(
-          'http://127.0.0.1:8000/cuentas/libro-diario/por-cuenta',
+          'http://127.0.0.1:8000/cuentas/libro-diario/por-cuentaCA',
           {
             cuenta: nombreCuenta.value,
             year: year
           }
         );
 
-        console.log('[CAPILLA] Movimientos recibidos para', nombreCuenta.value, resp.data);
+       // console.log('[CAPILLA] Movimientos recibidos para', nombreCuenta.value, resp.data);
         ingresosEgresos.value = resp.data || [];
       } catch (e) {
         console.error('Error al cargar movimientos de la cuenta (Capilla):', e);

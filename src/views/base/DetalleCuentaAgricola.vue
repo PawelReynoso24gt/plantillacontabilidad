@@ -217,11 +217,11 @@ export default {
       loading.value = true;
       error.value = false;
       try {
-        console.log('Código que se muestra:', codigoCuenta.value);
-        console.log('Nombre que se envía al backend:', nombreCuenta.value);
+       // console.log('Código que se muestra:', codigoCuenta.value);
+        //console.log('Nombre que se envía al backend:', nombreCuenta.value);
 
         const resp = await axios.post(
-          'http://127.0.0.1:8000/cuentas/libro-diario/por-cuenta',
+          'http://127.0.0.1:8000/cuentas/libro-diario/por-cuentaAG',
           {
             cuenta: nombreCuenta.value // aquí va el nombre, igual que en Postman
           }

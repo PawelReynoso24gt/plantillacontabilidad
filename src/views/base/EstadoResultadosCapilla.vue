@@ -391,6 +391,7 @@ export default {
           }
         );
         reporteData.value = response.data || null;
+        console.log(response);
       } catch (error) {
         console.error('Error al obtener datos del reporte:', error);
         reporteData.value = null;

@@ -613,7 +613,7 @@ export default {
 
       axios.post(url, data)
         .then(response => {
-          console.log(response.data);
+        //  console.log(response.data);
           success.value = 'Datos enviados correctamente'; // Mensaje de éxito
         })
         .catch(error => {

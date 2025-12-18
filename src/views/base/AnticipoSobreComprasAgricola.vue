@@ -354,7 +354,7 @@ export default {
         .get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoAG')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
-          console.log(response.data);
+          //console.log(response.data);
         })
         .catch((error) => {
           console.error(error);
@@ -366,7 +366,7 @@ export default {
         .get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data);
+          //console.log(response.data);
         })
         .catch((error) => {
           console.error(error);
@@ -442,11 +442,11 @@ export default {
           id_cuentas_bancarias: idCuentaBancaria.value
         };
 
-        console.log(
+       /* console.log(
           'id_cuentas_bancarias:',
           idCuentaBancaria.value,
           typeof idCuentaBancaria.value
-        );
+        );*/
 
         if (!Number.isInteger(idCuentaBancaria.value)) {
           error.value = 'Debes seleccionar una cuenta bancaria válida.';

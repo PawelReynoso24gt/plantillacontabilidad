@@ -550,7 +550,7 @@ export default {
       axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoCA')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
-          console.log(response.data); 
+         // console.log(response.data); 
         })
         .catch((error) => {
           console.error(error);
@@ -562,7 +562,7 @@ export default {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data); 
+          //console.log(response.data); 
         })
         .catch((error) => {
           console.error(error);
@@ -574,7 +574,7 @@ export default {
       axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data); 
+          //console.log(response.data); 
         })
         .catch((error) => {
           console.error(error);
@@ -607,7 +607,7 @@ export default {
         })
         .then(response => {
           successMessage.value = 'Datos enviados correctamente';
-          console.log(response.data); 
+          //console.log(response.data); 
         })
         .catch(error => {
           console.error(error);
@@ -632,7 +632,7 @@ export default {
         axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
           .then(response => {
             successMessage.value = 'Datos enviados correctamente';
-            console.log(response.data); 
+            //console.log(response.data); 
           })
           .catch(error => {
             console.error(error);
