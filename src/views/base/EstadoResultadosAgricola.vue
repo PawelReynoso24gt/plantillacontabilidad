@@ -30,17 +30,46 @@
             </select>
           </div>
 
-          <div class="select-group">
-            <label class="field-label">Mes</label>
-            <select v-model="selectedMes" class="field-control">
-              <option disabled value="">Seleccione un mes</option>
-              <option v-for="mes in meses" :key="mes" :value="mes">
-                {{ mes }}
-              </option>
-            </select>
-          </div>
+     <!-- MES (solo si NO es ANUAL) -->
+<div v-if="selectedPeriodo !== 'Anual'" class="select-group">
+  <label class="field-label">Mes</label>
+  <select v-model="selectedMes" class="field-control">
+    <option disabled value="">Seleccione un mes</option>
+    <option v-for="mes in meses" :key="mes" :value="mes">
+      {{ mes }}
+    </option>
+  </select>
+</div>
+
+          <!-- AÑO (solo si NO es ANUAL) -->
+<div v-if="selectedPeriodo !== 'Anual'" class="select-group">
+  <label class="field-label">Año</label>
+  <input
+    type="number"
+    v-model="selectedAnio"
+    class="field-control"
+    min="2000"
+    max="2100"
+    placeholder="Ej: 2026"
+  />
+</div>
+
+<!-- FECHAS (solo si es ANUAL) -->
+<div v-if="selectedPeriodo === 'Anual'" class="id-inputs" style="margin-top: 15px;">
+  <div class="select-group">
+    <label class="field-label">Fecha Inicio</label>
+    <input type="date" v-model="fechaInicio" class="field-control" />
+  </div>
+
+  <div class="select-group">
+    <label class="field-label">Fecha Fin</label>
+    <input type="date" v-model="fechaFin" class="field-control" />
+  </div>
+</div>
         </div>
       </div>
+
+
 
       <!-- Botones -->
       <div class="form-actions">
@@ -68,7 +97,16 @@
             <strong>INFORME CORRESPONDIENTE AL:</strong>
             {{ periodoTexto }}
           </div>
-          <div><strong>AÑO:</strong> {{ currentYear }}</div>
+         <!-- SI ES ANUAL: MOSTRAR FECHAS -->
+          <div v-if="selectedPeriodo === 'Anual'">
+            <strong>FECHAS SELECCIONADAS:</strong> {{ fechaInicio }} al {{ fechaFin }}
+          </div>
+
+          <!-- SI NO ES ANUAL: MOSTRAR AÑO -->
+          <div v-else>
+            <strong>AÑO:</strong> {{ selectedAnio }}
+          </div>
+
           <div>
             <strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA
           </div>
@@ -159,17 +197,39 @@ export default {
   name: 'ReporteAgricolaFinal',          
   setup() {
     const router = useRouter();          
-
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const fechaHoy = now.toLocaleDateString('es-ES');
     const selectedPeriodo = ref('');
     const selectedMes = ref('');
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
     const meses = ref([]);
+    const selectedAnio = ref(currentYear);
+    
+
+    const fechaInicio = ref('');
+    const fechaFin = ref('');
 
     const reporteData = ref(null);
 
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const fechaHoy = now.toLocaleDateString('es-ES');
+
+
+  const buildPayload = () => {
+  const tipo = selectedPeriodo.value.toLowerCase();
+  if (tipo === 'anual') {
+    return {
+      tipo: 'anual',
+      fecha_inicio: fechaInicio.value || `${selectedAnio.value}-01-01`,
+      fecha_fin: fechaFin.value || `${selectedAnio.value}-12-31`
+    };
+  }
+  return {
+    tipo,
+    mes: selectedMes.value.toLowerCase(),
+    anio: selectedAnio.value
+  };
+};
+
 
     const periodoTexto = computed(() => {
       if (selectedPeriodo.value === 'Mensual') {
@@ -193,6 +253,9 @@ export default {
     });
 
     const actualizarMeses = () => {
+      fechaInicio.value = '';
+      fechaFin.value = '';
+
       switch (selectedPeriodo.value) {
         case 'Mensual':
           meses.value = [
@@ -216,10 +279,13 @@ export default {
         case 'Semestral':
           meses.value = ['Enero', 'Julio'];
           break;
-        case 'Anual':
-          meses.value = ['Enero'];
-          selectedMes.value = 'Enero';
-          break;
+       case 'Anual':
+      meses.value = [];
+      selectedMes.value = '';
+      fechaInicio.value = `${selectedAnio.value}-01-01`;
+      fechaFin.value = `${selectedAnio.value}-12-31`;
+      break;
+
         default:
           meses.value = [];
       }
@@ -387,13 +453,10 @@ export default {
 
     const mostrarTabla = async () => {
       try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase(),
-          }
-        );
+    const response = await axios.post(
+      'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
+      buildPayload()
+    );
         reporteData.value = response.data || null;
       } catch (error) {
         console.error('Error al obtener datos del reporte:', error);
@@ -406,16 +469,16 @@ export default {
       selectedMes.value = '';
       meses.value = [];
       reporteData.value = null;
+      selectedAnio.value = currentYear;
+      fechaInicio.value = '';
+      fechaFin.value = '';
     };
 
     const generarPDF = async () => {
-  try {
+    try {
     const response = await axios.post(
       'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
-      {
-        tipo: selectedPeriodo.value.toLowerCase(),
-        mes: selectedMes.value.toLowerCase()
-      }
+      buildPayload()
     );
     const data = response.data;
 
@@ -475,8 +538,8 @@ export default {
 
     // ---------- ENCABEZADO PDF (AQUÍ CAMBIAMOS CAPILLA → AGRÍCOLA) ----------
     doc.setFontSize(16);
-    doc.text(
-      `ESTADO DE RESULTADOS ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
+      doc.text(
+      `ESTADO DE RESULTADOS ${selectedPeriodo.value.toUpperCase()} ${selectedAnio.value}`,
       105,
       27,
       { align: 'center' }
@@ -578,7 +641,10 @@ export default {
       mostrarTabla,
       limpiar,
       generarPDF,
-      irDetalleCuenta      
+      irDetalleCuenta,
+      selectedAnio,
+      fechaInicio,
+      fechaFin,      
     };
   }
 };

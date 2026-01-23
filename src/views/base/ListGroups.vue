@@ -9,44 +9,56 @@
         </div>
       </div>
 
-      <!-- Formulario: período + mes -->
-      <div class="division-container division-inline">
-        <div class="field-group">
-          <label class="field-label">Período de informe</label>
-          <select
-            v-model="selectedPeriodo"
-            @change="actualizarMeses"
-            class="field-control"
-          >
-            <option disabled value="">Seleccione un período</option>
-            <option
-              v-for="periodo in periodos"
-              :key="periodo"
-              :value="periodo"
-            >
-              {{ periodo }}
-            </option>
-          </select>
-        </div>
+     <div class="division-container division-inline">
 
-        <div class="field-group">
-          <label class="field-label">Mes</label>
-          <select
-            v-model="selectedMes"
-            class="field-control"
-          >
-            <option disabled value="">Seleccione un mes</option>
-            <option
-              v-for="mes in meses"
-              :key="mes"
-              :value="mes"
-            >
-              {{ mes }}
-            </option>
-          </select>
-        </div>
-      </div>
+  <!-- PERIODO -->
+  <div class="field-group">
+    <label class="field-label">Período de informe</label>
+    <select
+      v-model="selectedPeriodo"
+      @change="actualizarMeses"
+      class="field-control"
+    >
+      <option disabled value="">Seleccione un período</option>
+      <option v-for="periodo in periodos" :key="periodo" :value="periodo">
+        {{ periodo }}
+      </option>
+    </select>
+  </div>
 
+  <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
+    <label class="field-label">Año</label>
+    <input
+      type="number"
+      v-model="selectedYear"
+      class="field-control"
+      placeholder="Ej: 2026"
+      min="1900"
+      max="2100"
+    />
+  </div>
+
+  <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
+    <label class="field-label">Mes</label>
+    <select v-model="selectedMes" class="field-control">
+      <option disabled value="">Seleccione un mes</option>
+      <option v-for="mes in meses" :key="mes" :value="mes">
+        {{ mes }}
+      </option>
+    </select>
+  </div>
+
+  <div class="field-group" v-if="selectedPeriodo === 'Anual'">
+    <label class="field-label">Fecha inicial</label>
+    <input type="date" v-model="fechaInicio" class="field-control" />
+  </div>
+
+  <div class="field-group" v-if="selectedPeriodo === 'Anual'">
+    <label class="field-label">Fecha final</label>
+    <input type="date" v-model="fechaFin" class="field-control" />
+  </div>
+
+</div>
       <!-- Formulario: responsables -->
       <div class="division-container division-block">
         <p class="division-title">Responsables del informe</p>
@@ -108,7 +120,14 @@
             <strong>INFORME CORRESPONDIENTE AL:</strong>
             {{ periodoTexto }}
           </div>
-          <div><strong>AÑO:</strong> {{ currentYear }}</div>
+          <div v-if="selectedPeriodo !== 'Anual'">
+          <strong>AÑO:</strong> {{ selectedYear }}
+        </div>
+
+        <div v-else>
+          <strong>FECHA SELECCIONADA:</strong> {{ fechaInicio }} a {{ fechaFin }}
+        </div>
+
           <div>
             <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
           </div>
@@ -216,14 +235,43 @@ export default {
     const selectedMes = ref('');
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
     const meses = ref([]);
+    const selectedYear = ref('');
+    const fechaInicio = ref('');
+    const fechaFin = ref('');
 
     // Datos que regresa el backend cuando consultás
     const reporteData = ref(null);
 
-    // Año y fecha actual
+
     const now = new Date();
     const currentYear = now.getFullYear();
     const fechaHoy = now.toLocaleDateString('es-ES');
+
+
+    const construirPayload = () => {
+    const tipo = selectedPeriodo.value.toLowerCase();
+
+    const base = {
+      tipo,
+      responsable: responsable.value,
+      sirviente: hermanaSirviente.value,
+      economa: economaProvincial.value
+    };
+
+    if (selectedPeriodo.value === 'Anual') {
+      return {
+        ...base,
+        fecha_inicio: fechaInicio.value,
+        fecha_fin: fechaFin.value
+      };
+    }
+    return {
+      ...base,
+      anio: selectedYear.value,
+      mes: selectedMes.value.toLowerCase()
+    };
+  };
+
 
     // Lógica de período -> texto humano (igual a tu PDF)
     const periodoTexto = computed(() => {
@@ -454,16 +502,12 @@ export default {
 
     const mostrarTabla = async () => {
       try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/reporteFinalCA',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase(),
-            responsable: responsable.value,
-            sirviente: hermanaSirviente.value,
-            economa: economaProvincial.value
-          }
-        );
+       const payload = construirPayload();
+
+    const response = await axios.post(
+      'http://127.0.0.1:8000/in_eg/reporteFinalCA',
+      payload
+    );
 
         reporteData.value = response.data || null;
       } catch (error) {
@@ -481,21 +525,21 @@ export default {
       economaProvincial.value = '';
       meses.value = [];
       reporteData.value = null;
+      selectedYear.value = '';
+      fechaInicio.value = '';
+      fechaFin.value = '';
     };
 
     // Generar PDF (tu lógica original con firmas)
     const generarPDF = async () => {
       try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/reporteFinalCA',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase(),
-            responsable: responsable.value,
-            sirviente: hermanaSirviente.value,
-            economa: economaProvincial.value
-          }
-        );
+           const payload = construirPayload();
+
+    const response = await axios.post(
+      'http://127.0.0.1:8000/in_eg/reporteFinalCA',
+      payload
+    );
+
         const data = response.data;
 
         const doc = new jsPDF();
@@ -556,12 +600,11 @@ export default {
 
         // Encabezado
         doc.setFontSize(16);
-        doc.text(
-          `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
-          105,
-          27,
-          { align: 'center' }
-        );
+        const tituloPDF =
+  selectedPeriodo.value === 'Anual'
+    ? `REPORTE FINAL ANUAL`
+    : `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${selectedYear.value}`; 
+    doc.text(tituloPDF, 105, 27, { align: 'center' });
         doc.setLineWidth(0.5);
         doc.line(60, 32, 150, 32);
 
@@ -750,6 +793,9 @@ export default {
       selectedMes,
       periodos,
       meses,
+      selectedYear,
+      fechaInicio,
+      fechaFin,
 
       // derivados para UI
       currentYear,
