@@ -25,18 +25,36 @@
           </select>
         </div>
 
-        <div class="select-group">
-          <label>Mes</label>
-          <select v-model="selectedMes">
-            <option
-              v-for="mes in meses"
-              :key="mes"
-              :value="mes"
-            >
-              {{ mes }}
-            </option>
-          </select>
-        </div>
+       <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+  <label>Mes</label>
+  <select v-model="selectedMes">
+    <option v-for="mes in meses" :key="mes" :value="mes">
+      {{ mes }}
+    </option>
+  </select>
+</div>
+
+<div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+  <label>Año</label>
+  <input
+    type="number"
+    v-model="selectedYear"
+    :max="currentYear"
+    min="2000"
+    placeholder="Ej: 2025"
+  />
+</div>
+
+<div class="select-group" v-if="selectedPeriodo === 'Anual'">
+  <label>Fecha inicial</label>
+  <input type="date" v-model="fechaInicio" />
+</div>
+
+<div class="select-group" v-if="selectedPeriodo === 'Anual'">
+  <label>Fecha final</label>
+  <input type="date" v-model="fechaFin" />
+</div>
+
       </div>
     </div>
   </div>
@@ -152,6 +170,10 @@ export default {
   setup() {
     const router = useRouter();
 
+  const selectedYear = ref(new Date().getFullYear());
+  const fechaInicio = ref('');
+  const fechaFin = ref('');
+
     const selectedPeriodo = ref('');
     const selectedMes = ref('');
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
@@ -198,21 +220,22 @@ export default {
     });
 
     const actualizarMeses = () => {
+      selectedMes.value = '';
+      reporteData.value = null;
+
+      if (selectedPeriodo.value !== 'Anual') {
+        fechaInicio.value = '';
+        fechaFin.value = '';
+        selectedYear.value = new Date().getFullYear();
+      } else {
+        selectedYear.value = '';
+      }
+
       switch (selectedPeriodo.value) {
         case 'Mensual':
           meses.value = [
-            'Enero',
-            'Febrero',
-            'Marzo',
-            'Abril',
-            'Mayo',
-            'Junio',
-            'Julio',
-            'Agosto',
-            'Septiembre',
-            'Octubre',
-            'Noviembre',
-            'Diciembre'
+            'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
           ];
           break;
         case 'Trimestral':
@@ -222,13 +245,13 @@ export default {
           meses.value = ['Enero', 'Julio'];
           break;
         case 'Anual':
-          meses.value = ['Enero'];
-          selectedMes.value = 'Enero';
+          meses.value = [];
           break;
         default:
           meses.value = [];
       }
     };
+
 
         // helper: parse numbers robustly (accepts '1,234.56' and 'Q 1,234.56')
         const parseNumberString = (v) => {
@@ -599,36 +622,53 @@ export default {
     const limpiar = () => {
       selectedPeriodo.value = '';
       selectedMes.value = '';
+      selectedYear.value = new Date().getFullYear();
+      fechaInicio.value = '';
+      fechaFin.value = '';
       meses.value = [];
       reporteData.value = null;
     };
 
-    const mostrarTabla = async () => {
-      try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/reporteGeneralCA',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase()
-          }
-        );
+    const buildPayload = () => {
+    const tipo = selectedPeriodo.value.toLowerCase();
 
-        reporteData.value = response.data || null;
-      } catch (error) {
-        console.error('Error al obtener datos del reporte:', error);
-        reporteData.value = null;
-      }
+    if (selectedPeriodo.value === 'Anual') {
+      return {
+        tipo,
+        fecha_inicio: fechaInicio.value,
+        fecha_fin: fechaFin.value
+      };
+    }
+
+    return {
+      tipo,
+      mes: selectedMes.value.toLowerCase(),
+      year: Number(selectedYear.value)
     };
+  };
 
-    const generarPDF = async () => {
+
+  const mostrarTabla = async () => {
     try {
       const response = await axios.post(
         'http://127.0.0.1:8000/in_eg/reporteGeneralCA',
-        {
-          tipo: selectedPeriodo.value.toLowerCase(),
-          mes: selectedMes.value.toLowerCase()
-        }
+        buildPayload()
       );
+
+      reporteData.value = response.data || null;
+    } catch (error) {
+      console.error('Error al obtener datos del reporte:', error);
+      reporteData.value = null;
+    }
+  };
+
+
+    const generarPDF = async () => {
+    try {
+     const response = await axios.post(
+      'http://127.0.0.1:8000/in_eg/reporteGeneralCA',
+      buildPayload()
+    );
       const data = response.data;
 
       const doc = new jsPDF();
@@ -689,7 +729,8 @@ export default {
       // Encabezado PDF
       doc.setFontSize(16);
       doc.text(
-        `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
+        `REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
+        {{ selectedPeriodo === 'Anual' ? '' : selectedYear }}`,
         105,
         27,
         { align: 'center' }
@@ -780,9 +821,12 @@ export default {
   };
 
 
-    return {
+   return {
       selectedPeriodo,
       selectedMes,
+      selectedYear,
+      fechaInicio,
+      fechaFin,
       periodos,
       meses,
       reporteData,

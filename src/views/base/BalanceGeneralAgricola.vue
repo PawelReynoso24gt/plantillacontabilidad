@@ -25,18 +25,36 @@
           </select>
         </div>
 
-        <div class="select-group">
-          <label>Mes</label>
-          <select v-model="selectedMes">
-            <option
-              v-for="mes in meses"
-              :key="mes"
-              :value="mes"
-            >
-              {{ mes }}
-            </option>
-          </select>
-        </div>
+        <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+        <label>Mes</label>
+        <select v-model="selectedMes">
+          <option v-for="mes in meses" :key="mes" :value="mes">
+            {{ mes }}
+          </option>
+        </select>
+      </div>
+
+       <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+        <label>Año</label>
+        <input
+          type="number"
+          v-model="selectedYear"
+          :max="currentYear"
+          min="2000"
+          placeholder="Ej: 2025"
+        />
+      </div>
+    
+       <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+        <label>Fecha inicial</label>
+        <input type="date" v-model="fechaInicio" />
+      </div>
+
+      <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+        <label>Fecha final</label>
+        <input type="date" v-model="fechaFin" />
+      </div>
+
       </div>
     </div>
   </div>
@@ -57,10 +75,10 @@
   <!-- Vista previa del informe (solo si ya hay datos) -->
   <div v-if="reporteData" class="encabezado-container">
     <div class="encabezado-box">
-      <div class="encabezado-titulo">
-        REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
-        {{ currentYear }}
-      </div>
+    <div class="encabezado-titulo">
+      REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
+      {{ selectedPeriodo === 'Anual' ? '' : selectedYear }}
+    </div>
     </div>
 
     <div class="encabezado-detalles">
@@ -68,7 +86,11 @@
         <strong>INFORME CORRESPONDIENTE AL:</strong>
         {{ periodoTexto }}
       </div>
-      <div><strong>AÑO:</strong> {{ currentYear }}</div>
+    <div v-if="selectedPeriodo !== 'Anual'"><strong>AÑO:</strong> {{ selectedYear }}</div>
+
+      <div v-else>
+        <strong>RANGO:</strong> {{ fechaInicio }} al {{ fechaFin }}
+      </div>
       <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA - HOGAR SANTA LUISA DE MARILLAC</div>
       <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
       <div>
@@ -152,6 +174,10 @@ export default {
   setup() {
     const router = useRouter();
 
+    const selectedYear = ref(new Date().getFullYear());
+    const fechaInicio = ref('');
+    const fechaFin = ref('');
+
     const selectedPeriodo = ref('');
     const selectedMes = ref('');
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
@@ -178,7 +204,7 @@ export default {
 
     const periodoTexto = computed(() => {
       if (selectedPeriodo.value === 'Mensual') {
-        return `RESUMEN DE ${selectedMes.value?.toUpperCase?.() || ''}`;
+        return `RESUMEN DE ${selectedMes.value?.toUpperCase?.() || ''} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Trimestral') {
         const trimestre = {
           Enero: 'PRIMER TRIMESTRE',
@@ -186,33 +212,36 @@ export default {
           Julio: 'TERCER TRIMESTRE',
           Octubre: 'CUARTO TRIMESTRE'
         };
-        return `RESUMEN ${trimestre[selectedMes.value] || ''}`;
+        return `RESUMEN ${trimestre[selectedMes.value] || ''} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Semestral') {
-        return selectedMes.value === 'Enero'
+        const sem = selectedMes.value === 'Enero'
           ? 'RESUMEN PRIMER SEMESTRE'
           : 'RESUMEN SEGUNDO SEMESTRE';
+        return `${sem} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Anual') {
-        return 'RESUMEN ANUAL';
+        return `RESUMEN ANUAL (${fechaInicio.value} al ${fechaFin.value})`;
       }
       return '';
     });
 
-    const actualizarMeses = () => {
+      const actualizarMeses = () => {
+  
+      selectedMes.value = '';
+      reporteData.value = null;
+
+      if (selectedPeriodo.value !== 'Anual') {
+        fechaInicio.value = '';
+        fechaFin.value = '';
+        selectedYear.value = new Date().getFullYear();
+      } else {
+        selectedYear.value = '';
+      }
+
       switch (selectedPeriodo.value) {
         case 'Mensual':
           meses.value = [
-            'Enero',
-            'Febrero',
-            'Marzo',
-            'Abril',
-            'Mayo',
-            'Junio',
-            'Julio',
-            'Agosto',
-            'Septiembre',
-            'Octubre',
-            'Noviembre',
-            'Diciembre'
+            'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+            'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
           ];
           break;
         case 'Trimestral':
@@ -222,13 +251,13 @@ export default {
           meses.value = ['Enero', 'Julio'];
           break;
         case 'Anual':
-          meses.value = ['Enero'];
-          selectedMes.value = 'Enero';
+          meses.value = []; 
           break;
         default:
           meses.value = [];
       }
     };
+
 
         // helper: parse numbers robustly (accepts '1,234.56' and 'Q 1,234.56')
         const parseNumberString = (v) => {
@@ -594,41 +623,56 @@ export default {
     ];
 
     return aplicarNumeracion(rows);
-  });
+    });
 
-    const limpiar = () => {
+   const limpiar = () => {
       selectedPeriodo.value = '';
       selectedMes.value = '';
+      selectedYear.value = new Date().getFullYear();
+      fechaInicio.value = '';
+      fechaFin.value = '';
       meses.value = [];
       reporteData.value = null;
     };
 
-    const mostrarTabla = async () => {
-      try {
-        const response = await axios.post(
-          'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
-          {
-            tipo: selectedPeriodo.value.toLowerCase(),
-            mes: selectedMes.value.toLowerCase()
-          }
-        );
+  const buildPayload = () => {
+    const tipo = selectedPeriodo.value.toLowerCase();
 
-        reporteData.value = response.data || null;
-      } catch (error) {
-        console.error('Error al obtener datos del reporte:', error);
-        reporteData.value = null;
-      }
+    if (selectedPeriodo.value === 'Anual') {
+      return {
+        tipo,
+        fecha_inicio: fechaInicio.value,
+        fecha_fin: fechaFin.value
+      };
+    }
+
+    return {
+      tipo,
+      mes: selectedMes.value.toLowerCase(),
+      year: Number(selectedYear.value)
     };
+  };
+
+    const mostrarTabla = async () => {
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
+        buildPayload()
+      );
+
+      reporteData.value = response.data || null;
+    } catch (error) {
+      console.error('Error al obtener datos del reporte:', error);
+      reporteData.value = null;
+    }
+  };
 
     const generarPDF = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
-        {
-          tipo: selectedPeriodo.value.toLowerCase(),
-          mes: selectedMes.value.toLowerCase()
-        }
-      );
+      'http://127.0.0.1:8000/in_eg/reporteGeneralAG',
+      buildPayload()
+    );
       const data = response.data;
 
       const doc = new jsPDF();
@@ -688,12 +732,13 @@ export default {
 
       // Encabezado PDF
       doc.setFontSize(16);
-      doc.text(
-        `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${currentYear}`,
-        105,
-        27,
-        { align: 'center' }
-      );
+    const tituloPDF =
+      selectedPeriodo.value === 'Anual'
+        ? `REPORTE FINAL ANUAL`
+        : `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${selectedYear.value}`;
+
+    doc.text(tituloPDF, 105, 27, { align: 'center' });
+
       doc.setLineWidth(0.5);
       doc.line(60, 32, 150, 32);
 
@@ -701,7 +746,14 @@ export default {
       yOffset = 40;
       doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
       doc.text(periodoTextoPDF, 91, 40);
-      doc.text(`DE`, 165, 40);
+     doc.text(`DE`, 165, 40);
+
+      if (selectedPeriodo.value === 'Anual') {
+        doc.text(`${fechaInicio.value} al ${fechaFin.value}`, 175, 40);
+      } else {
+        doc.text(`${selectedYear.value}`, 175, 40);
+      }
+
       doc.text(`${currentYear}`, 175, 40);
       doc.text(`PROYECTO AGRÍCOLA HOGAR SANTA LUISA`, 20, 50);
       doc.text(`LUGAR:`, 130, 50);
@@ -783,6 +835,8 @@ export default {
     return {
       selectedPeriodo,
       selectedMes,
+      fechaInicio,
+      fechaFin,
       periodos,
       meses,
       reporteData,
