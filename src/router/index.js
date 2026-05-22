@@ -31,12 +31,6 @@ const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: '/theme/typography',
-        name: 'Typography',
-        component: () => import('@/views/theme/Typography.vue'),
-        meta: { requiresAuth: true }
-      },
-      {
         path: '/base',
         name: 'Base',
         component: {
@@ -56,12 +50,6 @@ const routes = [
             path: '/base/breadcrumbs',
             name: 'Breadcrumbs',
             component: () => import('@/views/base/Breadcrumbs.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
-            path: '/base/cards',
-            name: 'Cards',
-            component: () => import('@/views/base/Cards.vue'),
             meta: { requiresAuth: true }
           },
           {
@@ -89,12 +77,6 @@ const routes = [
             meta: { requiresAuth: true }
           },
           {
-            path: '/base/paginations',
-            name: 'Paginations',
-            component: () => import('@/views/base/Paginations.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
             path: '/capilla/cuenta/:cuenta',
             name: 'ReporteCuentaCapillaCuenta',
             component: () => import('../views/base/DetalleCuentaCapilla.vue'),
@@ -104,42 +86,6 @@ const routes = [
             path: '/agricola/cuenta/:cuenta',
             name: 'ReporteCuentaAgricolaCuenta',
             component: () => import('../views/base/DetalleCuentaAgricola.vue'),
-          },
-          {
-            path: '/base/placeholders',
-            name: 'Placeholders',
-            component: () => import('@/views/base/Placeholders.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
-            path: '/base/popovers',
-            name: 'Popovers',
-            component: () => import('@/views/base/Popovers.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
-            path: '/base/progress',
-            name: 'Progress',
-            component: () => import('@/views/base/Progress.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
-            path: '/base/spinners',
-            name: 'Spinners',
-            component: () => import('@/views/base/Spinners.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
-            path: '/base/tables',
-            name: 'Tables',
-            component: () => import('@/views/base/Tables.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
-            path: '/base/tooltips',
-            name: 'Tooltips',
-            component: () => import('@/views/base/Tooltips.vue'),
-            meta: { requiresAuth: true }
           },
           {
             path: '/base/EstadoResultadosCapilla',
@@ -202,12 +148,6 @@ const routes = [
             meta: { requiresAuth: true }
           },
           {
-            path: '/buttons/dropdowns',
-            name: 'Dropdowns',
-            component: () => import('@/views/buttons/Dropdowns.vue'),
-            meta: { requiresAuth: true }
-          },
-          {
             path: '/buttons/button-groups',
             name: 'Button Groups',
             component: () => import('@/views/buttons/ButtonGroups.vue'),
@@ -267,19 +207,7 @@ const routes = [
             component: () => import('@/views/forms/Layout.vue'),
             meta: { requiresAuth: true }
           },
-          {
-            path: '/forms/validation',
-            name: 'Validation',
-            component: () => import('@/views/forms/Validation.vue'),
-            meta: { requiresAuth: true }
-          },
         ],
-      },
-      {
-        path: '/charts',
-        name: 'Charts',
-        component: () => import('@/views/charts/Charts.vue'),
-        meta: { requiresAuth: true }
       },
       {
         path: '/icons',
