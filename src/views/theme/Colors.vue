@@ -44,29 +44,14 @@
 
       <!-- Pie de página -->
       <div class="project-footer">
-    
       </div>
-    
- 
 </template>
 
 <script>
-import WidgetsStatsA from './../widgets/WidgetsStatsTypeA.vue'
-import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
-
 
 import '../../styles/css/dashboard.css'
 
 export default {
   name: 'Dashboard',
-  components: {
-    WidgetsStatsA,
-    WidgetsStatsD,
-  },
-  setup() {
-    return {}
-  },
 }
 </script>
-
-

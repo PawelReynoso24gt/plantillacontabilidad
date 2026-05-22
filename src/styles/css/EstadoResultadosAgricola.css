@@ -1,24 +1,3 @@
-/* Fondo general del módulo */
-.estado-wrapper {
-  background-color: #f7f7f7;
-  min-height: calc(100vh - 100px);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2.5rem 1.5rem;
-}
-
-/* Card principal */
-.estado-card {
-  background-color: #ffffff;
-  border-radius: 18px;
-  padding: 2rem 2.5rem;
-  width: 100%;
-  max-width: 1200px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
-}
-
 /* Encabezado */
 .estado-header {
   margin-bottom: 1.5rem;
