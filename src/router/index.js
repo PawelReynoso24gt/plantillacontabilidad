@@ -289,6 +289,23 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/pages',
+    redirect: '/pages/404',
+    name: 'Pages',
+    component: {
+      render() {
+        return h(resolveComponent('router-view'))
+      },
+    },
+    children: [
+      {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/pages/Login'),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
