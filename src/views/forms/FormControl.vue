@@ -1,93 +1,68 @@
 <template>
-      <!-- Encabezado -->
-      <div class="deposito-header">
-        <div>
-          <h2 class="deposito-title">Traslados internos de caja</h2>
-          <p class="deposito-subtitle">
-            Registre el depósito desde caja hacia la cuenta bancaria seleccionada.
-          </p>
-        </div>
-      </div>
+  <!-- Encabezado -->
+  <div class="deposito-header">
+    <div>
+      <h2 class="deposito-title">Traslados internos de caja</h2>
+      <p class="deposito-subtitle">
+        Registre el depósito desde caja hacia la cuenta bancaria seleccionada.
+      </p>
+    </div>
+  </div>
 
-      <!-- Primera división: cuenta bancaria + documento + fecha -->
-      <div class="division-container division-inline">
-        <div class="field-group">
-          <label class="field-label">Cuenta bancaria</label>
-          <select
-            v-model="cuentaBName"
-            @change="cargarBancosNoCuenta"
-            class="field-control"
-          >
-            <option disabled value="">Seleccione una cuenta bancaria</option>
-            <option
-              v-for="cuentaN in cuentas_bancarias"
-              :key="cuentaN.cuenta_bancaria"
-              :value="cuentaN.cuenta_bancaria"
-            >
-              {{ cuentaN.banco_y_cuenta }}
-            </option>
-          </select>
-        </div>
+  <!-- Primera división: cuenta bancaria + documento + fecha -->
+  <div class="division-container division-inline">
+    <div class="field-group">
+      <label class="field-label">Cuenta bancaria</label>
+      <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
+        <option disabled value="">Seleccione una cuenta bancaria</option>
+        <option v-for="cuentaN in cuentas_bancarias" :key="cuentaN.cuenta_bancaria" :value="cuentaN.cuenta_bancaria">
+          {{ cuentaN.banco_y_cuenta }}
+        </option>
+      </select>
+    </div>
 
-        <div class="field-group">
-          <label class="field-label">Número de documento</label>
-          <input
-            type="text"
-            v-model="numero_documento"
-            class="field-control"
-          />
-        </div>
+    <div class="field-group">
+      <label class="field-label">Número de documento</label>
+      <input type="text" v-model="numero_documento" class="field-control" />
+    </div>
 
-        <div class="field-group">
-          <label class="field-label">Fecha</label>
-          <input
-            type="date"
-            v-model="fecha"
-            class="field-control"
-          />
-        </div>
-      </div>
+    <div class="field-group">
+      <label class="field-label">Fecha</label>
+      <input type="date" v-model="fecha" class="field-control" />
+    </div>
+  </div>
 
-      <!-- Segunda división: monto y observaciones -->
-      <div class="division-container">
-        <h3 class="division-title">Monto a retirar de caja</h3>
+  <!-- Segunda división: monto y observaciones -->
+  <div class="division-container">
+    <h3 class="division-title">Monto a retirar de caja</h3>
 
-        <div class="field-group">
-          <label class="field-label">Valor a retirar</label>
-          <input
-            type="text"
-            v-model="monto"
-            class="field-control"
-            placeholder="0.00"
-          />
-        </div>
+    <div class="field-group">
+      <label class="field-label">Valor a retirar</label>
+      <input type="text" v-model="monto" class="field-control" placeholder="0.00" />
+    </div>
 
-        <div class="field-group full-width">
-          <label class="field-label">Observaciones</label>
-          <input
-            type="text"
-            v-model="descripcion"
-            class="field-control"
-          />
-        </div>
-      </div>
+    <div class="field-group full-width">
+      <label class="field-label">Observaciones</label>
+      <input type="text" v-model="descripcion" class="field-control" />
+    </div>
+  </div>
 
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="error" class="text-danger">{{ error }}</p>
-        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
-      </div>
+  <!-- Mensajes -->
+  <div class="messages-container">
+    <p v-if="error" class="text-danger">{{ error }}</p>
+    <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+  </div>
 
-      <!-- Botones -->
-      <div class="form-actions">
-        <button class="btn-primary" @click="enviarDatos">
-          Guardar
-        </button>
-        <button class="btn-secondary" @click="limpiar">
-          Limpiar
-        </button>
-      </div>
-  
+  <!-- Botones -->
+  <div class="form-actions">
+    <button class="btn-primary" @click="enviarDatos">
+      Guardar
+    </button>
+    <button class="btn-secondary" @click="limpiar">
+      Limpiar
+    </button>
+  </div>
+
 
 </template>
 
@@ -112,7 +87,7 @@ export default {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data); 
+          console.log(response.data);
         })
         .catch((error) => {
           console.error(error);
@@ -135,14 +110,14 @@ export default {
         monto: monto.value,
         numero_documento: numero_documento.value,
       })
-      .then(response => {
-        successMessage.value = 'Datos enviados correctamente';
-      //  console.log(response.data); 
-      })
-      .catch(error => {
-        console.error(error);
-        error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
-      });
+        .then(response => {
+          successMessage.value = 'Datos enviados correctamente';
+          //  console.log(response.data); 
+        })
+        .catch(error => {
+          console.error(error);
+          error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+        });
     };
 
     const limpiar = () => {
@@ -175,4 +150,3 @@ export default {
   },
 }
 </script>
-
