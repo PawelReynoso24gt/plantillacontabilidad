@@ -252,8 +252,6 @@ export default {
       }
     };
 
-
-        // helper: parse numbers robustly (accepts '1,234.56' and 'Q 1,234.56')
         const parseNumberString = (v) => {
             if (v === null || v === undefined || v === '') return 0;
             if (typeof v === 'number') return v;
@@ -262,7 +260,6 @@ export default {
             return isNaN(n) ? 0 : n;
         };
 
-        // getItems: prefer nested container[cat][sub] arrays; otherwise filter flatArray by flags
         const getItems = (container, flatArray, cat, sub, field) => {
             try {
                 if (container && container[cat] && container[cat][sub] && Array.isArray(container[cat][sub])) {
@@ -271,8 +268,8 @@ export default {
 
                 if (Array.isArray(flatArray)) {
                     return flatArray.filter((it) => {
-                        const tipo = it.tipoCuenta ?? it.tipo_cuenta ?? it.tipo ?? null; // 1=ACTIVO,0=PASIVO
-                        const corriente = it.corriente ?? it.es_corriente ?? null; // 1=CORRIENTE,0=NO
+                        const tipo = it.tipoCuenta ?? it.tipo_cuenta ?? it.tipo ?? null; 
+                        const corriente = it.corriente ?? it.es_corriente ?? null; 
                         const tipoMatch = cat === 'activos' ? tipo == 1 : tipo == 0;
                         const subMatch = sub === 'corriente' ? corriente == 1 : corriente == 0;
                         return tipoMatch && subMatch && parseNumberString(it[field]) > 0;
@@ -285,7 +282,7 @@ export default {
             }
         };
 
-    // 👉 Ir al libro mayor de la cuenta (Agrícola)
+    //  Ir al libro mayor de la cuenta (Agrícola)
     const irDetalleCuenta = (codigoCuenta, nombreCuenta) => {
       router.push({
         name: 'ReporteCuentaCapillaCuenta', // aquí sí es agrícola
@@ -296,7 +293,7 @@ export default {
       });
     };
 
-    // 👉 Tabla con numeración jerárquica + marca de cuentas (esCuenta)
+    // Tabla con numeración jerárquica + marca de cuentas (esCuenta)
   const tablaPreview = computed(() => {
     if (!reporteData.value) return [];
 
@@ -753,7 +750,7 @@ export default {
 
       yOffset = 75;
 
-      // 👇👇 AQUÍ SOLO UNA VEZ tableData
+      // AQUÍ SOLO UNA VEZ tableData
       const tableData = [];
 
       // SALDO INICIAL

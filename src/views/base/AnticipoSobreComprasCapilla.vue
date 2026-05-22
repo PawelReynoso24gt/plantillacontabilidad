@@ -290,7 +290,6 @@
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted, watch } from 'vue';
-// Reutilizamos el MISMO CSS que usas en el anticipo agrícola
 import '../../styles/css/AnticipoComprasA.css';
 
 export default {
@@ -317,8 +316,6 @@ export default {
     const error = ref('');
     const successMessage = ref('');
     const idCuentaBancaria = ref(null);
-
-    // Tabla de anticipos
     const anticipoRows = ref([]);
     const loading = ref(false);
     const showTabla = ref(false);

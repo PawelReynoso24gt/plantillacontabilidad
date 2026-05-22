@@ -173,8 +173,6 @@
         </button>
       </div>
 
-
-
   <!-- pendientes -->
   <div class="division-container" style="margin-top: 40px; padding: 1.5rem;">
     <h3 class="division-title">Cuentas Pendientes por Pagar (Proyecto Agrícola)</h3>
@@ -379,12 +377,10 @@ export default {
     const es_pendiente = ref(false);
     const error = ref(''); // Estado para errores
     const successMessage = ref(''); // Estado para mensajes de éxito
-    // ** NUEVAS VARIABLES PARA EL REPORTE **
     const PROYECTO_ID = '1';       // Agrícola
     const CLASIFICACION_ID = '2'; // Egresos (Cuentas por Pagar)
     const pendientes = reactive([]);
     const mensajeVacio = ref('');
-    // ** VARIABLES PARA EL MODAL DE SALDADO **
     const mostrarModalSaldado = ref(false);
     const formSaldar = reactive({
         deuda_original_id: '',
@@ -396,12 +392,10 @@ export default {
         descripcion: '',
         monto: '',
         tipo: 'caja',
-        // Bancarios
         documento: '',
         numero_documento: '',
         fecha_emision: '',
         cuenta_bancaria: '',
-        // Datos fijos del proyecto/clasificación (vienen del reporte)
         id_proyectos: '',
         id_clasificacion: ''
     });
@@ -433,7 +427,6 @@ export default {
     }
 
     // ** ABRIR MODAL **
-    // Se llama al hacer clic en "Saldar" en la tabla
     const abrirModalSaldado = (item) => {
         // Prellenar datos básicos
         formSaldar.deuda_original_id = item.id_ingresos_egresos;
@@ -441,11 +434,8 @@ export default {
         formSaldar.nombre_cuenta_visual = item.cuentas.cuenta;
         
         // >> CORRECCIÓN DE FECHA (ZONA HORARIA LOCAL) <<
-        // Creamos un objeto Date con la hora actual del sistema
         const hoy = new Date();
         // Obtenemos el año, mes y día locales. 
-        // OJO: getMonth() devuelve 0-11, así que sumamos 1.
-        // padStart(2, '0') asegura que tengamos '05' en vez de '5'.
         const año = hoy.getFullYear();
         const mes = String(hoy.getMonth() + 1).padStart(2, '0');
         const dia = String(hoy.getDate()).padStart(2, '0');
@@ -461,14 +451,11 @@ export default {
         formSaldar.fecha_emision = '';
         formSaldar.cuenta_bancaria = '';
         // El monto sugerido es el saldo pendiente
-        // const saldo = item.monto_haber > 0 ? item.monto_haber : item.monto_debe;
         formSaldar.monto = '';
 
         // Heredar los IDs de proyecto y clasificación del filtro actual
-        // (Asumimos que son los mismos que se usaron para cargar la tabla)
-        // OJO: Usa las constantes o variables que definiste: PROYECTO_ID / CLASIFICACION_ID
-        formSaldar.id_proyectos = PROYECTO_ID; // O usa la variable PROYECTO_ID
-        formSaldar.id_clasificacion = CLASIFICACION_ID; // O usa CLASIFICACION_ID
+        formSaldar.id_proyectos = PROYECTO_ID; 
+        formSaldar.id_clasificacion = CLASIFICACION_ID;
 
         mostrarModalSaldado.value = true;
     };
@@ -573,7 +560,7 @@ export default {
           flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
           es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
         };
-        axios.post('http://127.0.0.1:8000/in_eg/createALLEGAG', data)
+        axios.post('http://127.0.0.1:8000/in_eg/AG', data)
           .then(response => {
             successMessage.value = 'Datos enviados correctamente';
             console.log(response.data); 
@@ -686,11 +673,9 @@ export default {
       es_pendiente,
       error,
       successMessage,
-      // nuevas variables
       pendientes,
       cargarPendientes,
       mensajeVacio,
-      // ----------------
       mostrarModalSaldado,
       formSaldar,
       abrirModalSaldado,
@@ -699,7 +684,6 @@ export default {
       mostrarModalExito,
       datosExito,
       cerrarModalExito,
-      // ----------------
       enviarDatos,
       cargarCuentas,
       cargarBancos,
