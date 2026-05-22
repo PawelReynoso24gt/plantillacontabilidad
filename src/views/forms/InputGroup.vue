@@ -1,113 +1,109 @@
 <template>
-      <!-- Encabezado -->
-      <div class="libro-header">
-        <div>
-          <h2 class="libro-title">Libro de Caja - Capilla</h2>
-          <p class="libro-subtitle">
-            Consulta el movimiento de caja por rango de fechas y genera el PDF.
-          </p>
-        </div>
+  <!-- Encabezado -->
+  <div class="libro-header">
+    <div>
+      <h2 class="libro-title">Libro de Caja - Capilla</h2>
+      <p class="libro-subtitle">
+        Consulta el movimiento de caja por rango de fechas y genera el PDF.
+      </p>
+    </div>
+  </div>
+
+  <!-- Filtros de fecha -->
+  <div class="division-container division-inline">
+    <div class="field-group">
+      <label class="field-label">Fecha inicial</label>
+      <input type="date" v-model="fechaInicial" class="field-control" />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Fecha final</label>
+      <input type="date" v-model="fechaFinal" class="field-control" />
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="form-actions">
+    <button @click="mostrarTabla" class="btn-secondary">Vista previa</button>
+    <button @click="generarPDF" class="btn-primary">Generar PDF</button>
+  </div>
+
+  <!-- Encabezado tipo PDF / vista previa -->
+  <div v-if="ingresosEgresos.length" class="encabezado-container">
+    <div class="encabezado-box">
+      <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
+      <div class="encabezado-direccion">
+        Dirección del Proyecto: {{ direccionProyecto }}
       </div>
+    </div>
 
-      <!-- Filtros de fecha -->
-      <div class="division-container division-inline">
-        <div class="field-group">
-          <label class="field-label">Fecha inicial</label>
-          <input type="date" v-model="fechaInicial" class="field-control" />
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Fecha final</label>
-          <input type="date" v-model="fechaFinal" class="field-control" />
-        </div>
+    <div class="encabezado-detalles">
+      <div><strong>REPORTE:</strong> LIBRO CAJA</div>
+      <div>
+        <strong>ESPECIFICACIÓN:</strong>
+        Desde {{ fechaInicial }} hasta {{ fechaFinal }}
       </div>
+    </div>
+  </div>
 
-      <!-- Botones -->
-      <div class="form-actions">
-        <button @click="mostrarTabla" class="btn-secondary">Vista previa</button>
-        <button @click="generarPDF" class="btn-primary">Generar PDF</button>
-      </div>
+  <!-- Tabla -->
+  <div v-if="ingresosEgresos.length" class="tabla-wrapper">
+    <table class="tabla-libro">
+      <thead>
+        <tr>
+          <th>Conteo</th>
+          <th>Fecha</th>
+          <th>Cuenta</th>
+          <th>Descripción</th>
+          <th class="right">Acredita</th>
+          <th class="right">Debita</th>
+          <th class="right">Saldo</th>
+        </tr>
+      </thead>
 
-      <!-- Encabezado tipo PDF / vista previa -->
-      <div v-if="ingresosEgresos.length" class="encabezado-container">
-        <div class="encabezado-box">
-          <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
-          <div class="encabezado-direccion">
-            Dirección del Proyecto: {{ direccionProyecto }}
-          </div>
-        </div>
+      <tbody>
+        <tr v-for="(fila, idx) in tablaFormateada" :key="idx" :class="{
+          'fila-resaltada':
+            fila.cuenta === 'Saldo inicial' ||
+            fila.cuenta === 'Suma total Caja'
+        }">
+          <!-- Filas especiales -->
+          <template v-if="
+            fila.cuenta === 'Saldo inicial' ||
+            fila.cuenta === 'Suma total Caja'
+          ">
+            <td>{{ fila.nomenclatura }}</td>
+            <td>{{ fila.fecha }}</td>
+            <td class="bold-text">{{ fila.cuenta }}</td>
+            <td class="descripcion-col bold-text">{{ fila.descripcion }}</td>
+            <td class="right bold-text"></td>
+            <td class="right bold-text"></td>
+            <td class="right bold-text">{{ fila.total }}</td>
+          </template>
 
-        <div class="encabezado-detalles">
-          <div><strong>REPORTE:</strong> LIBRO CAJA</div>
-          <div>
-            <strong>ESPECIFICACIÓN:</strong>
-            Desde {{ fechaInicial }} hasta {{ fechaFinal }}
-          </div>
-        </div>
-      </div>
+          <!-- Filas normales -->
+          <template v-else>
+            <td>{{ fila.nomenclatura }}</td>
+            <td>{{ fila.fecha }}</td>
+            <td>{{ fila.cuenta }}</td>
+            <td class="descripcion-col">{{ fila.descripcion }}</td>
+            <td class="right">{{ fila.acredita }}</td>
+            <td class="right">{{ fila.debita }}</td>
+            <td class="right">{{ fila.total }}</td>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-      <!-- Tabla -->
-      <div v-if="ingresosEgresos.length" class="tabla-wrapper">
-        <table class="tabla-libro">
-          <thead>
-            <tr>
-              <th>Conteo</th>
-              <th>Fecha</th>
-              <th>Cuenta</th>
-              <th>Descripción</th>
-              <th class="right">Acredita</th>
-              <th class="right">Debita</th>
-              <th class="right">Saldo</th>
-            </tr>
-          </thead>
+  <!-- Sin datos -->
+  <div v-else class="sin-datos">
+    No hay datos para mostrar.
+    Selecciona un rango de fechas y presiona <strong>Vista previa</strong>.
+  </div>
 
-          <tbody>
-            <tr
-              v-for="(fila, idx) in tablaFormateada"
-              :key="idx"
-              :class="{
-                'fila-resaltada':
-                  fila.cuenta === 'Saldo inicial' ||
-                  fila.cuenta === 'Suma total Caja'
-              }"
-            >
-              <!-- Filas especiales -->
-              <template v-if="
-                fila.cuenta === 'Saldo inicial' ||
-                fila.cuenta === 'Suma total Caja'
-              ">
-                <td>{{ fila.nomenclatura }}</td>
-                <td>{{ fila.fecha }}</td>
-                <td class="bold-text">{{ fila.cuenta }}</td>
-                <td class="descripcion-col bold-text">{{ fila.descripcion }}</td>
-                <td class="right bold-text"></td>
-                <td class="right bold-text"></td>
-                <td class="right bold-text">{{ fila.total }}</td>
-              </template>
 
-              <!-- Filas normales -->
-              <template v-else>
-                <td>{{ fila.nomenclatura }}</td>
-                <td>{{ fila.fecha }}</td>
-                <td>{{ fila.cuenta }}</td>
-                <td class="descripcion-col">{{ fila.descripcion }}</td>
-                <td class="right">{{ fila.acredita }}</td>
-                <td class="right">{{ fila.debita }}</td>
-                <td class="right">{{ fila.total }}</td>
-              </template>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <!-- Sin datos -->
-      <div v-else class="sin-datos">
-        No hay datos para mostrar.  
-        Selecciona un rango de fechas y presiona <strong>Vista previa</strong>.
-      </div>
-
-  
- 
 </template>
 
 <script>
@@ -159,13 +155,13 @@ export default {
           acredita: esEspecial
             ? ''
             : item.acredita
-            ? formatNumber(item.acredita)
-            : '',
+              ? formatNumber(item.acredita)
+              : '',
           debita: esEspecial
             ? ''
             : item.debita
-            ? formatNumber(item.debita)
-            : '',
+              ? formatNumber(item.debita)
+              : '',
           total: item.total ? formatNumber(item.total) : ''
         };
       });
@@ -333,4 +329,3 @@ export default {
   }
 };
 </script>
-

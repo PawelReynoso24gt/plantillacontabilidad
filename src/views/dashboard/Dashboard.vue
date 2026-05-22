@@ -44,21 +44,10 @@
   </div>
 </template>
 
-
 <script>
-import WidgetsStatsA from './../widgets/WidgetsStatsTypeA.vue'
-import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
-
 import '../../styles/css/DashboardC.css'
 
 export default {
-  name: 'DashboardAgricola',
-  components: {
-    WidgetsStatsA,
-    WidgetsStatsD,
-  },
-  setup() {
-    return {}
-  },
+  name: 'DashboardCapilla',
 }
 </script>
