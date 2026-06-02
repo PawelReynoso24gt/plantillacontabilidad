@@ -80,12 +80,14 @@ const routes = [
             path: '/capilla/cuenta/:cuenta',
             name: 'ReporteCuentaCapillaCuenta',
             component: () => import('../views/base/DetalleCuentaCapilla.vue'),
-            props: true
+            props: true,
+            meta: { requiresAuth: true }
           },
           {
             path: '/agricola/cuenta/:cuenta',
             name: 'ReporteCuentaAgricolaCuenta',
             component: () => import('../views/base/DetalleCuentaAgricola.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/EstadoResultadosCapilla',

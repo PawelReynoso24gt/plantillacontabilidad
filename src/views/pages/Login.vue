@@ -116,9 +116,9 @@ export default {
         });
 
         if (response.status === 200) {
-          //console.log('Autenticación exitosa');
-          localStorage.setItem('token', response.data.token);
-          localStorage.setItem('tipoProyecto', tipoProyecto.value);
+          console.log('Full response:', response.data);
+          store.dispatch('login', response.data.token);
+
           const projectToken = tipoProyecto.value === 'agricola' ? '1' : '2';
 
           store.dispatch(
