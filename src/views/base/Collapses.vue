@@ -121,7 +121,7 @@
           <div><strong>PROYECTO:</strong> AGRÍCOLA HOGAR SANTA LUISA</div>
           <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
           <div>
-            <strong>FECHA:</strong> {{ fechaHoy }}
+            <strong>FECHA DE CREACIÓN:</strong> {{ fechaHoy }}
           </div>
         </div>
       </div>
@@ -194,7 +194,7 @@
       <!-- Mensaje cuando aún no se ha pedido nada -->
       <div v-else class="sin-datos">
         No hay datos para mostrar.<br />
-        Selecciona período, mes y responsables y presiona
+        Selecciona período, fechas o mes, y responsables y presiona
         <span class="badge-ayuda">Vista previa</span>.
       </div>
  
@@ -249,8 +249,8 @@ export default {
     if (selectedPeriodo.value === 'Anual') {
       return {
         ...base,
-        fecha_inicio: fechaInicio.value,
-        fecha_fin: fechaFin.value
+        fecha_inicial: fechaInicio.value,
+        fecha_final: fechaFin.value
       };
     }
 
@@ -323,10 +323,10 @@ export default {
         case 'Semestral':
           meses.value = ['Enero', 'Julio'];
           break;
-        case 'Anual':
-          meses.value = ['Enero'];
-          selectedMes.value = 'Enero';
-          break;
+      case 'Anual':
+      meses.value = [];
+      selectedMes.value = '';
+      break;
         default:
           meses.value = [];
       }
