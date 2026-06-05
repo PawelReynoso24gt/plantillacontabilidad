@@ -369,12 +369,10 @@ export default {
     const es_pendiente = ref(false);
     const error = ref('');
     const success = ref(''); // Mensaje de éxito
-    // ** NUEVAS VARIABLES PARA EL REPORTE **
     const PROYECTO_ID = '1';       // Agrícola
     const CLASIFICACION_ID = '1'; // Ingresos (Cuentas por Cobrar)
     const pendientes = reactive([]);
     const mensajeVacio = ref('');
-    // ** VARIABLES PARA EL MODAL DE SALDADO **
     const mostrarModalSaldado = ref(false);
     const formSaldar = reactive({
         deuda_original_id: '',
@@ -423,7 +421,6 @@ export default {
     };
 
     // ** ABRIR MODAL **
-    // Se llama al hacer clic en "Saldar" en la tabla
     const abrirModalSaldado = (item) => {
         // Prellenar datos básicos
         formSaldar.deuda_original_id = item.id_ingresos_egresos;
@@ -431,11 +428,8 @@ export default {
         formSaldar.nombre_cuenta_visual = item.cuentas.cuenta;
         
         // >> CORRECCIÓN DE FECHA (ZONA HORARIA LOCAL) <<
-        // Creamos un objeto Date con la hora actual del sistema
         const hoy = new Date();
         // Obtenemos el año, mes y día locales. 
-        // OJO: getMonth() devuelve 0-11, así que sumamos 1.
-        // padStart(2, '0') asegura que tengamos '05' en vez de '5'.
         const año = hoy.getFullYear();
         const mes = String(hoy.getMonth() + 1).padStart(2, '0');
         const dia = String(hoy.getDate()).padStart(2, '0');
@@ -451,12 +445,9 @@ export default {
         formSaldar.fecha_emision = '';
         formSaldar.cuenta_bancaria = '';
         // El monto sugerido es el saldo pendiente
-        // const saldo = item.monto_haber > 0 ? item.monto_haber : item.monto_debe;
         formSaldar.monto = '';
 
         // Heredar los IDs de proyecto y clasificación del filtro actual
-        // (Asumimos que son los mismos que se usaron para cargar la tabla)
-        // OJO: Usa las constantes o variables que definiste: PROYECTO_ID / CLASIFICACION_ID
         formSaldar.id_proyectos = PROYECTO_ID; // O usa la variable PROYECTO_ID
         formSaldar.id_clasificacion = CLASIFICACION_ID; // O usa CLASIFICACION_ID
 

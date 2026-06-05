@@ -346,8 +346,6 @@ export default {
       }
     });
 
-    // (Opcional) podrías usar doc.lastAutoTable?.finalY si quisieras seguir escribiendo más contenido
-
     const blob = doc.output('blob');
     saveAs(blob, `libro_mayor_cuenta_${codigoCuenta.value}.pdf`);
   };
@@ -374,7 +372,7 @@ export default {
       error,
       generarPDF,
       volver,
-      irAPartida // Retornamos la nueva función
+      irAPartida 
     };
   }
 };

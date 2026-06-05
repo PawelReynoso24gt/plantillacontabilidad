@@ -15,17 +15,10 @@
       <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Banco / Cuenta bancaria</label>
-          <select
-            v-model="cuentaBName"
-            @change="cargarBancosNoCuenta"
-            class="field-control"
-          >
+          <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
             <option disabled value="">Seleccione banco y cuenta</option>
-            <option
-              v-for="cuentaN in cuentas_bancarias"
-              :key="cuentaN.cuenta_bancaria"
-              :value="cuentaN.cuenta_bancaria"
-            >
+            <option v-for="cuentaN in cuentas_bancarias" :key="cuentaN.cuenta_bancaria"
+              :value="cuentaN.cuenta_bancaria">
               {{ cuentaN.banco_y_cuenta }}
             </option>
           </select>
@@ -33,21 +26,13 @@
 
         <div class="field-group">
           <label class="field-label">Número de documento</label>
-          <input
-            type="text"
-            v-model="numero_documento"
-            class="field-control"
-            placeholder="Número de cheque / boleta / referencia"
-          />
+          <input type="text" v-model="numero_documento" class="field-control"
+            placeholder="Número de cheque / boleta / referencia" />
         </div>
 
         <div class="field-group">
           <label class="field-label">Fecha</label>
-          <input
-            type="date"
-            v-model="fecha"
-            class="field-control"
-          />
+          <input type="date" v-model="fecha" class="field-control" />
         </div>
       </div>
 
@@ -57,22 +42,12 @@
 
         <div class="field-group">
           <label class="field-label">Valor a retirar</label>
-          <input
-            type="text"
-            v-model="monto"
-            class="field-control"
-            placeholder="0.00"
-          />
+          <input type="text" v-model="monto" class="field-control" placeholder="0.00" />
         </div>
 
         <div class="field-group full-width">
           <label class="field-label">Observaciones</label>
-          <input
-            type="text"
-            v-model="descripcion"
-            class="field-control"
-            placeholder="Detalle del retiro (opcional)"
-          />
+          <input type="text" v-model="descripcion" class="field-control" placeholder="Detalle del retiro (opcional)" />
         </div>
       </div>
 
@@ -144,7 +119,7 @@ export default {
       axios.post('http://127.0.0.1:8000/in_eg/createTrasRetBanCA', datos)
         .then(response => {
           successMessage.value = 'Datos enviados correctamente';
-        //  console.log(response.data);
+          //  console.log(response.data);
         })
         .catch(error => {
           console.error(error);

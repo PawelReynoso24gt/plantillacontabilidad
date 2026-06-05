@@ -7,11 +7,7 @@
             <!-- Lado del logo / bienvenida -->
             <CCard class="login-card-brand d-none d-md-flex flex-column align-items-center justify-content-center">
               <!-- Cambia la ruta del logo según tu proyecto -->
-              <img
-                src="../../assets/brand/logoComp.png"
-                alt="Logo"
-                class="login-logo mb-4"
-              />
+              <img src="../../assets/brand/logoComp.png" alt="Logo" class="login-logo mb-4" />
             </CCard>
 
             <!-- Lado del formulario -->
@@ -20,11 +16,7 @@
                 <CForm @submit.prevent="login">
                   <div class="text-center mb-4 d-md-none">
                     <!-- Logo visible también en pantallas pequeñas -->
-                    <img
-                       src="../../assets/brand/logoComp.png"
-                      alt="Logo"
-                      class="login-logo mb-3"
-                    />
+                    <img src="../../assets/brand/logoComp.png" alt="Logo" class="login-logo mb-3" />
                   </div>
 
                   <h1 class="login-title mb-2">Inicia sesión</h1>
@@ -36,29 +28,16 @@
                     <CInputGroupText class="input-icon">
                       <font-awesome-icon :icon="['fas', 'user']" />
                     </CInputGroupText>
-                    <CFormInput
-                      v-model="usuarios"
-                      placeholder="Usuario"
-                      autocomplete="usuarios"
-                      class="login-input"
-                    />
+                    <CFormInput v-model="usuarios" placeholder="Usuario" autocomplete="usuarios" class="login-input" />
                   </CInputGroup>
 
                   <CInputGroup class="mb-3">
                     <CInputGroupText class="input-icon">
                       <font-awesome-icon :icon="['fas', 'lock']" />
                     </CInputGroupText>
-                    <CFormInput
-                      :type="showPassword ? 'text' : 'password'"
-                      v-model="contrasenias"
-                      placeholder="Contraseña"
-                      autocomplete="contrasenias"
-                      class="login-input"
-                    />
-                    <CInputGroupText
-                      class="input-icon input-icon-clickable"
-                      @click="togglePasswordVisibility"
-                    >
+                    <CFormInput :type="showPassword ? 'text' : 'password'" v-model="contrasenias"
+                      placeholder="Contraseña" autocomplete="contrasenias" class="login-input" />
+                    <CInputGroupText class="input-icon input-icon-clickable" @click="togglePasswordVisibility">
                       <font-awesome-icon :icon="['fas', showPassword ? 'eye-slash' : 'eye']" />
                     </CInputGroupText>
                   </CInputGroup>
@@ -67,10 +46,7 @@
                     <CInputGroupText class="input-icon">
                       <font-awesome-icon :icon="['fas', 'project-diagram']" />
                     </CInputGroupText>
-                    <select
-                      v-model="tipoProyecto"
-                      class="form-select login-input"
-                    >
+                    <select v-model="tipoProyecto" class="form-select login-input">
                       <option :value="null" disabled>Seleccionar tipo de proyecto</option>
                       <option value="agricola">Proyecto Agrícola</option>
                       <option value="capilla">Proyecto Capilla</option>
@@ -129,8 +105,8 @@ export default {
 
       try {
         error.value = '';
-      //  console.log('Usuario:', usuarios.value);
-       // console.log('Contraseña:', contrasenias.value);
+        //  console.log('Usuario:', usuarios.value);
+        // console.log('Contraseña:', contrasenias.value);
         //console.log('Tipo de proyecto:', tipoProyecto.value);
 
         const response = await axios.post('http://127.0.0.1:8000/api/authenticate', {

@@ -383,31 +383,27 @@ export default {
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
     const es_pendiente = ref(false);
-    const error = ref(''); // Estado para errores
-    const successMessage = ref(''); // Estado para mensajes de éxito
-    // ** NUEVAS VARIABLES PARA EL REPORTE **
-    const PROYECTO_ID = '2';       // Capilla
-    const CLASIFICACION_ID = '2'; // Egresos (Cuentas por Pagar)
+    const error = ref(''); 
+    const successMessage = ref(''); 
+    const PROYECTO_ID = '2';       
+    const CLASIFICACION_ID = '2'; 
     const pendientes = reactive([]);
     const mensajeVacio = ref('');
-    // ** VARIABLES PARA EL MODAL DE SALDADO **
     const mostrarModalSaldado = ref(false);
     const formSaldar = reactive({
         deuda_original_id: '',
-        cuenta: '', // Nombre de la cuenta (para el backend)
-        nombre_cuenta_visual: '', // Solo para mostrar
+        cuenta: '', 
+        nombre_cuenta_visual: '', 
         fecha: '',
         identificacion: '',
         nombre: '',
         descripcion: '',
         monto: '',
         tipo: 'caja',
-        // Bancarios
         documento: '',
         numero_documento: '',
         fecha_emision: '',
         cuenta_bancaria: '',
-        // Datos fijos del proyecto/clasificación (vienen del reporte)
         id_proyectos: '',
         id_clasificacion: ''
     });
@@ -430,28 +426,20 @@ export default {
       numero_documento.value = '';
       fecha_emision.value = '';
       es_pendiente.value = false;
-      error.value = ''; // Limpiar el mensaje de error
-      successMessage.value = ''; // Limpiar el mensaje de éxito
+      error.value = ''; 
+      successMessage.value = ''; 
     };
 
-    const agregarDivision = () => {
-      // Lógica para agregar una nueva división
-    }
-
     // ** ABRIR MODAL **
-    // Se llama al hacer clic en "Saldar" en la tabla
     const abrirModalSaldado = (item) => {
         // Prellenar datos básicos
         formSaldar.deuda_original_id = item.id_ingresos_egresos;
-        formSaldar.cuenta = item.cuentas.cuenta; // Nombre exacto para buscarla
+        formSaldar.cuenta = item.cuentas.cuenta; 
         formSaldar.nombre_cuenta_visual = item.cuentas.cuenta;
         
         // >> CORRECCIÓN DE FECHA (ZONA HORARIA LOCAL) <<
-        // Creamos un objeto Date con la hora actual del sistema
         const hoy = new Date();
         // Obtenemos el año, mes y día locales. 
-        // OJO: getMonth() devuelve 0-11, así que sumamos 1.
-        // padStart(2, '0') asegura que tengamos '05' en vez de '5'.
         const año = hoy.getFullYear();
         const mes = String(hoy.getMonth() + 1).padStart(2, '0');
         const dia = String(hoy.getDate()).padStart(2, '0');
@@ -467,14 +455,11 @@ export default {
         formSaldar.fecha_emision = '';
         formSaldar.cuenta_bancaria = '';
         // El monto sugerido es el saldo pendiente
-        // const saldo = item.monto_haber > 0 ? item.monto_haber : item.monto_debe;
         formSaldar.monto = '';
 
         // Heredar los IDs de proyecto y clasificación del filtro actual
-        // (Asumimos que son los mismos que se usaron para cargar la tabla)
-        // OJO: Usa las constantes o variables que definiste: PROYECTO_ID / CLASIFICACION_ID
-        formSaldar.id_proyectos = PROYECTO_ID; // O usa la variable PROYECTO_ID
-        formSaldar.id_clasificacion = CLASIFICACION_ID; // O usa CLASIFICACION_ID
+        formSaldar.id_proyectos = PROYECTO_ID; 
+        formSaldar.id_clasificacion = CLASIFICACION_ID; 
 
         mostrarModalSaldado.value = true;
     };
@@ -594,7 +579,7 @@ export default {
       const valorEsPendiente = es_pendiente.value ? 1 : 0;
 
       if (tipo.value === 'caja') { 
-        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
+        axios.post('http://127.0.0.1:8000/in_eg/', {
           fecha: fecha.value,
           identificacion: identificacion.value,
           nombre: nombre.value,
@@ -602,8 +587,8 @@ export default {
           monto: monto.value,
           tipo: tipo.value,
           cuenta: cuentaCMB.value,
-          flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
-          es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
+          flujo_contable: 'EGRESOS', 
+          es_pendiente: valorEsPendiente, 
         })
         .then(response => {
           successMessage.value = 'Datos enviados correctamente';
@@ -626,8 +611,8 @@ export default {
           numero_documento: numero_documento.value,
           fecha_emision: fecha_emision.value,
           cuenta_bancaria: cuentaBName.value,
-          flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
-          es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
+          flujo_contable: 'EGRESOS', 
+          es_pendiente: valorEsPendiente,
         };
         axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
           .then(response => {
@@ -643,7 +628,7 @@ export default {
 
     // Función para cargar los pendientes desde la API
     const cargarPendientes = () => {
-        pendientes.splice(0, pendientes.length); // Limpiar lista
+        pendientes.splice(0, pendientes.length); 
         error.value = '';
         mensajeVacio.value = '';
 
@@ -677,7 +662,6 @@ export default {
     });
 
     return {
-      agregarDivision,
       otroValor,
       mostrarDivisionCuatro,
       fecha,
@@ -699,11 +683,9 @@ export default {
       es_pendiente,
       error,
       successMessage,
-      // nuevas variables
       pendientes,
       cargarPendientes,
       mensajeVacio,
-      // ----------------
       mostrarModalSaldado,
       formSaldar,
       abrirModalSaldado,
@@ -712,7 +694,6 @@ export default {
       mostrarModalExito,
       datosExito,
       cerrarModalExito,
-      // ----------------
       enviarDatos,
       cargarCuentas,
       cargarBancos,

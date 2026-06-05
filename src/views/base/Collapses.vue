@@ -25,7 +25,7 @@
     </select>
   </div>
 
-  <!-- ✅ Año: solo cuando sea Mensual / Trimestral / Semestral -->
+  <!-- Año: solo cuando sea Mensual / Trimestral / Semestral -->
 
   <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
     <label class="field-label">Año</label>
@@ -39,7 +39,7 @@
     />
   </div>
 
-  <!-- ✅ Mes: solo si NO es anual -->
+  <!--  Mes: solo si NO es anual -->
   <div class="select-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
     <label class="field-label">Mes</label>
     <select v-model="selectedMes" class="field-control">
@@ -50,7 +50,7 @@
     </select>
   </div>
 
-  <!-- ✅ Fechas: solo si es anual -->
+  <!--  Fechas: solo si es anual -->
   <div class="select-group" v-if="selectedPeriodo === 'Anual'">
     <label class="field-label">Fecha inicial</label>
     <input type="date" v-model="fechaInicio" class="field-control" />

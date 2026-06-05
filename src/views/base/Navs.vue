@@ -131,9 +131,9 @@ export default {
         .then(response => {
           const proyecto = response.data;
           numero_cuenta.value = proyecto.numero_cuenta;
-          estado.value = proyecto.estado.toString(); // Aseguramos que estado sea una cadena de texto
-          banco.value = proyecto.banco; // Actualizamos el valor del banco seleccionado
-          isDisabled.value = false; // Habilitamos el campo Estado
+          estado.value = proyecto.estado.toString(); 
+          banco.value = proyecto.banco; 
+          isDisabled.value = false; 
         })
         .catch(() => {
           errorMessage.value = 'Error al cargar los datos de la cuenta.';
@@ -141,8 +141,8 @@ export default {
     };
 
     const insertar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+      errorMessage.value = ''; 
+      successMessage.value = ''; 
 
       if (!numero_cuenta.value || !banco.value) {
         errorMessage.value = 'Por favor, completa todos los campos.';
@@ -152,7 +152,7 @@ export default {
       const datos = {
         numero_cuenta: numero_cuenta.value,
         banco: banco.value,
-        estado: estado.value.trim() !== '' ? estado.value.trim() : '1', // Valor por defecto para estado
+        estado: estado.value.trim() !== '' ? estado.value.trim() : '1', 
       };
 
       axios.post('http://127.0.0.1:8000/cuentasB/create', datos)
@@ -215,7 +215,7 @@ export default {
 
     onMounted(() => {
       cargarCuentas();
-      cargarBancos(); // Cargar los bancos al montar el componente
+      cargarBancos(); 
     });
 
     return {
@@ -231,7 +231,7 @@ export default {
       cargarDatosCuenta,
       errorMessage,
       successMessage,
-      isDisabled // Incluir la propiedad isDisabled
+      isDisabled 
     };
   },
 };
