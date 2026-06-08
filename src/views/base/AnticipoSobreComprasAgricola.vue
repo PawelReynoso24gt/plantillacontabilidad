@@ -102,10 +102,16 @@
         </div>
       </div>
 
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="error" class="text-danger">{{ error }}</p>
-        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
+      <div class="bottom-actions-bar">
+        <div class="messages-area">
+          <transition-group name="lista-errores" tag="div" class="errores-stack">
+            <div v-for="err in erroresLista" :key="err.id" class="alert-inline-error">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ err.texto }}</span>
+            </div>
+          </transition-group>
+        
+        <p v-if="success" class="text-success" style="margin: 0;">{{ success }}</p>
       </div>
 
       <!-- Botones principales -->
@@ -115,6 +121,7 @@
         <button class="btn-ghost" @click="toggleMostrarTabla">
           {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
         </button>
+      </div>
       </div>
 
       <!-- Tabla de anticipos (colapsable) -->
@@ -273,8 +280,37 @@
           </div>
         </div>
       </div>
-   <!-- anticipo-card -->
-
+    <!-- **MODAL DE INGRESO CORRECTO** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Registro Exitoso!</h3>
+        <p style="color: #6c757d;">El ingreso se ha guardado correctamente en el sistema.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- **MODAL DE ERROR** -->
+  <div v-if="mostrarModalError" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;">❌</div>
+        <h3 style="color: #721c24; margin-bottom: 0.5rem;">¡Ocurrió un error!</h3>
+        <p style="color: #6c757d;">{{ mensajeError }}</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-secondary" @click="cerrarModalError" style="min-width: 120px;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ========================================================================================================================================================== -->
 </template>
 
 <script>
@@ -303,7 +339,12 @@ export default {
     const cuentas = reactive([]);
     const cuentaBName = ref('');
     const cuentas_bancarias = ref([]);
-    const error = ref('');
+    // ============================================================
+    const erroresLista = ref([]);
+    const mostrarModalExitoFormulario = ref(false);
+    const mostrarModalError = ref(false);
+    const mensajeError = ref('');
+    // =============================================================
     const successMessage = ref('');
     const idCuentaBancaria = ref(null);
 
@@ -324,13 +365,30 @@ export default {
       cuentaBName.value = '';
       numero_documento.value = '';
       fecha_emision.value = '';
-      error.value = '';
       successMessage.value = '';
     };
 
     const controlarVisibilidadDivisionCuatro = () => {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
     };
+// ======================================================================================================================================================================
+    const agregarError = (mensaje) => {
+        const id = Date.now() + Math.random();
+        erroresLista.value.push({ id, texto: mensaje });
+        setTimeout(() => {
+            erroresLista.value = erroresLista.value.filter(e => e.id !== id);
+        }, 5000); 
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
+
+    const cerrarModalError = () => {
+        mostrarModalError.value = false;
+        mensajeError.value = '';
+    }; // ==================================================================================================================================================================
 
     const cargarCuentasSelect = () => {
       axios
@@ -340,10 +398,11 @@ export default {
           if (!idCuentaBancaria.value && data.length) {
             idCuentaBancaria.value = Number(data[0].id);
           }
-        })
-        .catch((e) =>
-          console.error('for-select:', e?.response?.data || e.message)
-        );
+        })// ==========================================================================================
+        .catch((e) => {
+          console.error('for-select:', e?.response?.data || e.message);
+          agregarError('Advertencia: No se pudieron cargar las cuentas bancarias (Select).');
+        }); // =============================================================================================
     };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
@@ -358,6 +417,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          agregarError('Advertencia: No se pudieron cargar las cuentas contables.'); // mostrar en consola =====================================================
         });
     };
 
@@ -370,6 +430,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          agregarError('Advertencia: No se pudieron cargar las cuentas bancarias concatenadas.'); // ====================================================================
         });
     };
 
@@ -382,12 +443,13 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          agregarError('Advertencia: Hubo un problema al cargar los catálogos de bancos.'); // =================================================================================
         });
     };
 
     const enviarDatos = () => {
-      error.value = '';
       successMessage.value = '';
+      erroresLista.value = []; // Resetea la lista de errores ======================================================================================
 
       if (
         !fecha.value ||
@@ -401,7 +463,7 @@ export default {
             !numero_documento.value ||
             !fecha_emision.value))
       ) {
-        error.value = 'Por favor, complete todos los campos.';
+        agregarError('Por favor, complete todos los campos.');
         return;
       }
 
@@ -421,13 +483,17 @@ export default {
             payloadCaja
           )
           .then(() => {
-            successMessage.value = 'Datos enviados correctamente';
+            mostrarModalExitoFormulario.value = true; // <-- MODAL DE ÉXITO ==============================================================================
           })
           .catch(() => {
-            error.value =
-              'Error al enviar datos. Por favor, inténtelo de nuevo.';
+            mensajeError.value = 'Error al enviar datos. Verifique su conexión.'; // ==============================================================
+            mostrarModalError.value = true; // <-- MODAL DE ERROR CRÍTICO // ===================================================================================
           });
       } else {
+          if (!Number.isInteger(idCuentaBancaria.value)) { // =====================================================================================================
+            agregarError('Debes seleccionar una cuenta bancaria válida.');
+            return;
+          } // ====================================================================================================================================================
         const payloadBancos = {
           fecha: fecha.value,
           identificacion: identificacion.value,
@@ -448,22 +514,18 @@ export default {
           typeof idCuentaBancaria.value
         );*/
 
-        if (!Number.isInteger(idCuentaBancaria.value)) {
-          error.value = 'Debes seleccionar una cuenta bancaria válida.';
-          return;
-        }
-
         axios
           .post(
             'http://127.0.0.1:8000/in_eg/createAnticipoCompraAG',
             payloadBancos
           )
           .then(() => {
-            successMessage.value = 'Datos enviados correctamente';
+            mostrarModalExitoFormulario.value = true; // <-- MODAL DE ÉXITO
           })
           .catch((e) => {
             console.error('Error axios:', e?.response?.data || e.message);
-            error.value = 'Error al enviar datos.';
+            mensajeError.value = 'Error al enviar datos bancarios. Verifique su conexión.';
+            mostrarModalError.value = true; // <-- MODAL DE ERROR CRÍTICO
           });
       }
     };
@@ -579,11 +641,11 @@ export default {
         parseFloat(String(modalData.monto).replace(/,/g, '')) || 0;
 
       if (Number.isNaN(montoAbono) || montoAbono <= 0) {
-        error.value = 'Ingrese un monto a abonar válido mayor que 0.';
+        agregarError('Ingrese un monto a abonar válido mayor que 0.'); // <-- TOAST =============================================
         return;
       }
       if (montoAbono > montoTotal) {
-        error.value = 'El monto a abonar no puede ser mayor al monto total.';
+        agregarError('El monto a abonar no puede ser mayor al monto total.'); // <-- TOAST ====================================================
         return;
       }
 
@@ -611,24 +673,17 @@ export default {
         payload.id_cuentas_bancarias = modalData.idCuentaBancaria || null;
       }
 
-      error.value = '';
       try {
         const url =
           'http://localhost:8000/saldar_anticipos/saldarAnticipoAG';
         await axios.post(url, payload);
-        successMessage.value = 'Registro saldado correctamente.';
+        showModal.value = false; // Cerramos el modal de llenado =====================================================================================================
+        mostrarModalExitoFormulario.value = true; // <-- MODAL DE ÉXITO
         fetchTablaAnticipoAG();
-        setTimeout(() => {
-          successMessage.value = '';
-        }, 3000);
-        showModal.value = false;
       } catch (e) {
-        console.error(
-          'Error al saldar:',
-          e?.response?.data || e.message || e
-        );
-        error.value =
-          e?.response?.data?.message || 'Error al saldar el anticipo.';
+        console.error('Error al saldar:', e?.response?.data || e.message || e);
+        mensajeError.value = e?.response?.data?.message || 'Error al saldar el anticipo.';
+        mostrarModalError.value = true; // <-- MODAL DE ERROR CRÍTICO ================================================================================================
       }
     };
 
@@ -655,7 +710,6 @@ export default {
       cuentaCMB,
       cuentaBName,
       bancos_b,
-      error,
       successMessage,
       idCuentaBancaria,
       enviarDatos,
@@ -674,7 +728,14 @@ export default {
       modalData,
       openSaldarModal,
       closeModal,
-      saldarRegistroConfirm
+      saldarRegistroConfirm, // ================================================================================================================
+      // ------------------
+      erroresLista,
+      mostrarModalExitoFormulario,
+      cerrarModalExitoFormulario,
+      mostrarModalError,
+      mensajeError,
+      cerrarModalError // =========================================================================================================================
     };
   }
 };

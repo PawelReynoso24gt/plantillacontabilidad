@@ -304,6 +304,41 @@ const routes = [
         name: 'Login',
         component: () => import('@/views/pages/Login'),
       },
+      {
+        path: '/page422',
+        name: 'Page422',
+        component: () => import('@/views/pages/422Unprocessable.vue'),
+      },
+      {
+        path: '/page403',
+        name: 'Page403',
+        component: () => import('@/views/pages/403AccessDenied.vue'),
+      },
+      {
+        path: '/page404',
+        name: 'Page404',
+        component: () => import('@/views/pages/404NotFound.vue'),
+      },
+      {
+        path: '/page500',
+        name: 'Page500',
+        component: () => import('@/views/pages/500InternalServer.vue'),
+      },
+      {
+        path: '/page503',
+        name: 'Page503',
+        component: () => import('@/views/pages/503ServiceUnavailable.vue'),
+      },
+      {
+        path: '/page504',
+        name: 'Page504',
+        component: () => import('@/views/pages/504TimeOut.vue'),
+      },
+      {
+        path: '/page502',
+        name: 'Page502',
+        component: () => import('@/views/pages/502BadGateway.vue'),
+      },
     ],
   },
 ];

@@ -153,21 +153,24 @@
           />
         </div>
       </div>
+<!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
+      <div class="bottom-actions-bar">
+        <div class="messages-area">
+          <transition-group name="lista-errores" tag="div" class="errores-stack">
+            <div v-for="err in erroresLista" :key="err.id" class="alert-inline-error">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ err.texto }}</span>
+            </div>
+          </transition-group>
+          
+          <p v-if="success" class="text-success" style="margin: 0;">{{ success }}</p>
+        </div>
 
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="error" class="text-danger">{{ error }}</p>
-        <p v-if="success" class="text-success">{{ success }}</p>
-      </div>
-
-      <!-- Botones -->
-      <div class="form-actions">
-        <button class="btn-primary" @click="enviarDatos">
-          Guardar
-        </button>
-        <button class="btn-secondary" @click="limpiar">
-          Limpiar
-        </button>
+        <div class="form-actions">
+          <button class="btn-primary" @click="enviarDatos">Guardar</button>
+          <button class="btn-secondary" @click="limpiar">Limpiar</button>
+        </div>
+        <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
       </div>
 
   <!-- pendientes -->
@@ -342,6 +345,38 @@
       </div>
     </div>
   </div>
+<!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
+  <!-- **MODAL DE INGRESO CORRECTO** -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content ingreso-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Registro Exitoso!</h3>
+        <p style="color: #6c757d;">El ingreso se ha guardado correctamente en el sistema.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- **MODAL DE ERROR** -->
+  <div v-if="mostrarModalError" class="modal-overlay">
+    <div class="modal-content ingreso-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;">❌</div>
+        <h3 style="color: #721c24; margin-bottom: 0.5rem;">¡Ocurrió un error!</h3>
+        <p style="color: #6c757d;">{{ mensajeError }}</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-secondary" @click="cerrarModalError" style="min-width: 120px;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
 </template>
 
 <script>
@@ -367,7 +402,10 @@ export default {
     const cuentas_bancarias = reactive([]);
     const mostrarDivisionCuatro = ref(false);
     const es_pendiente = ref(false);
-    const error = ref('');
+    const erroresLista = ref([]);  // ===================================================================================================================================
+    const mostrarModalExitoFormulario = ref(false);
+    const mostrarModalError = ref(false);
+    const mensajeError = ref(''); // ===================================================================================================================================
     const success = ref(''); // Mensaje de éxito
     const PROYECTO_ID = '1';       // Agrícola
     const CLASIFICACION_ID = '1'; // Ingresos (Cuentas por Cobrar)
@@ -412,7 +450,6 @@ export default {
       tipo.value = '';
       cuentaBName.value = '';
       es_pendiente.value = false;
-      error.value = ''; // Limpiar el mensaje de error
       success.value = ''; // Limpiar el mensaje de éxito
     };
 
@@ -471,7 +508,6 @@ export default {
     // Función para cargar los pendientes desde la API
     const cargarPendientes = () => {
         pendientes.splice(0, pendientes.length); // Limpiar lista
-        error.value = '';
         mensajeVacio.value = '';
 
         // Usar Query Parameters para la petición GET
@@ -491,17 +527,37 @@ export default {
                 if (err.response && err.response.status === 404) {
                     mensajeVacio.value = err.response.data.message;
                 } else {
-                    error.value = 'Error al consultar datos. Revise la conexión al backend.';
+                  agregarError('Error al consultar datos. Revise la conexión al backend.');
                 }
             });
     };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
+// ===================================================================================================================================
+    const agregarError = (mensaje) => {
+        const id = Date.now() + Math.random();
+        erroresLista.value.push({ id, texto: mensaje });
+        setTimeout(() => {
+            erroresLista.value = erroresLista.value.filter(e => e.id !== id);
+        }, 5000); 
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
+
+    const cerrarModalError = () => {
+        mostrarModalError.value = false;
+        mensajeError.value = '';
+    };// ===================================================================================================================================
 
     // ** ENVIAR SALDADO **
     const enviarSaldado = () => {
         if (!formSaldar.monto || !formSaldar.fecha) {
-            alert("Por favor ingrese monto y fecha.");
+            // REEMPLAZAMOS EL alert() // ===================================================================================================================================
+            mensajeError.value = "Error al registrar el pago. Verifique datos antes de enviar o conexión con el servidor.";
+            mostrarModalError.value = true; // ===================================================================================================================================
             return;
         }
 
@@ -537,8 +593,10 @@ export default {
                 cargarPendientes(); // Recargar la tabla para ver cambios
             })
             .catch(err => {
-                console.error(err);
-                alert("Error al registrar el pago.");
+                console.error(err); // ===================================================================================================================================
+                // REEMPLAZAMOS EL alert()
+                mensajeError.value = "Error al registrar el pago. Verifique datos antes de enviar o conexión con el servidor.";
+                mostrarModalError.value = true;// ===================================================================================================================================
             });
     };
 
@@ -553,8 +611,9 @@ export default {
         .then(response => {
           cuentas.splice(0, cuentas.length, ...response.data);
         })
-        .catch(error => {
-          console.error(error);
+        .catch((err) => {// ===================================================================================================================================
+          console.error(err);
+          agregarError('Advertencia: No se pudieron cargar las cuentas contables.');// ===================================================================================================================================
         });
     };
 
@@ -563,19 +622,19 @@ export default {
         .then(response => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
         })
-        .catch(error => {
-          console.error(error);
+        .catch((err) => {// ===================================================================================================================================
+          console.error(err);
+          agregarError('Advertencia: No se pudieron cargar las cuentas bancarias.'); // ===================================================================================================================================
         });
     };
 
     const enviarDatos = () => {
-      error.value = ''; // Limpiar el mensaje de error antes de enviar los datos
       success.value = ''; // Limpiar el mensaje de éxito antes de enviar los datos
 
       // Validación
       if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value || !cuentaCMB.value ||
         (tipo.value === 'bancos' && (!documento.value || !cuentaBName.value || !numero_documento.value || !fecha_emision.value))) {
-        error.value = 'Por favor, complete todos los campos.';
+        agregarError('Por favor, complete todos los campos.'); // ===================================================================================================================================
         return;
       }
 
@@ -604,12 +663,15 @@ export default {
 
       axios.post(url, data)
         .then(response => {
-        //  console.log(response.data);
-          success.value = 'Datos enviados correctamente'; // Mensaje de éxito
+        // AQUI ACTIVAMOS EL MODAL // ===================================================================================================================================
+            mostrarModalExitoFormulario.value = true;
+            console.log(response.data);  // ===================================================================================================================================
         })
         .catch(error => {
           console.error(error);
-          error.value = 'Error al enviar datos. Por favor, inténtelo de nuevo.';
+          // CORRECCIÓN: Solo disparamos el modal, quitamos error.value // ===================================================================================================================================
+          mensajeError.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
+          mostrarModalError.value = true; // ===================================================================================================================================
         });
     };
 
@@ -633,7 +695,6 @@ export default {
       cargarCuentas,
       cargarBancosNoCuenta,
       enviarDatos,
-      error,
       success, // Agregado para el mensaje de éxito
       controlarVisibilidadDivisionCuatro,
       // nuevas variables
@@ -649,7 +710,13 @@ export default {
       mostrarModalExito,
       datosExito,
       cerrarModalExito,
-      // ----------------
+      // ---------------- // ===================================================================================================================================
+      erroresLista, 
+      mostrarModalExitoFormulario,
+      cerrarModalExitoFormulario,
+      mostrarModalError,
+      mensajeError,
+      cerrarModalError // ===================================================================================================================================
     };
   },
 }
