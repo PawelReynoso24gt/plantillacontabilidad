@@ -147,6 +147,6 @@ export default function useNavCapilla() {
     }
   ];
 
-  console.log('Nav Config Capilla:', navConfig);
+ // console.log('Nav Config Capilla:', navConfig);
   return navConfig;
 }

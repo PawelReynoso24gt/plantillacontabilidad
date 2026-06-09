@@ -579,7 +579,7 @@ export default {
       const valorEsPendiente = es_pendiente.value ? 1 : 0;
 
       if (tipo.value === 'caja') { 
-        axios.post('http://127.0.0.1:8000/in_eg/', {
+        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', {
           fecha: fecha.value,
           identificacion: identificacion.value,
           nombre: nombre.value,
