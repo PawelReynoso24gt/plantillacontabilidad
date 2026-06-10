@@ -592,6 +592,7 @@ export default {
         })
         .then(response => {
           successMessage.value = 'Datos enviados correctamente';
+          cargarPendientes();
           //console.log(response.data); 
         })
         .catch(error => {
@@ -617,6 +618,7 @@ export default {
         axios.post('http://127.0.0.1:8000/in_eg/createALLEGCA', data)
           .then(response => {
             successMessage.value = 'Datos enviados correctamente';
+            cargarPendientes();
             //console.log(response.data); 
           })
           .catch(error => {
