@@ -318,7 +318,7 @@ export default {
     const idCuentaBancaria = ref(null);
     const anticipoRows = ref([]);
     const loading = ref(false);
-    const showTabla = ref(false);
+    const showTabla = ref(true);
 
     const limpiar = () => {
       tipo.value = '';
@@ -427,6 +427,8 @@ export default {
           )
           .then(() => {
             successMessage.value = 'Datos enviados correctamente';
+            showTabla.value = true;
+            fetchTablaAnticipoAG();
           })
           .catch(() => {
             error.value =
@@ -459,6 +461,8 @@ export default {
           )
           .then(() => {
             successMessage.value = 'Datos enviados correctamente';
+            showTabla.value = true;
+            fetchTablaAnticipoAG();
           })
           .catch((e) => {
             console.error('Error axios:', e?.response?.data || e.message);
@@ -633,6 +637,7 @@ export default {
 
     onMounted(() => {
       cargarCuentasSelect();
+      fetchTablaAnticipoAG();
     });
 
     return {
