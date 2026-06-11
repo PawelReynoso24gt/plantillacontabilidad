@@ -80,12 +80,14 @@ const routes = [
             path: '/capilla/cuenta/:cuenta',
             name: 'ReporteCuentaCapillaCuenta',
             component: () => import('../views/base/DetalleCuentaCapilla.vue'),
-            props: true
+            props: true,
+            meta: { requiresAuth: true }
           },
           {
             path: '/agricola/cuenta/:cuenta',
             name: 'ReporteCuentaAgricolaCuenta',
             component: () => import('../views/base/DetalleCuentaAgricola.vue'),
+            meta: { requiresAuth: true }
           },
           {
             path: '/base/EstadoResultadosCapilla',
@@ -255,12 +257,12 @@ const routes = [
             component: () => import('@/views/notifications/Alerts.vue'),
             meta: { requiresAuth: true }
           },
-          {
+          /*{
             path: '/notifications/badges',
             name: 'Badges',
             component: () => import('@/views/notifications/Badges.vue'),
             meta: { requiresAuth: true }
-          },
+          }, */
           {
             path: '/notifications/modals',
             name: 'Modals',

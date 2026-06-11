@@ -13,14 +13,17 @@
 
 <script>
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import avatar from '@/assets/images/avatars/10.jpg'
 export default {
   name: 'AppHeaderDropdownAccnt',
   setup() {
     const router = useRouter();
+    const store = useStore();
     const avatarSrc = avatar;
     
     const logout = () => {
+      store.dispatch('logout'); // Asegúrate de tener una acción de logout en tu store
       router.push({ name: 'Login' }); 
     };
 

@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import axios from 'axios'
 
 import CoreuiVue from '@coreui/vue'
 import CIcon from '@coreui/icons-vue'
@@ -26,5 +27,22 @@ app.component('DocsExample', DocsExample)
 
 // Registra el componente de Font Awesome globalmente
 app.component('font-awesome-icon', FontAwesomeIcon)
+
+//Esto nos va a ayudar para proteger todas las rutas
+axios.interceptors.request.use(
+  (config) => {
+
+    const token = localStorage.getItem('token')
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 app.mount('#app')

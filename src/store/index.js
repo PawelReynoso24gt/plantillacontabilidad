@@ -34,6 +34,14 @@ const store = createStore({
       state.token = '';
       localStorage.removeItem('token');
     },
+    clearSelectedProject(state) {
+      state.selectedProject = '';
+      localStorage.removeItem('selectedProject');
+    },
+    clearProjectToken(state) {
+      state.projectToken = null;
+      localStorage.removeItem('projectToken');
+    },
   },
   actions: {
     updateSelectedProject({ commit }, project) {
@@ -47,6 +55,10 @@ const store = createStore({
     },
     logout({ commit }) {
       commit('clearToken');
+      commit('clearSelectedProject');
+      commit('clearProjectToken');
+      localStorage.clear();
+      sessionStorage.clear();
     },
   },
   getters: {
