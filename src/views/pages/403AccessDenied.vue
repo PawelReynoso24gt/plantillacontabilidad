@@ -15,7 +15,7 @@
         Tu solicitud ha sido bloqueada por políticas de seguridad o no cuentas con los permisos necesarios para realizar esta acción.
       </p>
 
-      <div class="cors-alert">
+      <!-- <div class="cors-alert">
         <div class="cors-alert-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
@@ -27,7 +27,7 @@
           <strong>¿Problemas de conexión?</strong>
           Asegúrate de tener encendida tu extensión de CORS en el navegador para permitir el flujo de datos hacia el sistema.
         </div>
-      </div>
+      </div> -->
 
       <button @click="regresar" class="btn-primary">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,10 +41,31 @@
 </template>
 
 <script setup>
-  // Función para regresar una página atrás
+  import { useRouter } from 'vue-router';
+  import { onMounted, onUnmounted } from 'vue'; // Importamos los ciclos de vida
+
+  const router = useRouter();
+
   const regresar = () => {
-    window.history.back();
+    router.go(-1); // Esto hace exactamente lo mismo: volver 1 paso atrás
   };
+
+  // Función que revisa qué tecla se presionó
+  const manejarTeclado = (evento) => {
+    if (evento.key === 'Enter') {
+      regresar(); // Si es Enter, ejecuta la función del botón
+    }
+  };
+
+  // Cuando la pantalla se carga, empezamos a escuchar el teclado
+  onMounted(() => {
+    window.addEventListener('keyup', manejarTeclado);
+  });
+
+  // Cuando salimos de la pantalla, dejamos de escuchar para no causar errores de memoria
+  onUnmounted(() => {
+    window.removeEventListener('keyup', manejarTeclado);
+  });
 </script>
 
 <style scoped>

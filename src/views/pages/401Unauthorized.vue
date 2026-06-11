@@ -4,16 +4,16 @@
       
       <div class="error-icon-container">
         <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-          <line x1="12" y1="9" x2="12" y2="13"></line>
-          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+          <circle cx="12" cy="10" r="3"></circle>
+          <path d="M7 20v-2a4 4 0 0 1 10 0v2"></path>
         </svg>
       </div>
 
-      <h1 class="error-code">502</h1>
-      <h2 class="error-title">Error de Puerta de Enlace</h2>
+      <h1 class="error-code">401</h1>
+      <h2 class="error-title">No Autorizado</h2>
       <p class="error-message">
-        El servidor principal recibió una respuesta no válida de otro servidor mientras intentaba procesar tu solicitud. Suele ser un problema temporal de comunicación en la red.
+        Para acceder a esta página necesitas iniciar sesión. Es posible que tus credenciales sean incorrectas o que tu sesión haya caducado.
       </p>
 
       <button @click="regresar" class="btn-primary">
@@ -29,15 +29,16 @@
 
 <script setup>
   import { useRouter } from 'vue-router';
-  import { onMounted, onUnmounted } from 'vue'; // Importamos los ciclos de vida
+  import { onMounted, onUnmounted } from 'vue';
 
   const router = useRouter();
 
+  // Función para volver atrás en el historial
   const regresar = () => {
-    router.go(-1); // Esto hace exactamente lo mismo: volver 1 paso atrás
+    router.go(-1); 
   };
 
-  // Función que revisa qué tecla se presionó
+  // Función que revisa si se presionó la tecla Enter
   const manejarTeclado = (evento) => {
     if (evento.key === 'Enter') {
       regresar(); // Si es Enter, ejecuta la función del botón
@@ -49,7 +50,7 @@
     window.addEventListener('keyup', manejarTeclado);
   });
 
-  // Cuando salimos de la pantalla, dejamos de escuchar para no causar errores de memoria
+  // Cuando salimos de la pantalla, dejamos de escuchar para evitar duplicados en la memoria
   onUnmounted(() => {
     window.removeEventListener('keyup', manejarTeclado);
   });

@@ -27,10 +27,29 @@
 </template>
 
 <script setup>
+  import { onMounted, onUnmounted } from 'vue'; // Solo importamos los ciclos de vida
+
   // Función para recargar la página actual
   const recargarPagina = () => {
     window.location.reload();
   };
+
+  // Función que revisa qué tecla se presionó
+  const manejarTeclado = (evento) => {
+    if (evento.key === 'Enter') {
+      recargarPagina(); // Si es Enter, ejecuta la función de recargar
+    }
+  };
+
+  // Cuando la pantalla se carga, empezamos a escuchar el teclado globalmente
+  onMounted(() => {
+    window.addEventListener('keyup', manejarTeclado);
+  });
+
+  // Cuando salimos de la pantalla, dejamos de escuchar para limpiar la memoria
+  onUnmounted(() => {
+    window.removeEventListener('keyup', manejarTeclado);
+  });
 </script>
 
 <style scoped>

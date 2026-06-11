@@ -1,0 +1,166 @@
+/* ==========================================================================
+   GLOBAL ALERTS, MODALS & ERRORS
+   ========================================================================== */
+
+/* =========================================
+   1. FONDOS Y TARJETAS DE MODALES
+========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Alto z-index para estar sobre todo */
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+  position: relative;
+  z-index: 1001;
+}
+
+/* Para el modal de éxito o error genérico (más pequeño) */
+.modal-overlay .modal-content[style*="max-width: 450px"] {
+  max-width: 450px;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   2. BARRA INFERIOR DE ACCIONES (Formularios)
+========================================= */
+.bottom-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  min-height: 48px;
+}
+
+.messages-area {
+  flex-grow: 1; 
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.bottom-actions-bar .form-actions {
+  margin-top: 0; 
+}
+
+@media (max-width: 768px) {
+  .bottom-actions-bar {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+  .messages-area, .alert-inline-error {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   3. NOTIFICACIONES FLOTANTES (TOASTS)
+========================================= */
+.errores-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  z-index: 9999;
+  width: auto;
+  min-width: 320px;
+  max-width: 400px;
+  pointer-events: none; 
+}
+
+.alert-inline-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff; 
+  border-left: 5px solid #ef4444; 
+  color: #991b1b;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0; 
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  pointer-events: auto; 
+  animation: shakeAlert 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.alert-inline-error .alert-icon {
+  font-size: 1.4rem;
+}
+
+@keyframes shakeAlert {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Transiciones de Vue para Toasts */
+.lista-errores-enter-active, 
+.lista-errores-leave-active {
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.lista-errores-enter-from {
+  opacity: 0;
+  transform: translateX(120%); 
+}
+.lista-errores-leave-to {
+  opacity: 0;
+  transform: translateX(120%);
+}
+.lista-errores-leave-active {
+  position: absolute;
+  width: 100%;
+}
+
+/* =========================================
+   4. ERRORES EN LÍNEA (DEBAJO DE INPUTS)
+========================================= */
+.error-text {
+  color: #d9534f;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 4px;
+  margin-left: 10px;
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}

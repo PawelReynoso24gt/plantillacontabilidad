@@ -19,16 +19,19 @@
           {{ cuentaN.banco_y_cuenta }}
         </option>
       </select>
+      <small v-if="fieldErrors.cuentaBName" class="error-text">{{ fieldErrors.cuentaBName }}</small>
     </div>
 
     <div class="field-group">
       <label class="field-label">Número de documento</label>
       <input type="text" v-model="numero_documento" class="field-control" />
+      <small v-if="fieldErrors.numero_documento" class="error-text">{{ fieldErrors.numero_documento }}</small>
     </div>
 
     <div class="field-group">
       <label class="field-label">Fecha</label>
       <input type="date" v-model="fecha" class="field-control" />
+      <small v-if="fieldErrors.fecha" class="error-text">{{ fieldErrors.fecha }}</small>
     </div>
   </div>
 
@@ -39,6 +42,7 @@
     <div class="field-group">
       <label class="field-label">Valor a retirar</label>
       <input type="text" v-model="monto" class="field-control" placeholder="0.00" />
+      <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
     </div>
 
     <div class="field-group full-width">
@@ -49,14 +53,14 @@
 <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
   <div class="bottom-actions-bar">
       <div class="messages-area">
-        <transition-group name="lista-errores" tag="div" class="errores-stack">
+        <!-- <transition-group name="lista-errores" tag="div" class="errores-stack">
           <div v-for="err in erroresLista" :key="err.id" class="alert-inline-error">
             <span class="alert-icon">⚠️</span>
             <span>{{ err.texto }}</span>
           </div>
-        </transition-group>
+        </transition-group> -->
         
-        <p v-if="success" class="text-success" style="margin: 0;">{{ success }}</p>
+        <p v-if="successMessage" class="text-success" style="margin: 0;">{{ successMessage }}</p>
       </div>
 
       <div class="form-actions">
@@ -101,11 +105,14 @@
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/DepositoCajaA.css'
 
 export default {
   name: 'Accordion',
   setup() {
+    const router = useRouter();
     const fecha = ref('');
     const descripcion = ref('');
     const monto = ref('');
@@ -113,17 +120,63 @@ export default {
     const cuentas_bancarias = reactive([]);
     const cuentaBName = ref('');
     const successMessage = ref(''); // Estado para mensajes de éxito
-    const erroresLista = ref([]); // ===================================================================================================================================
+    const error = ref(''); // ===================================================================================================================================
     const mostrarModalExitoFormulario = ref(false);
     const mostrarModalError = ref(false);
     const mensajeError = ref('');
+    // Objeto para guardar el error específico de cada campo
+    const fieldErrors = reactive({
+      tipo: '',
+      fecha: '',
+      identificacion: '',
+      nombre: '',
+      descripcion: '',
+      cuentaCMB: '',
+      monto: '',
+      documento: '',
+      cuentaBName: '',
+      numero_documento: '',
+      fecha_emision: ''
+    });
+    // Objeto reactivo exclusivo para los errores del Modal de Saldar
+    const modalErrors = reactive({
+      fecha: '',
+      identificacion: '',
+      nombre: '',
+      descripcion: '',
+      tipo: '',
+      monto: '',
+      documento: '',
+      cuenta_bancaria: '',
+      numero_documento: '',
+      fecha_emision: ''
+    });
 
-    const agregarError = (mensaje) => {
-        const id = Date.now() + Math.random();
-        erroresLista.value.push({ id, texto: mensaje });
-        setTimeout(() => {
-            erroresLista.value = erroresLista.value.filter(e => e.id !== id);
-        }, 5000); 
+    // Función que asigna el error y lo borra a los 5 segundos
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    // Función para manejar los errores del modal y borrarlos a los 5s
+
+    // ==========================================
+    // DETECTOR DE TECLADO (ENTER PARA MODALES)
+    // ==========================================
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // Previene que el Enter haga cosas raras (como recargar la página si estuviera en un <form>)
+        event.preventDefault();
+
+        if (mostrarModalExitoFormulario.value) {
+          cerrarModalExitoFormulario(); // Aceptar éxito de guardado normal
+        } 
+        else if (mostrarModalError.value) {
+          cerrarModalError(); // Cerrar error
+        }
+      }
     };
 
     const cerrarModalExitoFormulario = () => {
@@ -142,37 +195,52 @@ export default {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
           console.log(response.data);
         })
-        .catch((err) => { // ===================================================================================================================================
+        .catch((err) => { // ==================================================================================================================
           console.error(err);
-          agregarError('Advertencia: No se pudieron cargar las cuentas bancarias.');
+          error.value = 'Hubo un problema al cargar las cuentas de bancos';
+          manejarErrorRuta(err, router); // ===================================================================================================================================
         });// ===================================================================================================================================
     };
 
     const enviarDatos = () => {
-      successMessage.value = ''; // Resetea el mensaje de éxito antes de enviar datos
+      let tieneErrores = false;
 
-      if (!fecha.value || !descripcion.value || !monto.value || !numero_documento.value || !cuentaBName.value) {
-        agregarError('Por favor, complete todos los campos.'); // ===================================================================================================================================
-        return;
+      // 1. Validaciones individuales de cada campo
+      if (!cuentaBName.value) { mostrarErrorCampo('cuentaBName', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!numero_documento.value) { mostrarErrorCampo('numero_documento', 'Falta por llenar datos'); tieneErrores = true; }
+
+      // Validación del monto (Vacío y formato numérico, igual que en enviarSaldado)
+      if (!monto.value) { 
+          mostrarErrorCampo('monto', 'Falta por llenar datos'); 
+          tieneErrores = true; 
+      } else if (isNaN(monto.value)) {
+          mostrarErrorCampo('monto', 'Formato incorrecto (solo números)');
+          tieneErrores = true;
       }
 
-      axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaAG', {
-        cuenta_bancaria: cuentaBName.value,
-        fecha: fecha.value,
-        descripcion: descripcion.value,
-        monto: monto.value,
-        numero_documento: numero_documento.value,
-      })
+      // Detener la ejecución si hay al menos un error
+      if (tieneErrores) return;
+
+      // 2. Preparar el payload
+      const payload = {
+          cuenta_bancaria: cuentaBName.value,
+          fecha: fecha.value,
+          descripcion: descripcion.value,
+          monto: monto.value,
+          numero_documento: numero_documento.value,
+      };
+
+      axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaAG', payload)
         .then(response => { // ===================================================================================================================================
         // AQUI ACTIVAMOS EL MODAL
           mostrarModalExitoFormulario.value = true;
           console.log(response.data); 
         })
         .catch(err => {
-            console.error(err);
-            // REEMPLAZAMOS EL alert()
-            mensajeError.value = "Error al registrar el pago. Verifique datos antes de enviar o conexión con el servidor.";
-            mostrarModalError.value = true;
+            console.error(err); // ===================================================================================================================================
+            error.value = "Error al guardar la transacción. Verifique datos antes de enviar o conexión con el servidor.";
+            manejarErrorRuta(error, router);
         }); // ===================================================================================================================================
     };
 
@@ -187,6 +255,8 @@ export default {
 
     onMounted(() => {
       cargarBancosNoCuenta();
+      // Encendemos el detector de teclado
+      window.addEventListener('keydown', manejarEnter);
     });
 
     return {
@@ -201,7 +271,9 @@ export default {
       numero_documento,
       successMessage, // ===================================================================================================================================
       // -----------------
-      erroresLista,
+      fieldErrors,
+      modalErrors,
+      error,
       mostrarModalExitoFormulario,
       cerrarModalExitoFormulario,
       mostrarModalError,

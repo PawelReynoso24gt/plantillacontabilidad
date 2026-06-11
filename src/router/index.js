@@ -305,9 +305,9 @@ const routes = [
         component: () => import('@/views/pages/Login'),
       },
       {
-        path: '/page422',
-        name: 'Page422',
-        component: () => import('@/views/pages/422Unprocessable.vue'),
+        path: '/page401',
+        name: 'Page401',
+        component: () => import('@/views/pages/401Unauthorized.vue'),
       },
       {
         path: '/page403',
@@ -318,6 +318,11 @@ const routes = [
         path: '/page404',
         name: 'Page404',
         component: () => import('@/views/pages/404NotFound.vue'),
+      },
+      {
+        path: '/page422',
+        name: 'Page422',
+        component: () => import('@/views/pages/422Unprocessable.vue'),
       },
       {
         path: '/page500',

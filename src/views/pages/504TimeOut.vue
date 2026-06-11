@@ -28,12 +28,30 @@
 
 <script setup>
   import { useRouter } from 'vue-router';
+  import { onMounted, onUnmounted } from 'vue'; // Importamos los ciclos de vida
 
   const router = useRouter();
 
   const regresar = () => {
     router.go(-1); // Esto hace exactamente lo mismo: volver 1 paso atrás
   };
+
+  // Función que revisa qué tecla se presionó
+  const manejarTeclado = (evento) => {
+    if (evento.key === 'Enter') {
+      regresar(); // Si es Enter, ejecuta la función del botón
+    }
+  };
+
+  // Cuando la pantalla se carga, empezamos a escuchar el teclado
+  onMounted(() => {
+    window.addEventListener('keyup', manejarTeclado);
+  });
+
+  // Cuando salimos de la pantalla, dejamos de escuchar para no causar errores de memoria
+  onUnmounted(() => {
+    window.removeEventListener('keyup', manejarTeclado);
+  });
 </script>
 
 <style scoped>

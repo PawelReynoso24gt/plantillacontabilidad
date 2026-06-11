@@ -699,7 +699,6 @@ export default {
     };
 
     const enviarDatos = () => {
-// ==================================================================================================================
     let tieneErrores = false;
 
       // 1. Validaciones de campos vacíos
@@ -752,10 +751,10 @@ export default {
           console.log(response.data); 
         })
         .catch(error => {
+          console.error(error);
           error.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
-          manejarErrorRuta(error, router);
-        });// ==================================================================================================================
-      } else {
+          manejarErrorRuta(error, router); // ===================================================================================================================================
+        });
         // Si no es "caja", enviar los datos como lo estás haciendo actualmente
         const data = {
           fecha: fecha.value,
@@ -779,6 +778,7 @@ export default {
             console.log(response.data); 
           })
           .catch(error => {
+            console.error(error);
             error.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
             manejarErrorRuta(error, router);
         });

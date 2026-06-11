@@ -18,6 +18,7 @@
             <option value="caja">Caja</option>
             <option value="bancos">Bancos</option>
           </select>
+          <small v-if="fieldErrors.tipo" class="error-text">{{ fieldErrors.tipo }}</small>
         </div>
 
         <div class="field-group checkbox-group">
@@ -42,6 +43,7 @@
             v-model="fecha"
             class="field-control"
           />
+          <small v-if="fieldErrors.fecha" class="error-text">{{ fieldErrors.fecha }}</small>
         </div>
       </div>
 
@@ -54,6 +56,7 @@
             v-model="identificacion"
             class="field-control"
           />
+          <small v-if="fieldErrors.identificacion" class="error-text">{{ fieldErrors.identificacion }}</small>
         </div>
         <div class="field-group">
           <label class="field-label">Nombre / CF</label>
@@ -62,6 +65,7 @@
             v-model="nombre"
             class="field-control"
           />
+          <small v-if="fieldErrors.nombre" class="error-text">{{ fieldErrors.nombre }}</small>
         </div>
         <div class="field-group full-width">
           <label class="field-label">Observaciones de comprobante</label>
@@ -91,6 +95,7 @@
               {{ cuentab.cuenta }}
             </option>
           </select>
+          <small v-if="fieldErrors.cuentaCMB" class="error-text">{{ fieldErrors.cuentaCMB }}</small>
         </div>
         <div class="field-group">
           <label class="field-label">Monto</label>
@@ -100,6 +105,7 @@
             class="field-control"
             placeholder="0.00"
           />
+          <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
         </div>
       </div>
 
@@ -115,6 +121,7 @@
             <option value="Depósitos">Depósitos</option>
             <option value="Cheque">Cheque</option>
           </select>
+          <small v-if="fieldErrors.documento" class="error-text">{{ fieldErrors.documento }}</small>
         </div>
 
         <div class="field-group">
@@ -133,6 +140,7 @@
               {{ cuentaN.banco_y_cuenta }}
             </option>
           </select>
+          <small v-if="fieldErrors.cuentaBName" class="error-text">{{ fieldErrors.cuentaBName }}</small>
         </div>
 
         <div class="field-group">
@@ -142,6 +150,7 @@
             v-model="numero_documento"
             class="field-control"
           />
+          <small v-if="fieldErrors.numero_documento" class="error-text">{{ fieldErrors.numero_documento }}</small>
         </div>
 
         <div class="field-group">
@@ -152,18 +161,19 @@
             class="field-control"
           />
         </div>
+        <small v-if="fieldErrors.fecha_emision" class="error-text">{{ fieldErrors.fecha_emision }}</small>
       </div>
 <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
       <div class="bottom-actions-bar">
         <div class="messages-area">
-          <transition-group name="lista-errores" tag="div" class="errores-stack">
+          <!-- <transition-group name="lista-errores" tag="div" class="errores-stack">
             <div v-for="err in erroresLista" :key="err.id" class="alert-inline-error">
               <span class="alert-icon">⚠️</span>
               <span>{{ err.texto }}</span>
             </div>
-          </transition-group>
+          </transition-group> -->
           
-          <p v-if="success" class="text-success" style="margin: 0;">{{ success }}</p>
+          <p v-if="successMessage" class="text-success" style="margin: 0;">{{ successMessage }}</p>
         </div>
 
         <div class="form-actions">
@@ -249,6 +259,7 @@
         <div class="field-group">
           <label class="field-label">Fecha de Pago</label>
           <input type="date" v-model="formSaldar.fecha" class="field-control">
+          <small v-if="modalErrors.fecha" class="error-text">{{ modalErrors.fecha }}</small>
         </div>
       </div>
 
@@ -256,10 +267,12 @@
         <div class="field-group">
           <label class="field-label">DPI/NIT/CF</label>
           <input type="text" v-model="formSaldar.identificacion" class="field-control">
+          <small v-if="modalErrors.identificacion" class="error-text">{{ modalErrors.identificacion }}</small>
         </div>
         <div class="field-group">
           <label class="field-label">Nombre/CF</label>
           <input type="text" v-model="formSaldar.nombre" class="field-control">
+          <small v-if="modalErrors.nombre" class="error-text">{{ modalErrors.nombre }}</small>
         </div>
         <div class="field-group full-width">
           <label class="field-label">Observaciones</label>
@@ -274,10 +287,12 @@
             <option value="caja">Caja</option>
             <option value="bancos">Bancos</option>  
           </select>
+          <small v-if="modalErrors.tipo" class="error-text">{{ modalErrors.tipo }}</small>
         </div>
         <div class="field-group">
           <label class="field-label">Monto a Pagar (Q)</label>
           <input type="text" v-model="formSaldar.monto" class="field-control" placeholder="0.00">
+          <small v-if="modalErrors.monto" class="error-text">{{ modalErrors.monto }}</small>
         </div>
       </div>
 
@@ -292,6 +307,7 @@
             <option value="Depósitos">Depósitos</option>
             <option value="Cheque">Cheque</option> 
           </select>
+          <small v-if="modalErrors.documento" class="error-text">{{ modalErrors.documento }}</small>
         </div>
         
         <div class="field-group">
@@ -301,16 +317,19 @@
               {{ cuentaN.banco_y_cuenta }}
             </option> 
           </select>
+          <small v-if="modalErrors.cuenta_bancaria" class="error-text">{{ modalErrors.cuenta_bancaria }}</small>
         </div>
         
         <div class="field-group">
           <label class="field-label">No. Documento</label>
           <input type="text" v-model="formSaldar.numero_documento" class="field-control">
+          <small v-if="modalErrors.numero_documento" class="error-text">{{ modalErrors.numero_documento }}</small>
         </div>
         
         <div class="field-group">
           <label class="field-label">Fecha Emisión</label>
           <input type="date" v-model="formSaldar.fecha_emision" class="field-control">
+          <small v-if="modalErrors.fecha_emision" class="error-text">{{ modalErrors.fecha_emision }}</small>
         </div>
       </div>
 
@@ -382,11 +401,14 @@
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/IngresosAgricola.css'
 
 export default {
   name: 'Accordion',
   setup() {
+    const router = useRouter();
     const fecha = ref('');
     const identificacion = ref('');
     const descripcion = ref('');
@@ -402,11 +424,38 @@ export default {
     const cuentas_bancarias = reactive([]);
     const mostrarDivisionCuatro = ref(false);
     const es_pendiente = ref(false);
-    const erroresLista = ref([]);  // ===================================================================================================================================
+    const error = ref(''); // ======================================================================
     const mostrarModalExitoFormulario = ref(false);
     const mostrarModalError = ref(false);
-    const mensajeError = ref(''); // ===================================================================================================================================
-    const success = ref(''); // Mensaje de éxito
+    const mensajeError = ref('');
+    // Objeto para guardar el error específico de cada campo
+    const fieldErrors = reactive({
+      tipo: '',
+      fecha: '',
+      identificacion: '',
+      nombre: '',
+      descripcion: '',
+      cuentaCMB: '',
+      monto: '',
+      documento: '',
+      cuentaBName: '',
+      numero_documento: '',
+      fecha_emision: ''
+    });
+    // Objeto reactivo exclusivo para los errores del Modal de Saldar
+    const modalErrors = reactive({
+      fecha: '',
+      identificacion: '',
+      nombre: '',
+      descripcion: '',
+      tipo: '',
+      monto: '',
+      documento: '',
+      cuenta_bancaria: '',
+      numero_documento: '',
+      fecha_emision: ''
+    });// ===================================================================================================================================
+    const successMessage = ref(''); // Estado para mensajes de éxito
     const PROYECTO_ID = '1';       // Agrícola
     const CLASIFICACION_ID = '1'; // Ingresos (Cuentas por Cobrar)
     const pendientes = reactive([]);
@@ -450,8 +499,48 @@ export default {
       tipo.value = '';
       cuentaBName.value = '';
       es_pendiente.value = false;
-      success.value = ''; // Limpiar el mensaje de éxito
+      successMessage.value = ''; // Limpiar el mensaje de éxito
     };
+// ==================================================================================================================
+    // Función que asigna el error y lo borra a los 5 segundos
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    // Función para manejar los errores del modal y borrarlos a los 5s
+    const mostrarErrorModal = (campo, mensaje) => {
+      modalErrors[campo] = mensaje;
+      setTimeout(() => {
+        modalErrors[campo] = '';
+      }, 5000);
+    };
+
+    // ==========================================
+    // DETECTOR DE TECLADO (ENTER PARA MODALES)
+    // ==========================================
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // Previene que el Enter haga cosas raras (como recargar la página si estuviera en un <form>)
+        event.preventDefault();
+
+        // Evaluamos qué modal está abierto actualmente:
+        if (mostrarModalSaldado.value) {
+          enviarSaldado(); // Confirmar Pago
+        } 
+        else if (mostrarModalExito.value) {
+          cerrarModalExito(); // Aceptar éxito de saldado
+        } 
+        else if (mostrarModalExitoFormulario.value) {
+          cerrarModalExitoFormulario(); // Aceptar éxito de guardado normal
+        } 
+        else if (mostrarModalError.value) {
+          cerrarModalError(); // Cerrar error
+        }
+      }
+    };// ==================================================================================================================
 
     const controlarVisibilidadDivisionCuatro = () => {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
@@ -522,26 +611,13 @@ export default {
                 pendientes.splice(0, pendientes.length, ...response.data);
             })
             .catch(err => {
-                console.error("Error al cargar pendientes:", err);
-                // Si el error es 404 (No hay datos), mostramos el mensaje del backend
-                if (err.response && err.response.status === 404) {
-                    mensajeVacio.value = err.response.data.message;
-                } else {
-                  agregarError('Error al consultar datos. Revise la conexión al backend.');
-                }
-            });
+            console.error("Error al cargar pendientes:", err);
+            manejarErrorRuta(err, router);
+        });
     };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
 // ===================================================================================================================================
-    const agregarError = (mensaje) => {
-        const id = Date.now() + Math.random();
-        erroresLista.value.push({ id, texto: mensaje });
-        setTimeout(() => {
-            erroresLista.value = erroresLista.value.filter(e => e.id !== id);
-        }, 5000); 
-    };
-
     const cerrarModalExitoFormulario = () => {
         mostrarModalExitoFormulario.value = false;
         limpiar(); 
@@ -554,12 +630,33 @@ export default {
 
     // ** ENVIAR SALDADO **
     const enviarSaldado = () => {
-        if (!formSaldar.monto || !formSaldar.fecha) {
-            // REEMPLAZAMOS EL alert() // ===================================================================================================================================
-            mensajeError.value = "Error al registrar el pago. Verifique datos antes de enviar o conexión con el servidor.";
-            mostrarModalError.value = true; // ===================================================================================================================================
-            return;
+        let tieneErrores = false;
+
+        // 1. Validaciones de campos básicos
+        if (!formSaldar.fecha) { mostrarErrorModal('fecha', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!formSaldar.identificacion) { mostrarErrorModal('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!formSaldar.tipo) { mostrarErrorModal('tipo', 'Falta por llenar datos'); tieneErrores = true; }
+
+        // Validación del monto (Vacío y formato numérico)
+        if (!formSaldar.monto) { 
+            mostrarErrorModal('monto', 'Falta por llenar datos'); 
+            tieneErrores = true; 
+        } else if (isNaN(formSaldar.monto)) {
+            mostrarErrorModal('monto', 'Formato incorrecto (solo números)');
+            tieneErrores = true;
         }
+
+        // 2. Validaciones si el tipo es 'bancos'
+        if (formSaldar.tipo === 'bancos') {
+            if (!formSaldar.documento) { mostrarErrorModal('documento', 'Falta por llenar datos'); tieneErrores = true; }
+            if (!formSaldar.cuenta_bancaria) { mostrarErrorModal('cuenta_bancaria', 'Falta por llenar datos'); tieneErrores = true; }
+            if (!formSaldar.numero_documento) { mostrarErrorModal('numero_documento', 'Falta por llenar datos'); tieneErrores = true; }
+            if (!formSaldar.fecha_emision) { mostrarErrorModal('fecha_emision', 'Falta por llenar datos'); tieneErrores = true; }
+        }
+
+        // Detener la ejecución si hay al menos un error
+        if (tieneErrores) return;
 
         // Preparar payload
         const payload = {
@@ -594,9 +691,8 @@ export default {
             })
             .catch(err => {
                 console.error(err); // ===================================================================================================================================
-                // REEMPLAZAMOS EL alert()
-                mensajeError.value = "Error al registrar el pago. Verifique datos antes de enviar o conexión con el servidor.";
-                mostrarModalError.value = true;// ===================================================================================================================================
+                error.value = "Error al guardar el ingreso. Verifique datos antes de enviar o conexión con el servidor.";
+                manejarErrorRuta(error, router);// ===================================================================================================================================
             });
     };
 
@@ -604,6 +700,8 @@ export default {
       cargarCuentas();
       cargarBancosNoCuenta();
       cargarPendientes();
+      // Encendemos el detector de teclado
+      window.addEventListener('keydown', manejarEnter);
     });
 
     const cargarCuentas = () => {
@@ -611,9 +709,10 @@ export default {
         .then(response => {
           cuentas.splice(0, cuentas.length, ...response.data);
         })
-        .catch((err) => {// ===================================================================================================================================
+        .catch((err) => { // ==================================================================================================================
           console.error(err);
-          agregarError('Advertencia: No se pudieron cargar las cuentas contables.');// ===================================================================================================================================
+          error.value = 'Hubo un problema al cargar las cuentas contables';
+          manejarErrorRuta(err, router)
         });
     };
 
@@ -622,21 +721,45 @@ export default {
         .then(response => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
         })
-        .catch((err) => {// ===================================================================================================================================
+        .catch((err) => { // ==================================================================================================================
           console.error(err);
-          agregarError('Advertencia: No se pudieron cargar las cuentas bancarias.'); // ===================================================================================================================================
+          error.value = 'Hubo un problema al cargar las cuentas de bancos';
+          manejarErrorRuta(err, router); // ===================================================================================================================================
         });
     };
 
     const enviarDatos = () => {
-      success.value = ''; // Limpiar el mensaje de éxito antes de enviar los datos
+    
+      let tieneErrores = false;
 
-      // Validación
-      if (!fecha.value || !identificacion.value || !nombre.value || !descripcion.value || !monto.value || !cuentaCMB.value ||
-        (tipo.value === 'bancos' && (!documento.value || !cuentaBName.value || !numero_documento.value || !fecha_emision.value))) {
-        agregarError('Por favor, complete todos los campos.'); // ===================================================================================================================================
-        return;
+      // 1. Validaciones de campos vacíos
+      if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      // if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!cuentaCMB.value) { mostrarErrorCampo('cuentaCMB', 'Falta por llenar datos'); tieneErrores = true; }
+
+      // 2. Validación de Monto (Vacío y Formato)
+      if (!monto.value) {
+        mostrarErrorCampo('monto', 'Falta por llenar datos');
+        tieneErrores = true;
+      } else if (isNaN(monto.value)) {
+        // Validación de formato: Si no es un número
+        mostrarErrorCampo('monto', 'Formato incorrecto (solo números)');
+        tieneErrores = true;
       }
+
+      // 3. Validaciones si el tipo es 'bancos'
+      if (tipo.value === 'bancos') {
+        if (!documento.value) { mostrarErrorCampo('documento', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!cuentaBName.value) { mostrarErrorCampo('cuentaBName', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!numero_documento.value) { mostrarErrorCampo('numero_documento', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!fecha_emision.value) { mostrarErrorCampo('fecha_emision', 'Falta por llenar datos'); tieneErrores = true; }
+      }
+
+      // Si se encontró al menos un error, detenemos el envío
+      if (tieneErrores) return; 
 
       // Definimos el valor del checkbox como 1 o 0
       const valorEsPendiente = es_pendiente.value ? 1 : 0;
@@ -669,8 +792,7 @@ export default {
         })
         .catch(error => {
           console.error(error);
-          // CORRECCIÓN: Solo disparamos el modal, quitamos error.value // ===================================================================================================================================
-          mensajeError.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
+          mensajeError.value = "Error al guardar el ingreso. Verifique datos antes de enviar o conexión con el servidor.";
           mostrarModalError.value = true; // ===================================================================================================================================
         });
     };
@@ -695,7 +817,7 @@ export default {
       cargarCuentas,
       cargarBancosNoCuenta,
       enviarDatos,
-      success, // Agregado para el mensaje de éxito
+      successMessage, // Agregado para el mensaje de éxito
       controlarVisibilidadDivisionCuatro,
       // nuevas variables
       pendientes,
@@ -711,7 +833,9 @@ export default {
       datosExito,
       cerrarModalExito,
       // ---------------- // ===================================================================================================================================
-      erroresLista, 
+      fieldErrors,
+      modalErrors,
+      error,
       mostrarModalExitoFormulario,
       cerrarModalExitoFormulario,
       mostrarModalError,

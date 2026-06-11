@@ -9,6 +9,10 @@ export const manejarErrorRuta = (error, router) => {
             // El 400 (Bad Request) ya NO redirige. Solo avisa en consola.
             console.warn("Error 400: Petición mal formada (Bad Request). Revisa los datos enviados.");
             }
+            else if (status === 401) {
+            // Error 401 (No autorizado / Sesión expirada o token inválido)
+            router.push('/page401');
+            }
             else if (status === 422) {
                 // Error 422: Fallan validaciones del Request
                 router.push('/page422');
