@@ -257,12 +257,12 @@ const routes = [
             component: () => import('@/views/notifications/Alerts.vue'),
             meta: { requiresAuth: true }
           },
-          {
+          /*{
             path: '/notifications/badges',
             name: 'Badges',
             component: () => import('@/views/notifications/Badges.vue'),
             meta: { requiresAuth: true }
-          },
+          }, */
           {
             path: '/notifications/modals',
             name: 'Modals',
