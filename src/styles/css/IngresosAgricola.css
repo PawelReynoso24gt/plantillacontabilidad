@@ -1,6 +1,6 @@
 /* Fondo y centrado general */
 .ingreso-wrapper {
-  background-color: #f7f7f7;
+  background-color: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
@@ -10,13 +10,14 @@
 
 /* Card principal */
 .ingreso-card {
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
   max-width: 1100px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
 }
 
 /* Encabezado */
@@ -31,18 +32,18 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57; /* azul oscuro */
+  color: var(--cui-body-color);
 }
 
 .ingreso-subtitle {
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Contenedores de secciones */
 .division-container {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 1rem 1.2rem;
   margin-bottom: 1rem;
@@ -84,7 +85,7 @@
 .field-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);
   margin-bottom: 0.3rem;
 }
 
@@ -92,11 +93,12 @@
   width: 100%;
   padding: 0.5rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--cui-border-color);
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  background-color: #ffffff;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
 }
 
 .field-control:focus {
@@ -166,13 +168,13 @@
 
 /* Botón secundario */
 .btn-secondary {
-  background: #f7f7f7;
-  color: #292b57;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
   border: 1px solid #bd9f69;
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
@@ -219,23 +221,24 @@
 
 .pendientes-table td {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--cui-border-color);
   vertical-align: middle;
+  color: var(--cui-body-color);
 }
 
 .pendientes-table tbody tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .pendientes-table tbody tr:nth-child(even) {
-  background-color: #f8f8f8;
+  background-color: var(--cui-tertiary-bg);
 }
 
 /* Estilo para la columna de monto */
 .pendientes-table td:nth-last-child(2) {
   text-align: right;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);;
 }
 
 /* Estilo para botones en la tabla */
@@ -305,7 +308,8 @@
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   padding: 2rem;
   border-radius: 18px;
   width: 90%;
@@ -316,6 +320,7 @@
   animation: slideUp 0.3s ease-out;
   position: relative;
   z-index: 1001;
+  border: 1px solid var(--cui-border-color);
 }
 
 .modal-overlay .ingreso-card {
@@ -356,5 +361,5 @@
 .modal-overlay .form-actions {
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--cui-border-color);
 }

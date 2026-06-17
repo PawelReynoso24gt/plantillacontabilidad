@@ -1,6 +1,6 @@
 /* Fondo y centrado general */
 .libro-wrapper {
-  background-color: #f7f7f7;
+  background-color: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
@@ -10,13 +10,14 @@
 
 /* Card principal */
 .libro-card {
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
   max-width: 1100px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
 }
 
 /* Encabezado */
@@ -28,7 +29,7 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57;
+  color: var(--cui-body-color);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -36,12 +37,12 @@
 .libro-subtitle {
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Contenedores de secciones */
 .division-container {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 1rem 1.2rem;
   margin-bottom: 1rem;
@@ -66,7 +67,7 @@
 .field-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);
   margin-bottom: 0.3rem;
 }
 
@@ -74,11 +75,12 @@
   width: 100%;
   padding: 0.5rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--cui-border-color);
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  background-color: #ffffff;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
 }
 
 .field-control:focus {
@@ -119,13 +121,13 @@
 
 /* Botón secundario */
 .btn-secondary {
-  background: #f7f7f7;
-  color: #292b57;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
   border: 1px solid #bd9f69;
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
@@ -137,11 +139,11 @@
   flex-wrap: wrap;
   gap: 1.5rem;
   font-size: 0.9rem;
-  color: #292b57;
+  color: var(--cui-body-color);
 }
 
 .encabezado-box {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 0.75rem 1rem;
   border-left: 4px solid #bd9f69;
@@ -156,12 +158,13 @@
 
 .encabezado-direccion {
   margin-top: 0.25rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 .encabezado-detalles {
   flex: 1 1 220px;
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
+  color: var(--cui-body-color);
   border-radius: 12px;
   padding: 0.75rem 1rem;
   border-left: 4px solid #292b57;
@@ -173,11 +176,11 @@
 /* Tabla */
 .tabla-wrapper {
   margin-top: 1.5rem;
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
   overflow-x: auto;
 }
 
@@ -199,7 +202,8 @@
 
 .tabla-libro tbody td {
   padding: 0.5rem;
-  border-bottom: 1px solid #eeeeee;
+  color: var(--cui-body-color);
+  border-bottom: 1px solid var(--cui-border-color);
 }
 
 .tabla-libro tbody tr:last-child td {
@@ -216,7 +220,7 @@
 
 /* Filas especiales */
 .fila-resaltada {
-  background-color: #fdf7e9;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .bold-text {
@@ -227,11 +231,11 @@
 .sin-datos {
   margin-top: 2rem;
   text-align: center;
-  color: #6c757d;
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
+  color: var(--cui-secondary-color);
   border-radius: 12px;
   padding: 2rem 1rem;
-  border: 1px dashed #d0d0d0;
+  border: 1px dashed var(--cui-border-color);
   font-size: 0.95rem;
 }
 

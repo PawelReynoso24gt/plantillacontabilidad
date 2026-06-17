@@ -15,7 +15,7 @@
   align-items: center;
   gap: 1.75rem;
   
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--cui-border-color);
 }
 
 .project-logo {
@@ -36,13 +36,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: #292b57; /* azul oscuro */
+  color: var(--cui-body-color);
 }
 
 .project-subtitle {
   margin: 0;
   font-size: 1rem;
-  color: #41251c; /* tono vino/café oscuro */
+  color: var(--cui-secondary-color);
 }
 
 .project-divider {
@@ -96,7 +96,7 @@
 }
 
 .project-text-box {
-  background: #f7f7f7;
+  background: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 0.9rem 1.1rem;
   border-left: 4px solid #bd9f69;
@@ -105,7 +105,7 @@
 .project-text-box p {
   margin: 0;
   font-size: 0.95rem;
-  color: #080808;
+  color: var(--cui-body-color);
 }
 
 /* Pie de página */
@@ -113,7 +113,7 @@
   margin-top: 2rem;
   text-align: center;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Hover pequeño en imágenes para dar vida */
