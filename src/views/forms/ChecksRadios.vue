@@ -1,18 +1,18 @@
 <template>
-  <div class="dep-wrapper">
-    <div class="dep-card">
+  <div class="page-wrapper">
+    <div class="page-card">
       <!-- Encabezado -->
-      <div class="dep-header">
+      <div class="module-header">
         <div>
-          <h2 class="dep-title">Depósitos de caja - Capilla</h2>
-          <p class="dep-subtitle">
+          <h2 class="module-title">Depósitos de caja - Capilla</h2>
+          <p class="module-subtitle">
             Registra los depósitos desde caja hacia una cuenta bancaria.
           </p>
         </div>
       </div>
 
       <!-- Sección: banco + número documento + fecha -->
-      <div class="division-container division-inline">
+      <div class="section-container section-container--inline">
         <div class="field-group">
           <label class="field-label">Banco / Cuenta bancaria</label>
           <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
@@ -37,15 +37,15 @@
       </div>
 
       <!-- Sección: monto + observaciones -->
-      <div class="division-container division-block">
-        <p class="division-title">Monto a depositar</p>
+      <div class="section-container section-container--block">
+        <p class="section-title">Monto a depositar</p>
 
         <div class="field-group">
           <label class="field-label">Valor a depositar</label>
           <input type="text" v-model="monto" class="field-control" placeholder="0.00" />
         </div>
 
-        <div class="field-group full-width">
+        <div class="field-group field-group--full">
           <label class="field-label">Observaciones</label>
           <input type="text" v-model="descripcion" class="field-control"
             placeholder="Detalle del depósito (opcional)" />
@@ -60,10 +60,10 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn-primary" @click="insertar">
+        <button class="btn btn-primary" @click="insertar">
           Guardar
         </button>
-        <button class="btn-secondary" @click="limpiar">
+        <button class="btn btn-secondary" @click="limpiar">
           Limpiar
         </button>
       </div>
@@ -74,7 +74,7 @@
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted } from 'vue';
-import '../../styles/css/DepYRetiroCajaC.css'
+import '@/styles/global.css';
 
 export default {
   name: 'Accordion',

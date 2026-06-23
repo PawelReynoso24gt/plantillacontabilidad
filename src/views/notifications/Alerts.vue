@@ -1,4 +1,6 @@
 <template>
+  <div class="page-wrapper">
+    <div class="page-card">
 
       <!-- Encabezado -->
       <div class="module-header">
@@ -11,9 +13,9 @@
       </div>
 
       <!-- Primera división -->
-      <div class="division-container">
+      <div class="section-container">
         <!-- Fila 1: usuarios registrados + usuario -->
-        <div class="division-inline">
+        <div class="section-container--inline">
           <!-- Select de usuarios -->
           <div class="field-group">
             <label class="field-label">Usuarios registrados</label>
@@ -45,7 +47,7 @@
         </div>
 
         <!-- Fila 2: contraseña + estado -->
-        <div class="division-inline">
+        <div class="section-container--inline">
           <!-- Contraseña -->
           <div class="field-group">
             <label class="field-label">Contraseña</label>
@@ -88,25 +90,26 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn-primary" @click="insertar">
+        <button class="btn btn-primary" @click="insertar">
           Guardar
         </button>
-        <button class="btn-secondary" @click="actualizar">
+        <button class="btn btn-secondary" @click="actualizar">
           Actualizar
         </button>
-        <button class="btn-ghost" @click="limpiar">
+        <button class="btn btn-ghost" @click="limpiar">
           Limpiar
         </button>
       </div>
-   
 
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->
 </template>
 
 
 <script>
 import axios from 'axios';
 import { ref, computed } from 'vue';
-import '../../styles/css/Login.css';
+import '@/styles/global.css';
 
 export default {
   name: 'Badges',

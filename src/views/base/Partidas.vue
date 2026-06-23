@@ -1,18 +1,21 @@
-<template> 
-      <!-- Encabezado principal -->
-      <div class="partida-header">
+<template>
+  <div class="page-wrapper">
+    <div class="page-card">
+
+      <!-- Encabezado -->
+      <div class="module-header">
         <div>
-          <h2 class="partida-title">Generador de partidas contables</h2>
-          <p class="partida-subtitle">
+          <h2 class="module-title">Generador de partidas contables</h2>
+          <p class="module-subtitle">
             Visualiza y descarga en PDF la partida contable generada desde el sistema.
           </p>
         </div>
       </div>
 
-      <!-- Filtros (ID Ingreso/Egreso) -->
-      <div class="division-container">
+      <!-- Filtro: ID -->
+      <div class="section-container">
         <div class="field-group">
-          <label class="field-label">ID Ingreso/Egreso</label>
+          <label class="field-label">ID Ingreso / Egreso</label>
           <input
             type="number"
             v-model="idBuscado"
@@ -25,130 +28,88 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button
-          class="btn-secondary"
-          @click="generarPartida"
-          :disabled="loading || !idBuscado"
-        >
+        <button @click="volver" class="btn btn-ghost">Regresar</button>
+        <button @click="generarPartida" class="btn btn-secondary" :disabled="loading || !idBuscado">
           {{ loading ? 'Buscando...' : 'Buscar partida' }}
         </button>
-
-        <button
-          class="btn-primary"
-          @click="generarPDF"
-          :disabled="!partidaContable"
-        >
+        <button @click="generarPDF" class="btn btn-primary" :disabled="!partidaContable">
           Generar PDF
-        </button>
-
-        <button class="btn-ghost" @click="volver">
-          Regresar
         </button>
       </div>
 
       <!-- Mensajes de estado -->
       <div class="messages-container">
         <p v-if="error" class="text-danger">{{ error }}</p>
-        <p v-if="mostrarNoEncontrado" class="text-warning">
+        <p v-if="mostrarNoEncontrado" class="text-danger">
           No se encontró ningún registro con el ID {{ idBuscado }}
         </p>
       </div>
 
       <!-- Vista de partida -->
-      <div v-if="partidaContable" class="partida-preview">
-        <!-- Encabezado tipo reporte -->
+      <div v-if="partidaContable">
+
+        <!-- Encabezado visual -->
         <div class="encabezado-container">
           <div class="encabezado-box">
-            <div class="encabezado-titulo">
-              {{ partidaContable.proyecto }}
-            </div>
-            <div class="encabezado-direccion">
-              {{ direccionProyecto }}
-            </div>
+            <div class="encabezado-titulo">{{ partidaContable.proyecto }}</div>
+            <div class="encabezado-direccion">{{ direccionProyecto }}</div>
           </div>
-
           <div class="encabezado-detalles">
             <div><strong>PARTIDA No.:</strong> {{ partidaContable.nomenclatura }}</div>
             <div><strong>FECHA:</strong> {{ partidaContable.fecha }}</div>
             <div><strong>TIPO:</strong> {{ partidaContable.tipo_clasificacion }}</div>
-            <div class="encabezado-descripcion">
-              <strong>DESCRIPCIÓN:</strong> {{ partidaContable.descripcion }}
-            </div>
+            <div><strong>DESCRIPCIÓN:</strong> {{ partidaContable.descripcion }}</div>
           </div>
         </div>
 
-        <!-- Tabla de resultados -->
-        <div class="tabla-wrapper">
-          <table class="tabla-libro">
+        <!-- Tabla de movimientos -->
+        <div class="table-wrapper mt-3">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>Código</th>
                 <th>Cuenta</th>
                 <th>Descripción</th>
-                <th class="right">Débito (Q)</th>
-                <th class="right">Crédito (Q)</th>
+                <th class="cell-right">Débito (Q)</th>
+                <th class="cell-right">Crédito (Q)</th>
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="(movimiento, index) in partidaContable.movimientos"
-                :key="index"
-              >
-                <td class="center">{{ movimiento.codigo }}</td>
+              <tr v-for="(movimiento, index) in partidaContable.movimientos" :key="index">
+                <td class="cell-center">{{ movimiento.codigo }}</td>
                 <td>{{ movimiento.cuenta }}</td>
-                <td class="descripcion-col">
-                  {{ movimiento.descripcion || '-' }}
-                </td>
-                <td class="right debito">
+                <td>{{ movimiento.descripcion || '-' }}</td>
+                <td class="cell-right debito">
                   {{ movimiento.debito ? formatNumber(movimiento.debito) : '0.00' }}
                 </td>
-                <td class="right credito">
+                <td class="cell-right credito">
                   {{ movimiento.credito ? formatNumber(movimiento.credito) : '0.00' }}
                 </td>
               </tr>
             </tbody>
             <tfoot>
               <tr class="fila-resaltada">
-                <td colspan="3" class="bold-text right">TOTALES</td>
-                <td class="right bold-text">
-                  Q {{ partidaContable.totales.total_debito }}
-                </td>
-                <td class="right bold-text">
-                  Q {{ partidaContable.totales.total_credito }}
-                </td>
+                <td colspan="3" class="text-bold cell-right">TOTALES</td>
+                <td class="cell-right text-bold">Q {{ partidaContable.totales.total_debito }}</td>
+                <td class="cell-right text-bold">Q {{ partidaContable.totales.total_credito }}</td>
               </tr>
-              <tr
-                class="fila-resaltada"
-                :class="{ 'balance-correcto': partidaContable.totales.balanceada }"
-              >
-                <td colspan="3" class="bold-text right">DIFERENCIA</td>
-                <td
-                  colspan="2"
-                  class="right bold-text"
-                  :class="partidaContable.totales.balanceada ? 'texto-verde' : 'texto-rojo'"
-                >
+              <tr class="fila-resaltada" :class="{ 'balance-correcto': partidaContable.totales.balanceada }">
+                <td colspan="3" class="text-bold cell-right">DIFERENCIA</td>
+                <td colspan="2" class="cell-right text-bold" :class="partidaContable.totales.balanceada ? 'texto-verde' : 'texto-rojo'">
                   Q {{ partidaContable.totales.diferencia }}
-                  <span>
-                    {{ partidaContable.totales.balanceada ? '✅' : '❌' }}
-                  </span>
+                  <span>{{ partidaContable.totales.balanceada ? '✅' : '❌' }}</span>
                 </td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <!-- Resumen simple -->
+        <!-- Resumen -->
         <div class="resumen-container">
           <div class="resumen-item">
             <span class="label">Estado:</span>
-            <strong
-              :class="partidaContable.totales.balanceada ? 'texto-verde' : 'texto-rojo'"
-            >
-              {{
-                partidaContable.totales.balanceada
-                  ? 'BALANCEADA'
-                  : 'DESBALANCEADA'
-              }}
+            <strong :class="partidaContable.totales.balanceada ? 'texto-verde' : 'texto-rojo'">
+              {{ partidaContable.totales.balanceada ? 'BALANCEADA' : 'DESBALANCEADA' }}
             </strong>
           </div>
           <div class="resumen-item">
@@ -156,16 +117,17 @@
             <strong>{{ fechaActual }}</strong>
           </div>
         </div>
+
       </div>
 
-      <!-- Mensaje si aún no hay partida -->
-      <div v-else class="sin-datos">
+      <!-- Sin datos -->
+      <div v-else class="table-empty mt-3">
         No hay partida para mostrar.<br />
-        Ingresa un ID y presiona
-        <span class="badge-ayuda">Buscar partida</span>.
+        Ingresa un ID y presiona <strong>Buscar partida</strong>.
       </div>
-    
-  
+
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->
 </template>
 
 <script>
@@ -175,7 +137,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import { useRoute, useRouter } from 'vue-router'; 
-import '../../styles/css/PartidasCSS.css';
+import '@/styles/global.css';
 
 export default {
   name: 'GenerarPartidaSimple',

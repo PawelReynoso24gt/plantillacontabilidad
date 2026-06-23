@@ -1,9 +1,11 @@
 <template>
+  <div class="page-wrapper">
+    <div class="page-card">
      <!-- Encabezado -->
-      <div class="estado-header">
+      <div class="module-header">
         <div>
-          <h2 class="estado-title">Gestión de bancos</h2>
-          <p class="estado-subtitle">
+          <h2 class="module-title">Gestión de bancos</h2>
+          <p class="module-subtitle">
             Crea, actualiza y administra los bancos registrados en el sistema.
           </p>
         </div>
@@ -66,18 +68,19 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn-primary" @click="insertar">
+        <button class="btn btn-primary" @click="insertar">
           Guardar
         </button>
-        <button class="btn-secondary" @click="actualizar">
+        <button class="btn btn-secondary" @click="actualizar">
           Actualizar
         </button>
-        <button class="btn-ghost" @click="limpiar">
+        <button class="btn btn-ghost" @click="limpiar">
           Limpiar
         </button>
       </div>
-    
- 
+
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->
 </template>
 
 <script>
