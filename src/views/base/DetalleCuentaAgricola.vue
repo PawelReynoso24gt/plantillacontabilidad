@@ -138,24 +138,42 @@
       <div v-else class="sin-datos">
         No hay datos para mostrar. Esta cuenta no tiene movimientos para el período.
       </div>
-    
+
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import '../../styles/css/LibroDiarioA.css'; 
+import { saveAs } from 'file-saver';
+import '../../styles/css/LibroDiarioA.css';
+import '../../styles/css/GlobalAlertsModals.css';
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'ReporteCuentaAgricolaCuenta',
   setup() {
     const route = useRoute();
     const router = useRouter();
-
+    const mostrarModalExitoFormulario = ref(false); 
     // Código contable (2.1.1)
     const codigoCuenta = computed(() => route.params.codigo || '');
 
@@ -232,6 +250,7 @@ export default {
         console.error('Error al cargar movimientos de la cuenta:', e);
         error.value = true;
         ingresosEgresos.value = [];
+        manejarErrorRuta(e, router);
       } finally {
         loading.value = false;
       }
@@ -348,6 +367,7 @@ export default {
 
     const blob = doc.output('blob');
     saveAs(blob, `libro_mayor_cuenta_${codigoCuenta.value}.pdf`);
+    mostrarModalExitoFormulario.value = true;
   };
 
     const volver = () => {
@@ -357,7 +377,27 @@ export default {
     
     onMounted(() => {
       cargarMovimientos();
+      window.addEventListener('keydown', manejarEnter);
     });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+    };
 
     return {
       codigoCuenta,
@@ -372,7 +412,10 @@ export default {
       error,
       generarPDF,
       volver,
-      irAPartida 
+      irAPartida,
+      ///////////////
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario   
     };
   }
 };

@@ -18,10 +18,8 @@
             <option value="caja">Caja</option>
             <option value="bancos">Bancos</option>
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.tipo" class="error-text">{{ fieldErrors.tipo }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
-        </div>
+          </div>
 
         <div class="field-group checkbox-group">
           <label for="es_pendiente" class="field-label">
@@ -45,10 +43,8 @@
             v-model="fecha"
             class="field-control"
           />
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.fecha" class="error-text">{{ fieldErrors.fecha }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
-        </div>
+          </div>
       </div>
 
       <!-- Datos del proveedor / beneficiario -->
@@ -60,10 +56,9 @@
             v-model="identificacion"
             class="field-control"
           />
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.identificacion" class="error-text">{{ fieldErrors.identificacion }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
+
         <div class="field-group">
           <label class="field-label">Nombre / CF</label>
           <input
@@ -71,10 +66,9 @@
             v-model="nombre"
             class="field-control"
           />
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.nombre" class="error-text">{{ fieldErrors.nombre }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
+
         <div class="field-group full-width">
           <label class="field-label">Observaciones de comprobante</label>
           <input
@@ -103,10 +97,9 @@
               {{ cuentab.cuenta }}
             </option>
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.cuentaCMB" class="error-text">{{ fieldErrors.cuentaCMB }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
+
         <div class="field-group">
           <label class="field-label">Monto</label>
           <input
@@ -115,9 +108,7 @@
             class="field-control"
             placeholder="0.00"
           />
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
       </div>
 
@@ -136,9 +127,7 @@
             <option value="Depósitos">Depósitos</option>
             <option value="Cheque">Cheque</option>
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.documento" class="error-text">{{ fieldErrors.documento }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
 
         <div class="field-group">
@@ -157,9 +146,7 @@
               {{ cuentaN.banco_y_cuenta }}
             </option>
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.cuentaBName" class="error-text">{{ fieldErrors.cuentaBName }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
 
         <div class="field-group">
@@ -169,9 +156,7 @@
             v-model="numero_documento"
             class="field-control"
           />
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="fieldErrors.numero_documento" class="error-text">{{ fieldErrors.numero_documento }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
 
         <div class="field-group">
@@ -182,9 +167,7 @@
             class="field-control"
           />
         </div>
-        <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         <small v-if="fieldErrors.fecha_emision" class="error-text">{{ fieldErrors.fecha_emision }}</small>
-        <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
       </div>
 
       <!-- ** MENSAJE DE ADVERTENCIA Y BOTONES ** ========================================================================================== -->
@@ -205,7 +188,6 @@
           <button class="btn-primary" @click="enviarDatos">Guardar</button>
           <button class="btn-secondary" @click="limpiar">Limpiar</button>
         </div>
-        <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
       </div>
 
   <!-- pendientes -->
@@ -284,9 +266,7 @@
         <div class="field-group">
           <label class="field-label">Fecha de Pago</label>
           <input type="date" v-model="formSaldar.fecha" class="field-control">
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.fecha" class="error-text">{{ modalErrors.fecha }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
       </div>
 
@@ -294,16 +274,12 @@
         <div class="field-group">
           <label class="field-label">DPI/NIT/CF</label>
           <input type="text" v-model="formSaldar.identificacion" class="field-control">
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.identificacion" class="error-text">{{ modalErrors.identificacion }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
         <div class="field-group">
           <label class="field-label">Nombre/CF</label>
           <input type="text" v-model="formSaldar.nombre" class="field-control">
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.nombre" class="error-text">{{ modalErrors.nombre }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
         <div class="field-group full-width">
           <label class="field-label">Observaciones</label>
@@ -318,16 +294,12 @@
             <option value="caja">Caja</option>
             <option value="bancos">Bancos</option>  
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.tipo" class="error-text">{{ modalErrors.tipo }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
         <div class="field-group">
           <label class="field-label">Monto a Pagar (Q)</label>
           <input type="text" v-model="formSaldar.monto" class="field-control" placeholder="0.00">
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.monto" class="error-text">{{ modalErrors.monto }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
       </div>
 
@@ -342,9 +314,7 @@
             <option value="Depósitos">Depósitos</option>
             <option value="Cheque">Cheque</option> 
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.documento" class="error-text">{{ modalErrors.documento }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
         
         <div class="field-group">
@@ -354,25 +324,19 @@
               {{ cuentaN.banco_y_cuenta }}
             </option> 
           </select>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.cuenta_bancaria" class="error-text">{{ modalErrors.cuenta_bancaria }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
         
         <div class="field-group">
           <label class="field-label">No. Documento</label>
           <input type="text" v-model="formSaldar.numero_documento" class="field-control">
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.numero_documento" class="error-text">{{ modalErrors.numero_documento }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
         
         <div class="field-group">
           <label class="field-label">Fecha Emisión</label>
           <input type="date" v-model="formSaldar.fecha_emision" class="field-control">
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
           <small v-if="modalErrors.fecha_emision" class="error-text">{{ modalErrors.fecha_emision }}</small>
-          <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
         </div>
       </div>
 
@@ -407,7 +371,7 @@
       </div>
     </div>
   </div>
-<!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
+  
   <!-- ******* MODAL DE DATOS ENVIADOS CORRECTAMENTE ******* -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content egreso-card" style="max-width: 450px; text-align: center;">
@@ -441,7 +405,6 @@
       </div>
     </div>
   </div>
-  <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
 </template>
 
 
@@ -450,12 +413,13 @@ import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '../../styles/css/EgresosIngresosC.css'
+import '../../styles/css/EgresosIngresosC.css';
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'Accordion',
   setup() {
-    const router = useRouter(); // ==================================================================================================================
+    const router = useRouter();
     const otroValor = ref('opcion1');
     const mostrarDivisionCuatro = ref(true);
     const fecha = ref('');
@@ -475,7 +439,6 @@ export default {
     const cuentaBName = ref('');
     const cuentas_bancarias = reactive([]);
     const es_pendiente = ref(false);
-    // ==================================================================================================================
     const error = ref('');
     const mostrarModalExitoFormulario = ref(false);
     const mostrarModalError = ref(false);
@@ -507,7 +470,7 @@ export default {
       numero_documento: '',
       fecha_emision: ''
     });
-    // ==================================================================================================================
+    
     const successMessage = ref(''); // Estado para mensajes de éxito
     const PROYECTO_ID = '1';       // Agrícola
     const CLASIFICACION_ID = '2'; // Egresos (Cuentas por Pagar)
@@ -552,7 +515,7 @@ export default {
       es_pendiente.value = false;
       successMessage.value = ''; // Limpiar el mensaje de éxito
     };
-// ==================================================================================================================
+
     // Función que asigna el error y lo borra a los 5 segundos
     const mostrarErrorCampo = (campo, mensaje) => {
       fieldErrors[campo] = mensaje;
@@ -591,7 +554,7 @@ export default {
           cerrarModalError(); // Cerrar error
         }
       }
-    };// ==================================================================================================================
+    };
 
     const controlarVisibilidadDivisionCuatro = () => {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
@@ -655,23 +618,23 @@ export default {
           cuentas.splice(0, cuentas.length, ...response.data);
           console.log(response.data); 
         })
-        .catch((err) => { // ==================================================================================================================
+        .catch((err) => {
           console.error(err);
           error.value = 'Hubo un problema al cargar las cuentas contables';
           manejarErrorRuta(err, router)
-        }); // ==================================================================================================================
+        });
     };
 
     const cargarBancosNoCuenta = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data); 
+          //console.log(response.data); 
         })
-        .catch((err) => { // ==================================================================================================================
+        .catch((err) => {
           console.error(err);
           error.value = 'Hubo un problema al cargar las cuentas de bancos';
-          manejarErrorRuta(err, router); // ==================================================================================================================
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -679,34 +642,34 @@ export default {
       axios.get('http://127.0.0.1:8000/in_eg/getByNombreB')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data); 
+          //console.log(response.data); 
         })
-        .catch((err) => { // ==================================================================================================================
+        .catch((err) => {
           console.error(err);
           error.value = 'Hubo un problema al cargar el catálogo de bancos';
           manejarErrorRuta(err, router);
-        }); // ==================================================================================================================
+        });
     };
-// ==================================================================================================================
-    const cerrarModalExitoFormulario = () => {
+
+  const cerrarModalExitoFormulario = () => {
         mostrarModalExitoFormulario.value = false;
         limpiar(); // Llamamos a tu función limpiar() que ya resetea todos los campos
     };
 
     const cerrarModalError = () => {
         mostrarModalError.value = false;
-        mensajeError.value = ''; // Limpiamos el mensaje al cerrar // ==================================================================================================================
+        mensajeError.value = ''; // Limpiamos el mensaje al cerrar
     };
 
     const enviarDatos = () => {
-    let tieneErrores = false;
+      
+      let tieneErrores = false;
 
       // 1. Validaciones de campos vacíos
       if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
       if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
       if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
       if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
-      // if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
       if (!cuentaCMB.value) { mostrarErrorCampo('cuentaCMB', 'Falta por llenar datos'); tieneErrores = true; }
 
       // 2. Validación de Monto (Vacío y Formato)
@@ -729,61 +692,49 @@ export default {
 
       // Si se encontró al menos un error, detenemos el envío
       if (tieneErrores) return; 
-// ==================================================================================================================
+
       // Definimos el valor del checkbox como 1 o 0
       const valorEsPendiente = es_pendiente.value ? 1 : 0;
 
-      if (tipo.value === 'caja') { 
-        axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaAG', {
-          fecha: fecha.value,
-          identificacion: identificacion.value,
-          nombre: nombre.value,
-          descripcion: descripcion.value,
-          monto: monto.value,
-          tipo: tipo.value,
-          cuenta: cuentaCMB.value,
-          flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
-          es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
-        })
-        .then(response => {// ==================================================================================================================
-          // AQUI ACTIVAMOS EL MODAL
-          mostrarModalExitoFormulario.value = true;
-          console.log(response.data); 
+      // 4. Armamos UN SOLO objeto de datos
+      // (Laravel simplemente ignorará los datos de bancos si la petición va a la ruta de caja)
+      const data = {
+        fecha: fecha.value,
+        identificacion: identificacion.value,
+        nombre: nombre.value,
+        descripcion: descripcion.value,
+        monto: monto.value,
+        tipo: tipo.value,
+        cuenta: cuentaCMB.value,
+        documento: documento.value,
+        numero_documento: numero_documento.value,
+        fecha_emision: fecha_emision.value,
+        cuenta_bancaria: cuentaBName.value,
+        flujo_contable: 'EGRESOS', // <-- ¡Valor fijo de Egresos!
+        es_pendiente: valorEsPendiente, 
+      };
+
+      // 5. Elegimos la ruta correcta dinámicamente
+      const url = tipo.value === 'caja'
+        ? 'http://127.0.0.1:8000/in_eg/createALLINEGCajaAG'
+        : 'http://127.0.0.1:8000/in_eg/createALLEGAG'; // <-- Ruta para bancos
+
+      // 6. Hacemos UNA SOLA petición a Axios
+      axios.post(url, data)
+        .then(response => {
+            mostrarModalExitoFormulario.value = true;
+            //console.log(response.data);
         })
         .catch(error => {
-          console.error(error);
+          console.error("Error al guardar egreso:", error);
+          
+          // Opcional: si sigues usando error.value para tu vista, déjalo aquí
           error.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
-          manejarErrorRuta(error, router); // ===================================================================================================================================
+          
+          // Llamamos a tu manejador de errores global
+          manejarErrorRuta(error, router); 
         });
-        // Si no es "caja", enviar los datos como lo estás haciendo actualmente
-        const data = {
-          fecha: fecha.value,
-          identificacion: identificacion.value,
-          nombre: nombre.value,
-          descripcion: descripcion.value,
-          monto: monto.value,
-          tipo: tipo.value,
-          cuenta: cuentaCMB.value,
-          documento: documento.value,
-          numero_documento: numero_documento.value,
-          fecha_emision: fecha_emision.value,
-          cuenta_bancaria: cuentaBName.value,
-          flujo_contable: 'EGRESOS', // <-- ¡Valor fijo requerido por el backend!
-          es_pendiente: valorEsPendiente, // <-- Valor del checkbox (0 o 1)
-        };
-        axios.post('http://127.0.0.1:8000/in_eg/createALLEGAG', data) // ==================================================================================================================
-          .then(response => {
-            // AQUI ACTIVAMOS EL MODAL
-            mostrarModalExitoFormulario.value = true;
-            console.log(response.data); 
-          })
-          .catch(error => {
-            console.error(error);
-            error.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
-            manejarErrorRuta(error, router);
-        });
-      }
-    };// ==================================================================================================================
+    };
 
     // Función para cargar los pendientes desde la API
     const cargarPendientes = () => {
@@ -805,10 +756,10 @@ export default {
             console.error("Error al cargar pendientes:", err);
             manejarErrorRuta(err, router);
         });
-    }; // ==================================================================================================================
+    };
 
     // ** ENVIAR SALDADO **
-    const enviarSaldado = () => {// ==================================================================================================================
+    const enviarSaldado = () => {
         let tieneErrores = false;
 
         // 1. Validaciones de campos básicos
@@ -836,7 +787,7 @@ export default {
 
         // Detener la ejecución si hay al menos un error
         if (tieneErrores) return;
-// ================================================================================================================== 
+
         // Preparar payload
         const payload = {
             deuda_original_id: formSaldar.deuda_original_id,
@@ -868,14 +819,14 @@ export default {
                 limpiar();
                 cargarPendientes(); // Recargar la tabla para ver cambios
             })
-            .catch(err => {// ==================================================================================================================
+            .catch(err => {
                 console.error(err);
                 error.value = "Error al guardar el egreso. Verifique datos antes de enviar o conexión con el servidor.";
                 manejarErrorRuta(err, router);
-            });// ==================================================================================================================
+            });
     };
 
-    onMounted(() => {// ==================================================================================================================
+    onMounted(() => {
       cargarCuentas();
       cargarBancos();
       cargarBancosNoCuenta();
@@ -887,7 +838,7 @@ export default {
     onUnmounted(() => {
       // Apagamos el detector de teclado al salir de la pantalla
       window.removeEventListener('keydown', manejarEnter);
-    });// ==================================================================================================================
+    });
 
     return {
       otroValor,
@@ -926,7 +877,7 @@ export default {
       cargarBancos,
       controlarVisibilidadDivisionCuatro,
       cargarBancosNoCuenta,
-      limpiar,// ==================================================================================================================
+      limpiar,
       fieldErrors,
       modalErrors,
       error,
@@ -934,7 +885,7 @@ export default {
       cerrarModalExitoFormulario,
       mostrarModalError,
       mensajeError,
-      cerrarModalError// ==================================================================================================================
+      cerrarModalError
     }
   },
 }

@@ -24,6 +24,7 @@
         {{ periodo }}
       </option>
     </select>
+    <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
   </div>
 
   <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
@@ -36,6 +37,7 @@
       min="1900"
       max="2100"
     />
+    <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
   </div>
 
   <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
@@ -46,16 +48,19 @@
         {{ mes }}
       </option>
     </select>
+    <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
   </div>
 
   <div class="field-group" v-if="selectedPeriodo === 'Anual'">
     <label class="field-label">Fecha inicial</label>
     <input type="date" v-model="fechaInicio" class="field-control" />
+    <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
   </div>
 
   <div class="field-group" v-if="selectedPeriodo === 'Anual'">
     <label class="field-label">Fecha final</label>
     <input type="date" v-model="fechaFin" class="field-control" />
+    <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
   </div>
 
 </div>
@@ -71,6 +76,7 @@
             class="field-control"
             placeholder="Nombre de la responsable de capilla"
           />
+          <small v-if="fieldErrors.responsable" class="error-text">{{ fieldErrors.responsable }}</small>
         </div>
 
         <div class="field-group">
@@ -81,6 +87,7 @@
             class="field-control"
             placeholder="Nombre de la hermana sirviente"
           />
+          <small v-if="fieldErrors.hermanaSirviente" class="error-text">{{ fieldErrors.hermanaSirviente }}</small>
         </div>
 
         <div class="field-group">
@@ -91,6 +98,7 @@
             class="field-control"
             placeholder="Nombre de la economa provincial"
           />
+          <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
         </div>
       </div>
 
@@ -212,22 +220,41 @@
         <strong>Vista previa</strong>.
       </div>
 
-   
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
   
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import '../../styles/css/InformeInEgr.css'
+import '../../styles/css/GlobalAlertsModals.css';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'ReporteCapillaFinal',
   setup() {
     // Form fields
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const responsable = ref('');
     const hermanaSirviente = ref('');
     const economaProvincial = ref('');
@@ -247,6 +274,48 @@ export default {
     const currentYear = now.getFullYear();
     const fechaHoy = now.toLocaleDateString('es-ES');
 
+    const fieldErrors = reactive({
+      selectedPeriodo: '',
+      selectedYear: '',
+      selectedMes: '',
+      fechaInicio: '',
+      fechaFin: '',
+      responsable: '',
+      hermanaSirviente: '',
+      economaProvincial: '',
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
+
 
     const construirPayload = () => {
     const tipo = selectedPeriodo.value.toLowerCase();
@@ -261,8 +330,8 @@ export default {
     if (selectedPeriodo.value === 'Anual') {
       return {
         ...base,
-        fecha_inicio: fechaInicio.value,
-        fecha_fin: fechaFin.value
+        fecha_inicial: fechaInicio.value,
+        fecha_final: fechaFin.value
       };
     }
     return {
@@ -500,9 +569,32 @@ export default {
       return rows;
     });
 
+    const validarFormulario = () => {
+      let tieneErrores = false;
+
+      // 1. Validar campos que SIEMPRE están visibles
+      if (!selectedPeriodo.value) { mostrarErrorCampo('selectedPeriodo', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!responsable.value) { mostrarErrorCampo('responsable', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!hermanaSirviente.value) { mostrarErrorCampo('hermanaSirviente', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!economaProvincial.value) { mostrarErrorCampo('economaProvincial', 'Falta por llenar datos'); tieneErrores = true; }
+
+      // 2. Validar campos dinámicos según el período
+      if (selectedPeriodo.value === 'Anual') {
+        if (!fechaInicio.value) { mostrarErrorCampo('fechaInicio', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!fechaFin.value) { mostrarErrorCampo('fechaFin', 'Falta por llenar datos'); tieneErrores = true; }
+      } else if (selectedPeriodo.value) {
+        // Para Mensual, Trimestral o Semestral
+        if (!selectedYear.value) { mostrarErrorCampo('selectedYear', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!selectedMes.value) { mostrarErrorCampo('selectedMes', 'Falta por llenar datos'); tieneErrores = true; }
+      }
+
+      return !tieneErrores; // Retorna true si todo está bien, false si hay errores
+    };
+
     const mostrarTabla = async () => {
+      if (!validarFormulario()) return;
       try {
-       const payload = construirPayload();
+      const payload = construirPayload();
 
     const response = await axios.post(
       'http://127.0.0.1:8000/in_eg/reporteFinalCA',
@@ -513,6 +605,7 @@ export default {
       } catch (error) {
         console.error('Error al obtener datos del reporte:', error);
         reporteData.value = null;
+        manejarErrorRuta(error, router);
       }
     };
 
@@ -532,6 +625,7 @@ export default {
 
     // Generar PDF (tu lógica original con firmas)
     const generarPDF = async () => {
+      if (!validarFormulario()) return;
       try {
            const payload = construirPayload();
 
@@ -779,8 +873,10 @@ export default {
 
         const blob = doc.output('blob');
         saveAs(blob, 'informe_final_capilla.pdf');
+        mostrarModalExitoFormulario.value = true;
       } catch (error) {
         console.error('Error al generar el PDF:', error);
+        manejarErrorRuta(error, router);
       }
     };
 
@@ -810,7 +906,11 @@ export default {
       actualizarMeses,
       mostrarTabla,
       limpiar,
-      generarPDF
+      generarPDF,
+      /////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario
     };
   }
 };

@@ -29,6 +29,7 @@
                 {{ bank.banco }}
               </option>
             </select>
+            <small v-if="fieldErrors.selectedBancos" class="error-text">{{ fieldErrors.selectedBancos }}</small>
           </div>
         </div>
 
@@ -42,6 +43,7 @@
               class="field-control"
               placeholder="Ingrese el nombre del banco"
             />
+            <small v-if="fieldErrors.banco" class="error-text">{{ fieldErrors.banco }}</small>
           </div>
         </div>
 
@@ -55,13 +57,8 @@
             class="field-control"
             placeholder="1 = Activo, 0 = Inactivo"
           />
+          <small v-if="fieldErrors.estado" class="error-text">{{ fieldErrors.estado }}</small>
         </div>
-      </div>
-
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
       </div>
 
       <!-- Botones -->
@@ -76,18 +73,37 @@
           Limpiar
         </button>
       </div>
-    
- 
+
+  <!-- **MODAL DE CREACIÓN/ACTUALIZACIÓN CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Operación Exitosa!</h3>
+        <p style="color: #6c757d;">Los datos del banco se han guardado/actualizado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import '../../styles/css/Bancos.css';
+import '../../styles/css/GlobalAlertsModals.css';
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'Modals',
   setup() {
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const banco = ref('');
     const estado = ref(null);
     const selectedBancos = ref('');
@@ -96,14 +112,52 @@ export default {
     const successMessage = ref('');
     const isDisabled = ref(true);
 
+    const fieldErrors = reactive({
+      selectedBancos: '',
+      banco: '',
+      estado: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
+
     const cargarBancos = () => {
       axios
         .get('http://127.0.0.1:8000/bancos/get')
         .then((response) => {
           bancos.splice(0, bancos.length, ...response.data);
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar bancos.';
+        .catch((e) => {
+          console.error("Error al cargar bancos:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
@@ -119,73 +173,70 @@ export default {
           estado.value = bancoData.estado;
           isDisabled.value = false;
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar datos del banco.';
+        .catch((e) => {
+          console.error("Error al cargar datos del banco seleccionado:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
     const insertar = () => {
-      errorMessage.value = '';
-      successMessage.value = '';
-
+      // 1. Validación
       if (!banco.value) {
-        errorMessage.value =
-          'Por favor, completa el campo del nombre del banco.';
+        mostrarErrorCampo('banco', 'Por favor, ingrese el nombre del banco.');
         return;
       }
 
+      // 2. Preparar datos
       const datos = { banco: banco.value };
-
-      if (estado.value !== null) {
+      if (estado.value !== null && estado.value !== '') {
         datos.estado = estado.value;
       }
 
+      // 3. Petición Axios
       axios
         .post('http://127.0.0.1:8000/bancos/create', datos)
         .then(() => {
-          successMessage.value = 'Banco guardado correctamente.';
+          mostrarModalExitoFormulario.value = true; // <-- MODAL
           cargarBancos();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al guardar el banco.';
+        .catch((e) => {
+          console.error("Error al guardar banco:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
     const actualizar = () => {
-      errorMessage.value = '';
-      successMessage.value = '';
+      // 1. Validaciones
+      let tieneErrores = false;
 
       if (!selectedBancos.value) {
-        errorMessage.value = 'Por favor, selecciona un banco.';
-        return;
+        mostrarErrorCampo('selectedBancos', 'Por favor, selecciona un banco para actualizar.');
+        tieneErrores = true;
       }
 
-      const datos = {};
-
-      if (banco.value.trim() !== '') {
-        datos.banco = banco.value.trim();
+      if (!banco.value) {
+        mostrarErrorCampo('banco', 'El nombre no puede estar vacío.');
+        tieneErrores = true;
       }
 
-      if (estado.value !== null) {
+      if (tieneErrores) return;
+
+      // 2. Preparar datos
+      const datos = { banco: banco.value.trim() };
+      if (estado.value !== null && estado.value !== '') {
         datos.estado = estado.value;
       }
 
-      if (Object.keys(datos).length === 0) {
-        errorMessage.value = 'No hay campos para actualizar.';
-        return;
-      }
-
+      // 3. Petición Axios
       axios
-        .put(
-          `http://127.0.0.1:8000/bancos/updatebyname/${selectedBancos.value}`,
-          datos
-        )
+        .put(`http://127.0.0.1:8000/bancos/updatebyname/${selectedBancos.value}`, datos)
         .then(() => {
-          successMessage.value = 'Banco actualizado correctamente.';
+          mostrarModalExitoFormulario.value = true; // <-- MODAL
           cargarBancos();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al actualizar el banco.';
+        .catch((e) => {
+          console.error("Error al actualizar banco:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
@@ -193,8 +244,6 @@ export default {
       banco.value = '';
       estado.value = null;
       selectedBancos.value = '';
-      errorMessage.value = '';
-      successMessage.value = '';
       isDisabled.value = true;
     };
 
@@ -211,7 +260,11 @@ export default {
       cargarDatosBanco,
       errorMessage,
       successMessage,
-      isDisabled
+      isDisabled,
+      /////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario  
     };
   }
 };

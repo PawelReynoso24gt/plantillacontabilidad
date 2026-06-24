@@ -19,6 +19,7 @@
           <option value="caja">Caja</option>
           <option value="bancos">Bancos</option>
         </select>
+        <small v-if="fieldErrors.tipo" class="error-text">{{ fieldErrors.tipo }}</small>
       </div>
     </div>
 
@@ -27,6 +28,7 @@
       <div class="field-group">
         <label class="field-label">Fecha</label>
         <input type="date" v-model="fecha" class="field-control" />
+        <small v-if="fieldErrors.fecha" class="error-text">{{ fieldErrors.fecha }}</small>
       </div>
     </div>
 
@@ -35,11 +37,13 @@
       <div class="field-group">
         <label class="field-label">DPI/NIT/CF</label>
         <input type="text" v-model="identificacion" class="field-control" />
+        <small v-if="fieldErrors.identificacion" class="error-text">{{ fieldErrors.identificacion }}</small>
       </div>
 
       <div class="field-group">
         <label class="field-label">Nombre/CF</label>
         <input type="text" v-model="nombre" class="field-control" />
+        <small v-if="fieldErrors.nombre" class="error-text">{{ fieldErrors.nombre }}</small>
       </div>
 
       <div class="field-group full-width">
@@ -52,7 +56,8 @@
     <div class="division-container division-inline">
       <div class="field-group">
         <label class="field-label">Monto</label>
-        <input type="text" v-model="monto" class="field-control" />
+        <input type="text" v-model="monto" class="field-control" placeholder="0.00"/>
+        <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
       </div>
     </div>
 
@@ -68,6 +73,7 @@
           <option value="Depósitos">Depósitos</option>
           <option value="Cheque">Cheque</option>
         </select>
+        <small v-if="fieldErrors.documento" class="error-text">{{ fieldErrors.documento }}</small>
       </div>
 
       <div class="field-group">
@@ -85,6 +91,7 @@
             {{ c.label }}
           </option>
         </select>
+        <small v-if="fieldErrors.idCuentaBancaria" class="error-text">{{ fieldErrors.idCuentaBancaria }}</small>
       </div>
 
       <div class="field-group">
@@ -94,6 +101,7 @@
           v-model="numero_documento"
           class="field-control"
         />
+        <small v-if="fieldErrors.numero_documento" class="error-text">{{ fieldErrors.numero_documento }}</small>
       </div>
 
       <div class="field-group">
@@ -103,14 +111,21 @@
           v-model="fecha_emision"
           class="field-control"
         />
+        <small v-if="fieldErrors.fecha_emision" class="error-text">{{ fieldErrors.fecha_emision }}</small>
       </div>
     </div>
 
-    <!-- Mensajes -->
-    <div class="messages-container">
-      <p v-if="error" class="text-danger">{{ error }}</p>
-      <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
-    </div>
+    <div class="bottom-actions-bar">
+        <div class="messages-area">
+          <!-- <transition-group name="lista-errores" tag="div" class="errores-stack">
+            <div v-for="err in erroresLista" :key="err.id" class="alert-inline-error">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ err.texto }}</span>
+            </div>
+          </transition-group> -->
+        
+          <p v-if="successMessage" class="text-success" style="margin: 0;">{{ successMessage }}</p>
+      </div>
 
     <!-- Botones principales -->
     <div class="form-actions">
@@ -123,6 +138,7 @@
       <button class="btn-ghost" @click="toggleMostrarTabla">
         {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
       </button>
+    </div>
     </div>
 
     <!-- Tabla de anticipos (colapsable) -->
@@ -194,82 +210,122 @@
         <div class="modal-form">
           <div class="input-container">
             <label>Nomenclatura</label>
-            <input type="text" v-model="modalData.nomenclatura" />
+            <div style="width: 100%;">
+              <input type="text" v-model="modalData.nomenclatura" style="width: 100%;" />
+              <small v-if="modalErrors.nomenclatura" class="error-text">{{ modalErrors.nomenclatura }}</small>
+            </div>
           </div>
           <div class="input-container">
             <label>Cuenta</label>
-            <input type="text" v-model="modalData.id_cuentas" />
+              <div style="width: 100%;">
+                <input type="text" v-model="modalData.id_cuentas" style="width: 100%;" />
+                <small v-if="modalErrors.id_cuentas" class="error-text">{{ modalErrors.id_cuentas }}</small>
+              </div> 
           </div>
           <div class="input-container">
             <label>Fecha</label>
-            <input type="date" v-model="modalData.fecha" />
+              <div style="width: 100%;">
+                <input type="date" v-model="modalData.fecha" style="width: 100%;" />
+                <small v-if="modalErrors.fecha" class="error-text">{{ modalErrors.fecha }}</small>
+              </div>
           </div>
           <div class="input-container">
             <label>DPI/NIT/CF</label>
-            <input type="text" v-model="modalData.identificacion" />
+              <div style="width: 100%;">
+                <input type="text" v-model="modalData.identificacion" style="width: 100%;" />
+                <small v-if="modalErrors.identificacion" class="error-text">{{ modalErrors.identificacion }}</small>
+              </div>
           </div>
           <div class="input-container">
             <label>Nombre</label>
-            <input type="text" v-model="modalData.nombre" />
+              <div style="width: 100%;">
+                <input type="text" v-model="modalData.nombre" style="width: 100%;" />
+                <small v-if="modalErrors.nombre" class="error-text">{{ modalErrors.nombre }}</small>
+              </div>
           </div>
           <div class="input-container">
             <label>Observaciones</label>
-            <input type="text" v-model="modalData.descripcion" />
+            <div style="width: 100%;">
+                <input type="text" v-model="modalData.descripcion" style="width: 100%;" />
+              </div>
           </div>
           <div class="input-container">
             <label>Monto</label>
-            <input type="text" v-model="modalData.monto" />
+            <div style="width: 100%;">
+              <input type="text" v-model="modalData.monto" style="width: 100%;" />
+                <small v-if="modalErrors.monto" class="error-text">{{ modalErrors.monto }}</small>
+              </div>
           </div>
           <div class="input-container">
             <label>Monto a abonar</label>
-            <input
-              type="text"
-              v-model="modalData.monto_abono"
-              placeholder="0.00"
-            />
+            <div style="width: 100%;">
+                <input
+                  type="text"
+                  v-model="modalData.monto_abono"
+                  placeholder="0.00"
+                />
+                <small v-if="modalErrors.monto_abono" class="error-text">{{ modalErrors.monto_abono }}</small>
+              </div>
           </div>
           <div class="input-container">
             <label>Tipo</label>
-            <select v-model="modalData.tipo">
-              <option value="caja">caja</option>
-              <option value="bancos">bancos</option>
-            </select>
+            <div style="width: 100%;">
+                <select v-model="modalData.tipo" style="width: 100%;">
+                  <option value="caja">caja</option>
+                  <option value="bancos">bancos</option>
+                </select>
+                <small v-if="modalErrors.tipo" class="error-text">{{ modalErrors.tipo }}</small>
+              </div>
           </div>
 
           <template v-if="modalData.tipo === 'bancos'">
             <div class="input-container">
               <label>Documento</label>
-              <select v-model="modalData.documento">
-                <option value="Transferencia">Transferencia</option>
-                <option value="Depósitos">Depósitos</option>
-                <option value="Cheque">Cheque</option>
-              </select>
+              <div style="width: 100%;">
+                  <select v-model="modalData.documento" style="width: 100%;">
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Depósitos">Depósitos</option>
+                    <option value="Cheque">Cheque</option>
+                  </select>
+                  <small v-if="modalErrors.documento" class="error-text">{{ modalErrors.documento }}</small>
+                </div>
             </div>
             <div class="input-container">
               <label>Cuenta bancaria</label>
-              <select v-model.number="modalData.idCuentaBancaria">
-                <option
-                  v-for="c in cuentas_bancarias"
-                  :key="c.id"
-                  :value="c.id"
-                >
-                  {{ c.label }}
-                </option>
-              </select>
+              <div style="width: 100%;">
+                  <select v-model.number="modalData.idCuentaBancaria" style="width: 100%;">
+                    <option
+                      v-for="c in cuentas_bancarias"
+                      :key="c.id"
+                      :value="c.id"
+                    >
+                      {{ c.label }}
+                    </option>
+                  </select>
+                  <small v-if="modalErrors.idCuentaBancaria" class="error-text">{{ modalErrors.idCuentaBancaria }}</small>
+                </div>
             </div>
             <div class="input-container">
               <label>No. documento</label>
-              <input
-                type="text"
-                v-model="modalData.numero_documento"
-              />
+                <div style="width: 100%;">
+                  <input
+                    type="text"
+                    v-model="modalData.numero_documento"
+                    style="width: 100%;"
+                  />
+                  <small v-if="modalErrors.numero_documento" class="error-text">{{ modalErrors.numero_documento }}</small>
+                </div>
             </div>
             <div class="input-container">
               <label>Fecha emisión</label>
-              <input
-                type="date"
-                v-model="modalData.fecha_emision"
-              />
+              <div style="width: 100%;">
+                  <input
+                    type="date"
+                    v-model="modalData.fecha_emision"
+                    style="width: 100%;"
+                  />
+                  <small v-if="modalErrors.fecha_emision" class="error-text">{{ modalErrors.fecha_emision }}</small>
+                </div>
             </div>
           </template>
         </div>
@@ -285,16 +341,59 @@
       </div>
     </div>
   </div>
+
+    <!-- **MODAL DE INGRESO CORRECTO** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Registro Exitoso!</h3>
+        <p style="color: #6c757d;">El ingreso se ha guardado correctamente en el sistema.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ******* MODAL DE ÉXITO ******* -->
+  <div v-if="mostrarModalExito" class="modal-overlay">
+    <div class="modal-content egreso-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Pago Exitoso!</h3>
+        <p style="color: #6c757d;">{{ datosExito.mensaje || 'El abono se ha registrado correctamente.' }}</p>
+      </div>
+      
+      <div class="division-container" style="background-color: #f9f9f9; margin-bottom: 1.5rem;">
+        <div style="text-align: center; width: 100%;">
+          <p style="margin: 0; color: #666; font-size: 0.9rem;">Saldo Pendiente Restante</p>
+          <h2 style="margin: 0.5rem 0; color: #292b57; font-size: 1.8rem;">Q {{ datosExito.saldo }}</h2>
+        </div>
+      </div>
+
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExito" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/AnticipoComprasA.css';
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'Accordion',
   setup() {
+    const router = useRouter();
     const otroValor = ref('opcion1');
     const mostrarDivisionCuatro = ref(true);
     const fecha = ref('');
@@ -314,11 +413,53 @@ export default {
     const cuentaBName = ref('');
     const cuentas_bancarias = ref([]);
     const error = ref('');
+    const mostrarModalExitoFormulario = ref(false);
+    const mensajeError = ref('');
+    // Objeto para guardar el error específico de cada campo
+    const fieldErrors = reactive({
+      tipo: '',
+      fecha: '',
+      identificacion: '',
+      nombre: '',
+      descripcion: '',
+      cuentaCMB: '',
+      monto: '',
+      documento: '',
+      cuentaBName: '',
+      numero_documento: '',
+      fecha_emision: '',
+      nomenclatura: '',
+      id_cuentas: '',
+      monto_abono: '',
+      idCuentaBancaria: ''
+    });
+    // Objeto reactivo exclusivo para los errores del Modal de Saldar
+    const modalErrors = reactive({
+      fecha: '',
+      identificacion: '',
+      nombre: '',
+      descripcion: '',
+      tipo: '',
+      monto: '',
+      documento: '',
+      cuenta_bancaria: '',
+      numero_documento: '',
+      fecha_emision: '',
+      nomenclatura: '',
+      id_cuentas: '',
+      monto_abono: '',
+      idCuentaBancaria: ''
+    });
     const successMessage = ref('');
     const idCuentaBancaria = ref(null);
     const anticipoRows = ref([]);
     const loading = ref(false);
     const showTabla = ref(false);
+    const mostrarModalExito = ref(false);
+    const datosExito = reactive({
+        mensaje: '',
+        saldo: ''
+    });
 
     const limpiar = () => {
       tipo.value = '';
@@ -332,8 +473,53 @@ export default {
       cuentaBName.value = '';
       numero_documento.value = '';
       fecha_emision.value = '';
-      error.value = '';
       successMessage.value = '';
+      idCuentaBancaria.value = '';
+    };
+
+
+    // Función que asigna el error y lo borra a los 5 segundos
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    // Función para manejar los errores del modal y borrarlos a los 5s
+    const mostrarErrorModal = (campo, mensaje) => {
+      modalErrors[campo] = mensaje;
+      setTimeout(() => {
+        modalErrors[campo] = '';
+      }, 5000);
+    };
+
+    const cerrarModalExito = () => {
+      mostrarModalExito.value = false;
+      limpiar();
+    };
+
+    // ==========================================
+    // DETECTOR DE TECLADO (ENTER PARA MODALES)
+    // ==========================================
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // Previene que el Enter haga cosas raras (como recargar la página si estuviera en un <form>)
+        event.preventDefault();
+
+        // Evaluamos qué modal está abierto actualmente:
+        if (mostrarModalExito.value) {
+          cerrarModalExito(); // Aceptar éxito de saldado
+        } 
+        else if (mostrarModalExitoFormulario.value) {
+          cerrarModalExitoFormulario(); // Aceptar éxito de guardado normal
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
     };
 
     const controlarVisibilidadDivisionCuatro = () => {
@@ -349,9 +535,11 @@ export default {
             idCuentaBancaria.value = Number(data[0].id);
           }
         })
-        .catch((e) =>
-          console.error('for-select:', e?.response?.data || e.message)
-        );
+        .catch((err) => {
+          console.error('for-select:', err?.response?.data || err.message);
+          error.value = 'Hubo un problema al cargar las cuentas de bancos';
+          manejarErrorRuta(err, router);
+        });
     };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
@@ -365,6 +553,8 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Hubo un problema al cargar las cuentas contables';
+          manejarErrorRuta(error, router);
         });
     };
 
@@ -376,6 +566,8 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Hubo un problema al cargar las cuentas de bancos';
+          manejarErrorRuta(error, router);
         });
     };
 
@@ -387,84 +579,78 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          error.value = 'Hubo un problema al cargar los bancos';
+          manejarErrorRuta(error, router);
         });
     };
 
     const enviarDatos = () => {
-      error.value = '';
-      successMessage.value = '';
+      let tieneErrores = false;
 
-      if (
-        !fecha.value ||
-        !identificacion.value ||
-        !nombre.value ||
-        !descripcion.value ||
-        !monto.value ||
-        (tipo.value === 'bancos' &&
-          (!documento.value ||
-            !idCuentaBancaria.value ||
-            !numero_documento.value ||
-            !fecha_emision.value))
-      ) {
-        error.value = 'Por favor, complete todos los campos.';
-        return;
+      // 1. Validaciones de campos vacíos principales
+      if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
+
+      // 2. Validación de Monto (Vacío y Formato Numérico)
+      if (!monto.value) {
+        mostrarErrorCampo('monto', 'Falta por llenar datos');
+        tieneErrores = true;
+      } else if (isNaN(monto.value)) {
+        mostrarErrorCampo('monto', 'Formato incorrecto (solo números)');
+        tieneErrores = true;
       }
 
-      if (tipo.value === 'caja') {
-        const payloadCaja = {
-          fecha: fecha.value,
-          identificacion: identificacion.value,
-          nombre: nombre.value,
-          descripcion: descripcion.value,
-          monto: monto.value,
-          tipo: 'caja',
-          cuenta: 'Anticipo de compras y gastos'
-        };
-        axios
-          .post(
-            'http://127.0.0.1:8000/in_eg/createAnticipoCompraCA',
-            payloadCaja
-          )
-          .then(() => {
-            successMessage.value = 'Datos enviados correctamente';
-          })
-          .catch(() => {
-            error.value =
-              'Error al enviar datos. Por favor, inténtelo de nuevo.';
-          });
-      } else {
-        const payloadBancos = {
-          fecha: fecha.value,
-          identificacion: identificacion.value,
-          nombre: nombre.value,
-          descripcion: descripcion.value,
-          monto: monto.value,
-          tipo: 'bancos',
-          cuenta: 'Anticipo de compras y gastos',
-          documento: documento.value,
-          numero_documento: numero_documento.value,
-          fecha_emision: fecha_emision.value,
-          id_cuentas_bancarias: idCuentaBancaria.value
-        };
-
-        if (!Number.isInteger(idCuentaBancaria.value)) {
-          error.value = 'Debes seleccionar una cuenta bancaria válida.';
-          return;
+      // 3. Validaciones adicionales si el tipo es 'bancos'
+      if (tipo.value === 'bancos') {
+        if (!documento.value) { mostrarErrorCampo('documento', 'Falta por llenar datos'); tieneErrores = true; }
+        
+        // Validación estricta para idCuentaBancaria (vacío o no entero)
+        if (!idCuentaBancaria.value) { 
+          mostrarErrorCampo('idCuentaBancaria', 'Falta por llenar datos'); 
+          tieneErrores = true; 
+        } else if (!Number.isInteger(idCuentaBancaria.value)) {
+          mostrarErrorCampo('idCuentaBancaria', 'Debes seleccionar una cuenta bancaria válida.');
+          tieneErrores = true;
         }
 
-        axios
-          .post(
-            'http://127.0.0.1:8000/in_eg/createAnticipoCompraCA',
-            payloadBancos
-          )
-          .then(() => {
-            successMessage.value = 'Datos enviados correctamente';
-          })
-          .catch((e) => {
-            console.error('Error axios:', e?.response?.data || e.message);
-            error.value = 'Error al enviar datos.';
-          });
+        if (!numero_documento.value) { mostrarErrorCampo('numero_documento', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!fecha_emision.value) { mostrarErrorCampo('fecha_emision', 'Falta por llenar datos'); tieneErrores = true; }
       }
+
+      // Si se detectó algún error en las validaciones, detenemos la ejecución
+      if (tieneErrores) return;
+
+      // 4. Armar UN SOLO objeto de datos (Payload)
+      const data = {
+        fecha: fecha.value,
+        identificacion: identificacion.value,
+        nombre: nombre.value,
+        descripcion: descripcion.value,
+        monto: monto.value,
+        tipo: tipo.value, // Envía 'caja' o 'bancos' dinámicamente
+        cuenta: 'Anticipo de compras y gastos', // Valor fijo
+        // Datos bancarios (el backend los ignorará automáticamente si es 'caja')
+        documento: documento.value,
+        numero_documento: numero_documento.value,
+        fecha_emision: fecha_emision.value,
+        id_cuentas_bancarias: idCuentaBancaria.value
+      };
+
+      //console.log('ENVIANDO ANTICIPO CAPILLA:', data);
+
+      // 5. Hacer la petición Axios a la ruta de CAPILLA (CA)
+      axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraCA', data)
+        .then(response => {
+          //console.log('ÉXITO:', response.data);
+          mostrarModalExitoFormulario.value = true; // Mostramos el modal de éxito
+        })
+        .catch(error => {
+          console.error("ERROR al guardar anticipo:", error?.response?.data || error.message);
+          manejarErrorRuta(error, router);
+        });
     };
 
     const fetchTablaAnticipoAG = async () => {
@@ -503,6 +689,7 @@ export default {
           'Error cargando tablaVistaAnticipoAG:',
           e?.response?.data || e.message
         );
+        manejarErrorRuta(e, router);
         anticipoRows.value = [];
       } finally {
         loading.value = false;
@@ -572,20 +759,49 @@ export default {
     };
 
     const saldarRegistroConfirm = async () => {
-      const montoAbono = parseFloat(
-        String(modalData.monto_abono).replace(/,/g, '')
-      );
-      const montoTotal =
-        parseFloat(String(modalData.monto).replace(/,/g, '')) || 0;
+      let tieneErrores = false;
+
+      // 1. Limpieza de montos y parseo seguro
+      const montoAbono = parseFloat(String(modalData.monto_abono || '').replace(/,/g, ''));
+      const montoTotal = parseFloat(String(modalData.monto || '').replace(/,/g, '')) || 0;
+
+      // 2. Validaciones generales de campos vacíos
+      if (!modalData.nomenclatura) { mostrarErrorModal('nomenclatura', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!modalData.id_cuentas) { mostrarErrorModal('id_cuentas', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!modalData.fecha) { mostrarErrorModal('fecha', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!modalData.identificacion) { mostrarErrorModal('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!modalData.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!modalData.tipo) { mostrarErrorModal('tipo', 'Falta por llenar datos'); tieneErrores = true; }
+
+      // 3. Validaciones Lógicas de Montos
       if (Number.isNaN(montoAbono) || montoAbono <= 0) {
-        error.value = 'Ingrese un monto a abonar válido mayor que 0.';
-        return;
-      }
-      if (montoAbono > montoTotal) {
-        error.value = 'El monto a abonar no puede ser mayor al monto total.';
-        return;
+        mostrarErrorModal('monto_abono', 'Ingrese un monto mayor a 0');
+        tieneErrores = true;
+      } else if (montoAbono > montoTotal) {
+        mostrarErrorModal('monto_abono', 'No puede ser mayor al total');
+        tieneErrores = true;
       }
 
+      // 4. Validaciones bancarias condicionales
+      if (modalData.tipo === 'bancos') {
+        if (!modalData.documento) { mostrarErrorModal('documento', 'Falta por llenar datos'); tieneErrores = true; }
+        
+        if (!modalData.idCuentaBancaria) { 
+            mostrarErrorModal('idCuentaBancaria', 'Falta por llenar datos'); 
+            tieneErrores = true; 
+        } else if (!Number.isInteger(modalData.idCuentaBancaria)) {
+            mostrarErrorModal('idCuentaBancaria', 'Cuenta inválida'); 
+            tieneErrores = true; 
+        }
+
+        if (!modalData.numero_documento) { mostrarErrorModal('numero_documento', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!modalData.fecha_emision) { mostrarErrorModal('fecha_emision', 'Falta por llenar datos'); tieneErrores = true; }
+      }
+
+      // Detenemos la ejecución si se activó algún error en pantalla
+      if (tieneErrores) return;
+
+      // 5. Armado de Payload
       const payload = {
         fecha:
           modalData.fecha || new Date().toISOString().slice(0, 10),
@@ -610,17 +826,15 @@ export default {
         payload.id_cuentas_bancarias = modalData.idCuentaBancaria || null;
       }
 
-      error.value = '';
       try {
         const url =
           'http://localhost:8000/saldar_anticipos/saldarAnticipoCA';
         await axios.post(url, payload);
-        successMessage.value = 'Registro saldado correctamente.';
-        fetchTablaAnticipoAG();
-        setTimeout(() => {
-          successMessage.value = '';
-        }, 3000);
-        showModal.value = false;
+        
+        showModal.value = false; // Cerramos el modal actual
+        mostrarModalExitoFormulario.value = true; // Abrimos modal de éxito
+        
+        fetchTablaAnticipoAG(); // Recargamos tabla
       } catch (e) {
         console.error(
           'Error al saldar:',
@@ -628,11 +842,19 @@ export default {
         );
         error.value =
           e?.response?.data?.message || 'Error al saldar el anticipo.';
+        manejarErrorRuta(e, router);
+        mensajeError.value = e?.response?.data?.message || 'Error al saldar el anticipo. Verifique su conexión.';
       }
     };
 
     onMounted(() => {
       cargarCuentasSelect();
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
     });
 
     return {
@@ -673,7 +895,14 @@ export default {
       modalData,
       openSaldarModal,
       closeModal,
-      saldarRegistroConfirm
+      saldarRegistroConfirm,
+      datosExito,
+      fieldErrors,
+      modalErrors,
+      mostrarModalExitoFormulario,
+      mostrarModalExito,
+      cerrarModalExitoFormulario,
+      mensajeError
     };
   }
 };

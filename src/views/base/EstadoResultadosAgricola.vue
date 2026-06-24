@@ -28,6 +28,7 @@
                 {{ periodo }}
               </option>
             </select>
+            <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
           </div>
 
      <!-- MES (solo si NO es ANUAL) -->
@@ -39,6 +40,7 @@
       {{ mes }}
     </option>
   </select>
+  <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
 </div>
 
           <!-- AÑO (solo si NO es ANUAL) -->
@@ -52,6 +54,7 @@
     max="2100"
     placeholder="Ej: 2026"
   />
+  <small v-if="fieldErrors.selectedAnio" class="error-text">{{ fieldErrors.selectedAnio }}</small>
 </div>
 
 <!-- FECHAS (solo si es ANUAL) -->
@@ -59,11 +62,13 @@
   <div class="select-group">
     <label class="field-label">Fecha Inicio</label>
     <input type="date" v-model="fechaInicio" class="field-control" />
+    <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
   </div>
 
   <div class="select-group">
     <label class="field-label">Fecha Fin</label>
     <input type="date" v-model="fechaFin" class="field-control" />
+    <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
   </div>
 </div>
         </div>
@@ -178,25 +183,43 @@
         Selecciona período y mes y presiona
         <span class="badge-ayuda">Vista previa</span>.
       </div>
-   
+
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 
 </template>
 
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import { useRouter } from 'vue-router';   
 import { aplicarNumeracion } from '../../../utils/numeracion';
 import '../../styles/css/EstadoResultadosAgricola.css'
+import '../../styles/css/GlobalAlertsModals.css';
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'ReporteAgricolaFinal',          
   setup() {
-    const router = useRouter();          
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);       
     const now = new Date();
     const currentYear = now.getFullYear();
     const fechaHoy = now.toLocaleDateString('es-ES');
@@ -204,15 +227,50 @@ export default {
     const selectedMes = ref('');
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
     const meses = ref([]);
-    const selectedAnio = ref(currentYear);
-    
-
+    const selectedAnio = ref('');
     const fechaInicio = ref('');
     const fechaFin = ref('');
-
     const reporteData = ref(null);
 
 
+    const fieldErrors = reactive({
+      selectedPeriodo: '',
+      selectedAnio: '',
+      selectedMes: '',
+      fechaInicio: '',
+      fechaFin: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
 
   const buildPayload = () => {
   const tipo = selectedPeriodo.value.toLowerCase();
@@ -450,8 +508,31 @@ export default {
       return aplicarNumeracion(rows);
     });
 
+    const validarFormulario = () => {
+      let tieneErrores = false;
+
+      // 1. Validar el campo obligatorio principal
+      if (!selectedPeriodo.value) { 
+        mostrarErrorCampo('selectedPeriodo', 'Falta por llenar datos'); 
+        tieneErrores = true; 
+      }
+
+      // 2. Validar campos dinámicos según el período
+      if (selectedPeriodo.value === 'Anual') {
+        // Validar rango de fechas para el reporte anual
+        if (!fechaInicio.value) { mostrarErrorCampo('fechaInicio', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!fechaFin.value) { mostrarErrorCampo('fechaFin', 'Falta por llenar datos'); tieneErrores = true; }
+      } else if (selectedPeriodo.value) {
+        // Validar Año y Mes para Mensual, Trimestral o Semestral
+        if (!selectedAnio.value) { mostrarErrorCampo('selectedAnio', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!selectedMes.value) { mostrarErrorCampo('selectedMes', 'Falta por llenar datos'); tieneErrores = true; }
+      }
+
+      return !tieneErrores; // Retorna true si todo está bien
+    };
 
     const mostrarTabla = async () => {
+      if (!validarFormulario()) return;
       try {
     const response = await axios.post(
       'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
@@ -461,6 +542,7 @@ export default {
       } catch (error) {
         console.error('Error al obtener datos del reporte:', error);
         reporteData.value = null;
+        manejarErrorRuta(error, router);
       }
     };
 
@@ -469,12 +551,13 @@ export default {
       selectedMes.value = '';
       meses.value = [];
       reporteData.value = null;
-      selectedAnio.value = currentYear;
+      selectedAnio.value = '';
       fechaInicio.value = '';
       fechaFin.value = '';
     };
 
     const generarPDF = async () => {
+      if (!validarFormulario()) return;
     try {
     const response = await axios.post(
       'http://127.0.0.1:8000/in_eg/getReporteEstadoResultadosAG',
@@ -621,8 +704,10 @@ export default {
 
     // ⬇️ AQUÍ CAMBIAMOS EL NOMBRE DEL ARCHIVO
     saveAs(blob, 'estado_resultados_agricola.pdf');
+    mostrarModalExitoFormulario.value = true;
   } catch (error) {
     console.error('Error al generar el PDF:', error);
+    manejarErrorRuta(error, router);
   }
 };
 
@@ -644,7 +729,11 @@ export default {
       irDetalleCuenta,
       selectedAnio,
       fechaInicio,
-      fechaFin,      
+      fechaFin,
+      /////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario
     };
   }
 };

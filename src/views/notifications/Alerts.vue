@@ -30,6 +30,7 @@
                 {{ project.usuarios }}
               </option>
             </select>
+            <small v-if="fieldErrors.selectedProject" class="error-text">{{ fieldErrors.selectedProject }}</small>
           </div>
 
           <!-- Usuario -->
@@ -41,6 +42,7 @@
               class="field-control"
               placeholder="Ingrese el nombre de usuario"
             />
+            <small v-if="fieldErrors.usuarios" class="error-text">{{ fieldErrors.usuarios }}</small>
           </div>
         </div>
 
@@ -56,6 +58,7 @@
                 class="field-control-inner"
                 placeholder="Ingrese la contraseña"
               />
+              <small v-if="fieldErrors.contrasenias" class="error-text">{{ fieldErrors.contrasenias }}</small>
               <button
                 type="button"
                 class="btn-inline"
@@ -76,15 +79,24 @@
               class="field-control"
               placeholder="Activo / Inactivo"
             />
+            <small v-if="fieldErrors.estado" class="error-text">{{ fieldErrors.estado }}</small>
           </div>
         </div>
       </div>
 
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
-      </div>
+      <!-- ** MENSAJE DE ADVERTENCIA Y BOTONES ** ========================================================================================== -->
+      <div class="bottom-actions-bar">
+        
+        <div class="messages-area">
+          <!-- <transition-group name="lista-errores" tag="div" class="errores-stack">
+            <div v-for="err in erroresLista" :key="err.id" class="alert-inline-error">
+              <span class="alert-icon">⚠️</span>
+              <span>{{ err.texto }}</span>
+            </div>
+          </transition-group> -->
+          
+          <p v-if="successMessage" class="text-success" style="margin: 0;">{{ successMessage }}</p>
+        </div>
 
       <!-- Botones -->
       <div class="form-actions">
@@ -98,19 +110,40 @@
           Limpiar
         </button>
       </div>
-   
+    </div>
+
+  <!-- ******* MODAL DE DATOS ENVIADOS CORRECTAMENTE ******* -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content egreso-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Operación Exitosa!</h3>
+        <p style="color: #6c757d;">El usuario se ha guardado/actualizado correctamente en el sistema.</p>
+      </div>
+      
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 
 </template>
 
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/Login.css';
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'Badges',
   setup() {
+    const router = useRouter();
     const usuarios = ref('');
     const contrasenias = ref('');
     const estado = ref('');
@@ -122,8 +155,45 @@ export default {
 
     const estadoenabled = computed(() => !!selectedProject.value);
 
+    const mostrarModalExitoFormulario = ref(false);
+    // Objeto para guardar el error específico de cada campo
+    const fieldErrors = reactive({
+      selectedProject: '',
+      usuarios: '',
+      contrasenias: '',
+      estado: ''
+    });
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); // Llamamos a tu función limpiar() que ya resetea todos los campos
+    };
+
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
+    };
+
+    // Función que asigna el error y lo borra a los 5 segundos
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    // ==========================================
+    // DETECTOR DE TECLADO (ENTER PARA MODALES)
+    // ==========================================
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // Previene que el Enter haga cosas raras (como recargar la página si estuviera en un <form>)
+        event.preventDefault();
+
+        // Evaluamos qué modal está abierto actualmente:
+        if (mostrarModalExitoFormulario.value) {
+          cerrarModalExitoFormulario(); // Aceptar éxito de guardado normal
+        } 
+      }
     };
 
     const cargarProyectos = () => {
@@ -132,8 +202,9 @@ export default {
         .then((response) => {
           projects.value = response.data;
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar usuarios.';
+        .catch((err) => {
+          console.error('Error al cargar lista de usuarios:', err);
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -150,19 +221,20 @@ export default {
           contrasenias.value = proyecto.contrasenias;
           estado.value = proyecto.estado.toString();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar datos del usuario.';
+        .catch((err) => {
+          console.error('Error al obtener cuenta del usuario:', err);
+          manejarErrorRuta(err, router);
         });
     };
 
     const insertar = () => {
-      errorMessage.value = '';
-      successMessage.value = '';
+      let tieneErrores = false;
 
-      if (!usuarios.value || !contrasenias.value) {
-        errorMessage.value = 'Por favor, completa todos los campos.';
-        return;
-      }
+      // Validaciones básicas de campos vacíos
+      if (!usuarios.value) { mostrarErrorCampo('usuarios', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!contrasenias.value) { mostrarErrorCampo('contrasenias', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (tieneErrores) return;
 
       const datos = {
         usuarios: usuarios.value,
@@ -173,41 +245,33 @@ export default {
       axios
         .post('http://127.0.0.1:8000/logins/create', datos)
         .then(() => {
-          successMessage.value = 'Datos guardados correctamente.';
+          mostrarModalExitoFormulario.value = true;
           cargarProyectos();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al guardar los datos.';
+        .catch((err) => {
+          console.error('ERROR CREACIÓN:', err?.response?.data || err.message);
+          manejarErrorRuta(err, router);
         });
     };
 
     const actualizar = () => {
-      errorMessage.value = '';
-      successMessage.value = '';
+      let tieneErrores = false;
 
       if (!selectedProject.value) {
-        errorMessage.value = 'Por favor, selecciona un usuario.';
-        return;
+        mostrarErrorCampo('selectedProject', 'Por favor, selecciona un usuario para actualizar.');
+        tieneErrores = true;
       }
+      if (!usuarios.value) { mostrarErrorCampo('usuarios', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!contrasenias.value) { mostrarErrorCampo('contrasenias', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!estado.value) { mostrarErrorCampo('estado', 'Falta por llenar datos'); tieneErrores = true; }
 
-      const datos = {};
+      if (tieneErrores) return;
 
-      if (usuarios.value.trim() !== '') {
-        datos.usuarios = usuarios.value;
-      }
-
-      if (contrasenias.value.trim() !== '') {
-        datos.contrasenias = contrasenias.value;
-      }
-
-      if (estado.value.trim() !== '') {
-        datos.estado = estado.value;
-      }
-
-      if (Object.keys(datos).length === 0) {
-        errorMessage.value = 'No hay campos para actualizar.';
-        return;
-      }
+      const datos = {
+        usuarios: usuarios.value.trim(),
+        contrasenias: contrasenias.value.trim(),
+        estado: estado.value.trim()
+      };
 
       axios
         .put(
@@ -215,11 +279,12 @@ export default {
           datos
         )
         .then(() => {
-          successMessage.value = 'Datos actualizados correctamente.';
+          mostrarModalExitoFormulario.value = true;
           cargarProyectos();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al actualizar los datos.';
+        .catch((err) => {
+          console.error('ERROR ACTUALIZACIÓN:', err?.response?.data || err.message);
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -235,6 +300,16 @@ export default {
 
     cargarProyectos();
 
+    onMounted(() => {
+      // Encendemos el detector de teclado
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
     return {
       usuarios,
       contrasenias,
@@ -249,7 +324,11 @@ export default {
       successMessage,
       estadoenabled,
       togglePasswordVisibility,
-      showPassword
+      showPassword,
+      /////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario
     };
   }
 };

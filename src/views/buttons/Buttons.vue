@@ -163,7 +163,7 @@
         </div>
         <small v-if="fieldErrors.fecha_emision" class="error-text">{{ fieldErrors.fecha_emision }}</small>
       </div>
-<!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
+
       <div class="bottom-actions-bar">
         <div class="messages-area">
           <!-- <transition-group name="lista-errores" tag="div" class="errores-stack">
@@ -180,7 +180,6 @@
           <button class="btn-primary" @click="enviarDatos">Guardar</button>
           <button class="btn-secondary" @click="limpiar">Limpiar</button>
         </div>
-        <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
       </div>
 
   <!-- pendientes -->
@@ -364,7 +363,7 @@
       </div>
     </div>
   </div>
-<!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
+
   <!-- **MODAL DE INGRESO CORRECTO** -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content ingreso-card" style="max-width: 450px; text-align: center;">
@@ -395,15 +394,15 @@
       </div>
     </div>
   </div>
-  <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '../../styles/css/IngresosAgricola.css'
+import '../../styles/css/IngresosAgricola.css';
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'Accordion',
@@ -424,7 +423,7 @@ export default {
     const cuentas_bancarias = reactive([]);
     const mostrarDivisionCuatro = ref(false);
     const es_pendiente = ref(false);
-    const error = ref(''); // ======================================================================
+    const error = ref(''); 
     const mostrarModalExitoFormulario = ref(false);
     const mostrarModalError = ref(false);
     const mensajeError = ref('');
@@ -454,7 +453,7 @@ export default {
       cuenta_bancaria: '',
       numero_documento: '',
       fecha_emision: ''
-    });// ===================================================================================================================================
+    });
     const successMessage = ref(''); // Estado para mensajes de éxito
     const PROYECTO_ID = '1';       // Agrícola
     const CLASIFICACION_ID = '1'; // Ingresos (Cuentas por Cobrar)
@@ -501,7 +500,7 @@ export default {
       es_pendiente.value = false;
       successMessage.value = ''; // Limpiar el mensaje de éxito
     };
-// ==================================================================================================================
+
     // Función que asigna el error y lo borra a los 5 segundos
     const mostrarErrorCampo = (campo, mensaje) => {
       fieldErrors[campo] = mensaje;
@@ -540,7 +539,7 @@ export default {
           cerrarModalError(); // Cerrar error
         }
       }
-    };// ==================================================================================================================
+    };
 
     const controlarVisibilidadDivisionCuatro = () => {
       mostrarDivisionCuatro.value = tipo.value === 'bancos';
@@ -612,12 +611,13 @@ export default {
             })
             .catch(err => {
             console.error("Error al cargar pendientes:", err);
+            error.value = 'Error al cargar pendientes';
             manejarErrorRuta(err, router);
         });
     };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
-// ===================================================================================================================================
+
     const cerrarModalExitoFormulario = () => {
         mostrarModalExitoFormulario.value = false;
         limpiar(); 
@@ -626,7 +626,7 @@ export default {
     const cerrarModalError = () => {
         mostrarModalError.value = false;
         mensajeError.value = '';
-    };// ===================================================================================================================================
+    };
 
     // ** ENVIAR SALDADO **
     const enviarSaldado = () => {
@@ -690,9 +690,9 @@ export default {
                 cargarPendientes(); // Recargar la tabla para ver cambios
             })
             .catch(err => {
-                console.error(err); // ===================================================================================================================================
+                console.error(err); 
                 error.value = "Error al guardar el ingreso. Verifique datos antes de enviar o conexión con el servidor.";
-                manejarErrorRuta(error, router);// ===================================================================================================================================
+                manejarErrorRuta(error, router);
             });
     };
 
@@ -704,12 +704,17 @@ export default {
       window.addEventListener('keydown', manejarEnter);
     });
 
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
     const cargarCuentas = () => {
       axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasIngresoAG')
         .then(response => {
           cuentas.splice(0, cuentas.length, ...response.data);
         })
-        .catch((err) => { // ==================================================================================================================
+        .catch((err) => {
           console.error(err);
           error.value = 'Hubo un problema al cargar las cuentas contables';
           manejarErrorRuta(err, router)
@@ -721,10 +726,10 @@ export default {
         .then(response => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
         })
-        .catch((err) => { // ==================================================================================================================
+        .catch((err) => {
           console.error(err);
           error.value = 'Hubo un problema al cargar las cuentas de bancos';
-          manejarErrorRuta(err, router); // ===================================================================================================================================
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -786,14 +791,13 @@ export default {
 
       axios.post(url, data)
         .then(response => {
-        // AQUI ACTIVAMOS EL MODAL // ===================================================================================================================================
             mostrarModalExitoFormulario.value = true;
-            console.log(response.data);  // ===================================================================================================================================
+            //console.log(response.data);
         })
         .catch(error => {
           console.error(error);
-          mensajeError.value = "Error al guardar el ingreso. Verifique datos antes de enviar o conexión con el servidor.";
-          mostrarModalError.value = true; // ===================================================================================================================================
+          error.value = "Error al guardar el ingreso. Verifique datos antes de enviar o conexión con el servidor.";
+          manejarErrorRuta(error, router);
         });
     };
 
@@ -832,7 +836,7 @@ export default {
       mostrarModalExito,
       datosExito,
       cerrarModalExito,
-      // ---------------- // ===================================================================================================================================
+      // ----------------
       fieldErrors,
       modalErrors,
       error,
@@ -840,7 +844,7 @@ export default {
       cerrarModalExitoFormulario,
       mostrarModalError,
       mensajeError,
-      cerrarModalError // ===================================================================================================================================
+      cerrarModalError
     };
   },
 }

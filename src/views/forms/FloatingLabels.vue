@@ -14,11 +14,13 @@
     <div class="field-group">
       <label class="field-label">Fecha inicial</label>
       <input type="date" v-model="fechaInicial" class="field-control" />
+      <small v-if="fieldErrors.fechaInicial" class="error-text">{{ fieldErrors.fechaInicial }}</small>
     </div>
 
     <div class="field-group">
       <label class="field-label">Fecha final</label>
       <input type="date" v-model="fechaFinal" class="field-control" />
+      <small v-if="fieldErrors.fechaFinal" class="error-text">{{ fieldErrors.fechaFinal }}</small>
     </div>
   </div>
 
@@ -32,6 +34,7 @@
           {{ cuentaN.banco_y_cuenta }}
         </option>
       </select>
+      <small v-if="fieldErrors.cuentaBName" class="error-text">{{ fieldErrors.cuentaBName }}</small>
     </div>
   </div>
 
@@ -130,20 +133,40 @@
     <strong>Vista previa</strong>.
   </div>
 
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/InformeBancosC.css'
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'LibroBancosCapilla',
   setup() {
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const fechaInicial = ref('');
     const fechaFinal = ref('');
     const nombreEncabezado = ref('PROYECTO CAPILLA');
@@ -153,6 +176,50 @@ export default {
     const cuentaBName = ref('');
 
     const ingresosEgresos = ref([]);
+
+    const fieldErrors = reactive({
+      fechaInicial: '',
+      fechaFinal: '',
+      cuentaBName: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const limpiar = () => {
+      fechaFinal.value = '';
+      fechaInicial.value = '';
+      cuentaBName.value = '';
+      ingresosEgresos.value = [];
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
 
     const cargarBancosNoCuenta = () => {
       axios
@@ -166,6 +233,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          manejarErrorRuta(error, router);
         });
     };
 
@@ -219,6 +287,15 @@ export default {
     });
 
     const mostrarTabla = async () => {
+      let tieneErrores = false;
+
+      // Comprobación de campos vacíos
+      if (!fechaInicial.value) { mostrarErrorCampo('fechaInicial', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fechaFinal.value) { mostrarErrorCampo('fechaFinal', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!cuentaBName.value) { mostrarErrorCampo('cuentaBName', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (tieneErrores) return;
+
       try {
         const response = await axios.post(
           'http://127.0.0.1:8000/in_eg/fechaBancoCA',
@@ -232,10 +309,20 @@ export default {
       } catch (error) {
         console.error('Error al mostrar la tabla:', error);
         ingresosEgresos.value = [];
+        manejarErrorRuta(error, router);
       }
     };
 
     const generarPDF = async () => {
+      let tieneErrores = false;
+
+      // Comprobación de campos vacíos
+      if (!fechaInicial.value) { mostrarErrorCampo('fechaInicial', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fechaFinal.value) { mostrarErrorCampo('fechaFinal', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!cuentaBName.value) { mostrarErrorCampo('cuentaBName', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (tieneErrores) return;
+
       try {
         const response = await axios.post(
           'http://127.0.0.1:8000/in_eg/fechaBancoCA',
@@ -368,8 +455,10 @@ export default {
 
         const blob = doc.output('blob');
         saveAs(blob, 'libro_bancos_capilla.pdf');
+        mostrarModalExitoFormulario.value = true;
       } catch (error) {
         console.error('Error al generar el PDF:', error);
+        manejarErrorRuta(error, router);
       }
     };
 
@@ -384,7 +473,12 @@ export default {
       ingresosEgresos,
       tablaFormateada,
       mostrarTabla,
-      generarPDF
+      generarPDF,
+      /////////////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      limpiar,
+      mostrarModalExitoFormulario
     };
   }
 };

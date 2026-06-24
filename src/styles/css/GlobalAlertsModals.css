@@ -164,3 +164,43 @@
   display: block;
   animation: fadeIn 0.3s ease-in-out;
 }
+
+/* =========================================
+   5. BOTONES GLOBALES PARA MODALES
+========================================= */
+.modal-content .btn-primary {
+  background-color: #bd9f69; /* El color que pediste */
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-content .btn-primary:hover {
+  background-color: #a0834e; /* Un tono un poco más oscuro al pasar el mouse */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Y agregamos el botón de cancelar/cerrar para el modal de error por si acaso */
+.modal-content .btn-secondary {
+  background-color: #f7f7f7;
+  color: #292b57;
+  border: 1px solid #bd9f69;
+  border-radius: 999px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-content .btn-secondary:hover {
+  background-color: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}

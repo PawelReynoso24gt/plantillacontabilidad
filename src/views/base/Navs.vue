@@ -27,6 +27,7 @@
                 {{ project.numero_cuenta }}
               </option>
             </select>
+            <small v-if="fieldErrors.selectedProject" class="error-text">{{ fieldErrors.selectedProject }}</small>
           </div>
 
           <div class="field-group">
@@ -37,6 +38,7 @@
               class="field-control"
               placeholder="Ej. 123456789"
             />
+            <small v-if="fieldErrors.numero_cuenta" class="error-text">{{ fieldErrors.numero_cuenta }}</small>
           </div>
         </div>
 
@@ -51,6 +53,7 @@
               class="field-control"
               placeholder="1 = Activo, 0 = Inactivo"
             />
+            <small v-if="fieldErrors.estado" class="error-text">{{ fieldErrors.estado }}</small>
           </div>
 
           <div class="field-group">
@@ -68,14 +71,9 @@
                 {{ bn.banco }}
               </option>
             </select>
+            <small v-if="fieldErrors.bancos" class="error-text">{{ fieldErrors.bancos }}</small>
           </div>
         </div>
-      </div>
-
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
       </div>
 
       <!-- Botones -->
@@ -84,34 +82,91 @@
         <button class="btn-secondary" @click="actualizar">Actualizar</button>
         <button class="btn-ghost" @click="limpiar">Limpiar</button>
       </div>
-   
+  <!-- **MODAL DE CREACIÓN/ACTUALIZACIÓN CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Operación Exitosa!</h3>
+        <p style="color: #6c757d;">Los datos de la cuenta bancaria se han guardado/actualizado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import '../../styles/css/CuentasBancarias.css'
+import '../../styles/css/GlobalAlertsModals.css';
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'Cuentas',
   setup() {
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const numero_cuenta = ref('');
     const estado = ref('');
     const banco = ref('');
     const selectedProject = ref('');
     const projects = reactive([]);
     const bancos = reactive([]);
-    const errorMessage = ref(''); // Estado para errores
-    const successMessage = ref(''); // Estado para mensajes de éxito
     const isDisabled = ref(true); // Estado para controlar el atributo disabled
+
+    const fieldErrors = reactive({
+      numero_cuenta: '',
+      bancos: '',
+      estado: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      cargarCuentas();
+      cargarBancos(); 
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
 
     const cargarCuentas = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/get')
         .then((response) => {
           projects.splice(0, projects.length, ...response.data);
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar las cuentas bancarias.';
+        .catch((e) => {
+          console.error("Error al cargar las cuentas bancarias:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
@@ -120,8 +175,9 @@ export default {
         .then((response) => {
           bancos.splice(0, bancos.length, ...response.data);
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar los bancos.';
+        .catch((e) => {
+          console.error("Error al cargar bancos:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
@@ -135,19 +191,32 @@ export default {
           banco.value = proyecto.banco; 
           isDisabled.value = false; 
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar los datos de la cuenta.';
+        .catch((e) => {
+          console.error("Error al cargar los datos de la cuenta:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
     const insertar = () => {
-      errorMessage.value = ''; 
-      successMessage.value = ''; 
+      let tieneErrores = false;
 
-      if (!numero_cuenta.value || !banco.value) {
-        errorMessage.value = 'Por favor, completa todos los campos.';
-        return;
+      // 1. Validaciones para cuenta
+      if (!numero_cuenta.value) { 
+        mostrarErrorCampo('numero_cuenta', 'Falta por llenar datos'); 
+        tieneErrores = true; 
+      } else if (!/^\d+$/.test(numero_cuenta.value)) {
+        // Validamos que sean ÚNICAMENTE números
+        mostrarErrorCampo('numero_cuenta', 'Solo se permiten números'); 
+        tieneErrores = true; 
       }
+
+      // 2. Validación para banco
+      if (!banco.value) { 
+        mostrarErrorCampo('bancos', 'Falta por llenar datos'); 
+        tieneErrores = true; 
+      }
+
+      if (tieneErrores) return;
 
       const datos = {
         numero_cuenta: numero_cuenta.value,
@@ -157,22 +226,37 @@ export default {
 
       axios.post('http://127.0.0.1:8000/cuentasB/create', datos)
         .then(() => {
-          successMessage.value = 'Cuenta bancaria guardada correctamente.';
+          mostrarModalExitoFormulario.value = true;
           cargarCuentas();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al guardar la cuenta bancaria.';
+        .catch((e) => {
+          console.error("Error al guardar la cuenta bancaria:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
     const actualizar = () => {
-      errorMessage.value = ''; // Limpiar errores previos
-      successMessage.value = ''; // Limpiar mensajes de éxito previos
+      let tieneErrores = false;
 
       if (!selectedProject.value) {
-        errorMessage.value = 'Por favor, selecciona una cuenta bancaria.';
-        return;
+        mostrarErrorCampo('selectedProject', 'Por favor, selecciona una cuenta.');
+        tieneErrores = true;
       }
+      // Validaciones para cuenta en actualización
+      if (!numero_cuenta.value) {
+        mostrarErrorCampo('numero_cuenta', 'El número de cuenta no puede estar vacío.');
+        tieneErrores = true;
+      } else if (!/^\d+$/.test(numero_cuenta.value)) {
+        mostrarErrorCampo('numero_cuenta', 'Solo se permiten números');
+        tieneErrores = true;
+      }
+
+      if (!banco.value) {
+        mostrarErrorCampo('bancos', 'Debe asignar un banco.');
+        tieneErrores = true;
+      }
+
+      if (tieneErrores) return;
 
       const datos = {};
 
@@ -188,18 +272,14 @@ export default {
         datos.banco = banco.value;
       }
 
-      if (Object.keys(datos).length === 0) {
-        errorMessage.value = 'No hay campos para actualizar.';
-        return;
-      }
-
       axios.put(`http://127.0.0.1:8000/cuentasB/update/${selectedProject.value}`, datos)
         .then(() => {
-          successMessage.value = 'Cuenta bancaria actualizada correctamente.';
+          mostrarModalExitoFormulario.value = true;
           cargarCuentas();
         })
-        .catch(() => {
-          errorMessage.value = 'Error al actualizar la cuenta bancaria.';
+        .catch((e) => {
+          console.error("Error al actualizar la cuenta bancaria:", e);
+          manejarErrorRuta(e, router);
         });
     };
 
@@ -208,15 +288,8 @@ export default {
       estado.value = '';
       banco.value = '';
       selectedProject.value = '';
-      errorMessage.value = ''; // Limpiar mensaje de error
-      successMessage.value = ''; // Limpiar mensaje de éxito
       isDisabled.value = true; // Deshabilitar el campo Estado
     };
-
-    onMounted(() => {
-      cargarCuentas();
-      cargarBancos(); 
-    });
 
     return {
       numero_cuenta,
@@ -229,9 +302,11 @@ export default {
       actualizar,
       limpiar,
       cargarDatosCuenta,
-      errorMessage,
-      successMessage,
-      isDisabled 
+      isDisabled,
+      /////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario  
     };
   },
 };

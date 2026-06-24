@@ -14,10 +14,12 @@
     <div class="field-group">
       <label class="field-label">Fecha inicial</label>
       <input type="date" v-model="fechaInicial" class="field-control" />
+      <small v-if="fieldErrors.fechaInicial" class="error-text">{{ fieldErrors.fechaInicial }}</small>
     </div>
     <div class="field-group">
       <label class="field-label">Fecha final</label>
       <input type="date" v-model="fechaFinal" class="field-control" />
+      <small v-if="fieldErrors.fechaFinal" class="error-text">{{ fieldErrors.fechaFinal }}</small>
     </div>
   </div>
 
@@ -109,27 +111,89 @@
     <strong>Vista previa</strong>.
   </div>
 
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 
 
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import '../../styles/css/InformeLDiario.css'
+import '../../styles/css/GlobalAlertsModals.css';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'LibroDiarioCapilla',
   setup() {
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const fechaInicial = ref('');
     const fechaFinal = ref('');
     const nombreEncabezado = ref('PROYECTO CAPILLA');
     const direccionProyecto = ref('Dirección del Proyecto');
 
     const ingresosEgresos = ref([]);
+
+    const fieldErrors = reactive({
+      fechaInicial: '',
+      fechaFinal: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
+
+    const limpiar = () => {
+      fechaFinal.value = '';
+      fechaInicial. value = '';
+      ingresosEgresos.value = [];
+    };
 
     const formatNumber = (value) => {
       if (value === null || value === undefined || value === '') return '';
@@ -172,6 +236,14 @@ export default {
     });
 
     const mostrarTabla = async () => {
+      let tieneErrores = false;
+
+      // Comprobación de campos vacíos
+      if (!fechaInicial.value) { mostrarErrorCampo('fechaInicial', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fechaFinal.value) { mostrarErrorCampo('fechaFinal', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (tieneErrores) return;
+
       try {
         const response = await axios.post(
           'http://127.0.0.1:8000/in_eg/libroDiarioCA',
@@ -184,10 +256,19 @@ export default {
       } catch (error) {
         console.error('Error al mostrar la tabla:', error);
         ingresosEgresos.value = [];
+        manejarErrorRuta(error, router);
       }
     };
 
     const generarPDF = async () => {
+      let tieneErrores = false;
+
+      // Comprobación de campos vacíos
+      if (!fechaInicial.value) { mostrarErrorCampo('fechaInicial', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!fechaFinal.value) { mostrarErrorCampo('fechaFinal', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (tieneErrores) return;
+
       try {
         const response = await axios.post(
           'http://127.0.0.1:8000/in_eg/libroDiarioCA',
@@ -315,8 +396,10 @@ export default {
 
         const blob = doc.output('blob');
         saveAs(blob, 'libro_diario_capilla.pdf');
+        mostrarModalExitoFormulario.value = true;
       } catch (error) {
         console.error('Error al generar el PDF:', error);
+        manejarErrorRuta(error, router);
       }
     };
 
@@ -325,12 +408,15 @@ export default {
       fechaFinal,
       nombreEncabezado,
       direccionProyecto,
-
       ingresosEgresos,
       tablaFormateada,
-
       mostrarTabla,
-      generarPDF
+      generarPDF,
+      //////////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      limpiar,
+      mostrarModalExitoFormulario
     };
   }
 };

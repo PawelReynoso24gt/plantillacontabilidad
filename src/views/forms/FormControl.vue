@@ -50,7 +50,6 @@
       <input type="text" v-model="descripcion" class="field-control" />
     </div>
   </div>
-<!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
   <div class="bottom-actions-bar">
       <div class="messages-area">
         <!-- <transition-group name="lista-errores" tag="div" class="errores-stack">
@@ -98,16 +97,16 @@
         </button>
       </div>
     </div>
-    <!-- ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ -->
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '../../styles/css/DepositoCajaA.css'
+import '../../styles/css/DepositoCajaA.css';
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'Accordion',
@@ -120,7 +119,7 @@ export default {
     const cuentas_bancarias = reactive([]);
     const cuentaBName = ref('');
     const successMessage = ref(''); // Estado para mensajes de éxito
-    const error = ref(''); // ===================================================================================================================================
+    const error = ref('');
     const mostrarModalExitoFormulario = ref(false);
     const mostrarModalError = ref(false);
     const mensajeError = ref('');
@@ -187,19 +186,19 @@ export default {
     const cerrarModalError = () => {
         mostrarModalError.value = false;
         mensajeError.value = '';
-    }; // ===================================================================================================================================
+    }; 
 
     const cargarBancosNoCuenta = () => {
       axios.get('http://127.0.0.1:8000/cuentasB/getConcatenada')
         .then((response) => {
           cuentas_bancarias.splice(0, cuentas_bancarias.length, ...response.data);
-          console.log(response.data);
+          //console.log(response.data);
         })
-        .catch((err) => { // ==================================================================================================================
+        .catch((err) => {
           console.error(err);
           error.value = 'Hubo un problema al cargar las cuentas de bancos';
-          manejarErrorRuta(err, router); // ===================================================================================================================================
-        });// ===================================================================================================================================
+          manejarErrorRuta(err, router);
+        });
     };
 
     const enviarDatos = () => {
@@ -232,16 +231,15 @@ export default {
       };
 
       axios.post('http://127.0.0.1:8000/in_eg/createTrasDepCajaAG', payload)
-        .then(response => { // ===================================================================================================================================
-        // AQUI ACTIVAMOS EL MODAL
+        .then(response => {
           mostrarModalExitoFormulario.value = true;
-          console.log(response.data); 
+          //console.log(response.data); 
         })
         .catch(err => {
-            console.error(err); // ===================================================================================================================================
+            console.error(err);
             error.value = "Error al guardar la transacción. Verifique datos antes de enviar o conexión con el servidor.";
             manejarErrorRuta(error, router);
-        }); // ===================================================================================================================================
+        }); 
     };
 
     const limpiar = () => {
@@ -259,6 +257,11 @@ export default {
       window.addEventListener('keydown', manejarEnter);
     });
 
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
     return {
       limpiar,
       enviarDatos,
@@ -269,7 +272,7 @@ export default {
       monto,
       descripcion,
       numero_documento,
-      successMessage, // ===================================================================================================================================
+      successMessage,
       // -----------------
       fieldErrors,
       modalErrors,
@@ -278,7 +281,7 @@ export default {
       cerrarModalExitoFormulario,
       mostrarModalError,
       mensajeError,
-      cerrarModalError // ===================================================================================================================================
+      cerrarModalError
     }
   },
 }
