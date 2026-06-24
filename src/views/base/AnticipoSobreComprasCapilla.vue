@@ -454,7 +454,7 @@ export default {
     const idCuentaBancaria = ref(null);
     const anticipoRows = ref([]);
     const loading = ref(false);
-    const showTabla = ref(false);
+    const showTabla = ref(true);
     const mostrarModalExito = ref(false);
     const datosExito = reactive({
         mensaje: '',
@@ -646,6 +646,8 @@ export default {
         .then(response => {
           //console.log('ÉXITO:', response.data);
           mostrarModalExitoFormulario.value = true; // Mostramos el modal de éxito
+          showTabla.value = true;
+          fetchTablaAnticipoAG();
         })
         .catch(error => {
           console.error("ERROR al guardar anticipo:", error?.response?.data || error.message);
@@ -849,6 +851,7 @@ export default {
 
     onMounted(() => {
       cargarCuentasSelect();
+      fetchTablaAnticipoAG();
       window.addEventListener('keydown', manejarEnter);
     });
 

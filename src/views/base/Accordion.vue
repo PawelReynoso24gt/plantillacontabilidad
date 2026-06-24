@@ -192,16 +192,12 @@
 
   <!-- pendientes -->
   <div class="division-container" style="margin-top: 40px; padding: 1.5rem;">
-    <h3 class="division-title">Cuentas Pendientes por Pagar (Proyecto Agrícola)</h3>
+    <h3 class="division-title">Cuentas Pendientes por Pagar</h3>
     
     <p v-if="mensajeVacio" class="text-danger" style="margin-top: 10px;">{{ mensajeVacio }}</p>
 
       <div v-if="pendientes.length > 0" style="margin-top: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h4 style="margin: 0; color: #292b57;">Deudas Pendientes Encontradas ({{ pendientes.length }})</h4>
-          <button @click="cargarPendientes" class="btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">
-            Actualizar
-          </button>
       </div>
         <table class="pendientes-table">
             <thead>
@@ -605,7 +601,7 @@ export default {
     const cerrarModalExito = () => {
         mostrarModalExito.value = false;
         limpiar();
-        //cargarPendientes(); // Recargar la tabla al cerrar el éxito
+        cargarPendientes(); // Recargar la tabla al cerrar el éxito
     };
 
     watch(tipo, controlarVisibilidadDivisionCuatro);
@@ -724,6 +720,7 @@ export default {
         .then(response => {
             mostrarModalExitoFormulario.value = true;
             //console.log(response.data);
+            cargarPendientes();
         })
         .catch(error => {
           console.error("Error al guardar egreso:", error);
@@ -747,7 +744,7 @@ export default {
             id_clasificacion: CLASIFICACION_ID,
         };
 
-      axios.get('http://127.0.0.1:8000/in_eg/get/transacciones_pendientes', { params }) // ==================================================================================================================
+      axios.get('http://127.0.0.1:8000/in_eg/get/transacciones_pendientes', { params })
           .then(response => {
               // Almacenar los datos en la lista reactiva
               pendientes.splice(0, pendientes.length, ...response.data);

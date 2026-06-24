@@ -448,7 +448,7 @@ export default {
     // Tabla de anticipos
     const anticipoRows = ref([]);
     const loading = ref(false);
-    const showTabla = ref(false);
+    const showTabla = ref(true);
 
     const limpiar = () => {
       tipo.value = '';
@@ -634,7 +634,9 @@ export default {
       axios.post('http://127.0.0.1:8000/in_eg/createAnticipoCompraAG', data)
         .then(response => {
           mostrarModalExitoFormulario.value = true;
-          console.log(response.data);
+          //console.log(response.data);
+          showTabla.value = true;
+          fetchTablaAnticipoAG();
         })
         .catch(error => {
           console.error("Error al guardar anticipo:", error?.response?.data || error.message);
@@ -831,6 +833,7 @@ const saldarRegistroConfirm = async () => {
 
     onMounted(() => {
       cargarCuentasSelect();
+      fetchTablaAnticipoAG();
       window.addEventListener('keydown', manejarEnter);
     });
 

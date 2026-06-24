@@ -807,6 +807,7 @@ export default {
         axios.post('http://127.0.0.1:8000/in_eg/createALLINEGCajaCA', data)
         .then(response => {
           mostrarModalExitoFormulario.value = true;
+          cargarPendientes();
         //  console.log(response.data); 
         })
         .catch(error => {
@@ -818,6 +819,7 @@ export default {
         axios.post('http://127.0.0.1:8000/in_eg/createALLINCA', data)
           .then(response => {
             mostrarModalExitoFormulario.value = true;
+            cargarPendientes();
            // console.log(response.data); 
           })
           .catch(error => {

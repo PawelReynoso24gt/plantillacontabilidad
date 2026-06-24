@@ -140,7 +140,7 @@
             <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
           </div>
           <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-          <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
+          <div><strong>FECHA DE CREACIÓN:</strong> {{ fechaHoy }}</div>
         </div>
       </div>
 
@@ -389,9 +389,9 @@ export default {
         case 'Semestral':
           meses.value = ['Enero', 'Julio'];
           break;
-        case 'Anual':
-          meses.value = ['Enero'];
-          selectedMes.value = 'Enero';
+       case 'Anual':
+          meses.value = [];
+          selectedMes.value = '';
           break;
         default:
           meses.value = [];
