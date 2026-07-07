@@ -23,12 +23,14 @@
               {{ periodo }}
             </option>
           </select>
-        </div>
+          <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
+  </div>
 
         <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
           <label class="field-label">Año</label>
           <input type="number" v-model="selectedYear" class="field-control" placeholder="Ej: 2026" min="1900" max="2100" />
-        </div>
+          <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
+  </div>
 
         <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
           <label class="field-label">Mes</label>
@@ -36,32 +38,38 @@
             <option disabled value="">Seleccione un mes</option>
             <option v-for="mes in meses" :key="mes" :value="mes">{{ mes }}</option>
           </select>
-        </div>
+          <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
+  </div>
 
         <div class="field-group" v-if="selectedPeriodo === 'Anual'">
           <label class="field-label">Fecha inicial</label>
           <input type="date" v-model="fechaInicio" class="field-control" />
-        </div>
+          <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
+  </div>
 
         <div class="field-group" v-if="selectedPeriodo === 'Anual'">
           <label class="field-label">Fecha final</label>
           <input type="date" v-model="fechaFin" class="field-control" />
-        </div>
+          <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
+  </div>
 
         <!-- Responsables -->
         <div class="field-group">
           <label class="field-label">Contador</label>
           <input type="text" v-model="contador" class="field-control" />
+            <small v-if="fieldErrors.contador" class="error-text">{{ fieldErrors.contador }}</small>
         </div>
 
         <div class="field-group">
           <label class="field-label">Responsable de proyecto agrícola</label>
           <input type="text" v-model="responsableAgricola" class="field-control" />
+            <small v-if="fieldErrors.responsableAgricola" class="error-text">{{ fieldErrors.responsableAgricola }}</small>
         </div>
 
         <div class="field-group">
           <label class="field-label">Economa provincial</label>
           <input type="text" v-model="economaProvincial" class="field-control" />
+            <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
         </div>
 
       </div>
@@ -153,22 +161,40 @@
         <strong>Vista previa</strong>.
       </div>
 
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 
 <script>
 import axios from 'axios';
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import '@/styles/global.css';
+import '../../styles/css/GlobalAlertsModals.css';
+import { useRouter } from 'vue-router'; // para redirección de rutas
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'ReporteAG',
   setup() {
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const contador = ref('');
     const responsableAgricola = ref('');
     const economaProvincial = ref('');
@@ -180,8 +206,49 @@ export default {
     const years = ref([]);
     const fechaInicio = ref('');
     const fechaFin = ref('');
-
     const reporteData = ref(null);
+
+    const fieldErrors = reactive({
+      selectedPeriodo: '',
+      selectedYear: '',
+      selectedMes: '',
+      fechaInicio: '',
+      fechaFin: '',
+      contador: '',
+      responsableAgricola: '',
+      economaProvincial: '',
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
 
     const generarAnios = () => {
       const actual = new Date().getFullYear();
@@ -455,7 +522,30 @@ export default {
 
     };
 
+    const validarFormulario = () => {
+      let tieneErrores = false;
+
+      // 1. Validar campos que SIEMPRE están visibles
+      if (!selectedPeriodo.value) { mostrarErrorCampo('selectedPeriodo', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!contador.value) { mostrarErrorCampo('contador', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!responsableAgricola.value) { mostrarErrorCampo('responsableAgricola', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!economaProvincial.value) { mostrarErrorCampo('economaProvincial', 'Falta por llenar datos'); tieneErrores = true; }
+
+      // 2. Validar campos dinámicos según el período
+      if (selectedPeriodo.value === 'Anual') {
+        if (!fechaInicio.value) { mostrarErrorCampo('fechaInicio', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!fechaFin.value) { mostrarErrorCampo('fechaFin', 'Falta por llenar datos'); tieneErrores = true; }
+      } else if (selectedPeriodo.value) {
+        // Para Mensual, Trimestral o Semestral
+        if (!selectedYear.value) { mostrarErrorCampo('selectedYear', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!selectedMes.value) { mostrarErrorCampo('selectedMes', 'Falta por llenar datos'); tieneErrores = true; }
+      }
+
+      return !tieneErrores; // Retorna true si todo está bien, false si hay errores
+    };
+
     const mostrarTabla = async () => {
+      if (!validarFormulario()) return;
     try {
       const payload = construirPayload();
 
@@ -468,10 +558,12 @@ export default {
     } catch (error) {
       console.error('Error al obtener datos del reporte:', error);
       reporteData.value = null;
+      manejarErrorRuta(error, router);
     }
   };
 
     const generarPDF = async () => {
+      if (!validarFormulario()) return;
       try {
          const payload = construirPayload();
         const response = await axios.post(
@@ -723,8 +815,10 @@ export default {
 
         const blob = doc.output('blob');
         saveAs(blob, 'reporte_final_agrícola.pdf');
+        mostrarModalExitoFormulario.value = true;
       } catch (error) {
         console.error('Error al generar el PDF:', error);
+        manejarErrorRuta(error, router);
       }
     };
 
@@ -748,7 +842,11 @@ export default {
       actualizarMeses,
       limpiar,
       mostrarTabla,
-      generarPDF
+      generarPDF,
+      /////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario
     };
   }
 };

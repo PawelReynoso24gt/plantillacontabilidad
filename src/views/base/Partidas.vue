@@ -23,6 +23,7 @@
             placeholder="Ingrese el ID y presione Enter o clic en Buscar"
             @keyup.enter="generarPartida"
           />
+          <small v-if="fieldErrors.idBuscado" class="error-text">{{ fieldErrors.idBuscado }}</small>
         </div>
       </div>
 
@@ -126,30 +127,84 @@
         Ingresa un ID y presiona <strong>Buscar partida</strong>.
       </div>
 
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Descarga Exitosa!</h3>
+        <p style="color: #6c757d;">El reporte en PDF se ha generado y descargado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
     </div><!-- /page-card -->
   </div><!-- /page-wrapper -->
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, reactive } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
 import { useRoute, useRouter } from 'vue-router'; 
 import '@/styles/global.css';
+import '../../styles/css/GlobalAlertsModals.css';
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'GenerarPartidaSimple',
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);  
     // --- ESTADO ---
     const idBuscado = ref(''); // variable para ingresar el ID
     const partidaContable = ref(null);
     const loading = ref(false);
     const error = ref('');
     const mostrarNoEncontrado = ref(false);
+
+    const fieldErrors = reactive({
+      idBuscado: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+    };
+
+    onMounted(() => {
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
 
     // --- COMPUTADOS ---
     const fechaActual = computed(() => new Date().toLocaleDateString('es-GT'));
@@ -169,6 +224,7 @@ export default {
     const generarPartida = async () => {
       if (!idBuscado.value) {
         error.value = 'Por favor ingrese un ID válido.';
+        mostrarErrorCampo('idBuscado', 'Por favor ingrese el ID a buscar');
         return;
       }
 
@@ -190,6 +246,7 @@ export default {
           mostrarNoEncontrado.value = true;
         } else {
           error.value = 'Error de conexión: ' + (err.response?.data?.error || err.message);
+          manejarErrorRuta(err, router);
         }
       } finally {
         loading.value = false;
@@ -331,17 +388,22 @@ export default {
         doc.text(`Generado el: ${fechaActual.value}`, 20, finalY);
 
         saveAs(doc.output('blob'), `partida_${data.nomenclatura}.pdf`);
-
+        mostrarModalExitoFormulario.value = true;
       } catch (err) {
         console.error("Error PDF:", err);
-        alert("Hubo un error al generar el PDF.");
+        //alert("Hubo un error al generar el PDF.");
+        manejarErrorRuta(err, router);
       }
     };
 
     return {
       idBuscado, partidaContable, loading, error, mostrarNoEncontrado,
       fechaActual, formatNumber, generarPartida, generarPDF, handleKeyPress,
-      direccionProyecto, volver
+      direccionProyecto, volver,
+      //////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario
     };
   }
 }

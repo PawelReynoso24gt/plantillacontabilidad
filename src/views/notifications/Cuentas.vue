@@ -32,6 +32,7 @@
             {{ project.cuenta }} ({{ project.codigo }}) - {{ project.proyecto }}
           </option>
         </select>
+        <small v-if="fieldErrors.selectedProject" class="error-text">{{ fieldErrors.selectedProject }}</small>
       </div>
 
       <!-- Nombre de la cuenta -->
@@ -43,6 +44,7 @@
           class="field-control"
           placeholder="Ingrese el nombre de la cuenta"
         />
+        <small v-if="fieldErrors.cuenta" class="error-text">{{ fieldErrors.cuenta }}</small>
       </div>
     </div>
 
@@ -58,6 +60,7 @@
               class="field-control"
               placeholder="1 = Activo, 0 = Inactivo"
             />
+            <small v-if="fieldErrors.estado" class="error-text">{{ fieldErrors.estado }}</small>
           </div>
 
           <!-- Código -->
@@ -69,6 +72,7 @@
               class="field-control"
               placeholder="Ej. 1.1.1"
             />
+            <small v-if="fieldErrors.codigo" class="error-text">{{ fieldErrors.codigo }}</small>
           </div>
         </div>
 
@@ -90,6 +94,7 @@
                 {{ clasificacion.tipo }}
               </option>
             </select>
+            <small v-if="fieldErrors.selectedClasificacion" class="error-text">{{ fieldErrors.selectedClasificacion }}</small>
           </div>
 
           <!-- Proyecto -->
@@ -108,6 +113,7 @@
                 {{ proyecto.nombre }}
               </option>
             </select>
+            <small v-if="fieldErrors.selectedTipoProyecto" class="error-text">{{ fieldErrors.selectedTipoProyecto }}</small>
           </div>
         </div>
         <div class="row-inline">
@@ -119,6 +125,7 @@
                 <option value="ACTIVO">ACTIVO</option>
                 <option value="PASIVO">PASIVO</option>
               </select>
+              <small v-if="fieldErrors.tipo_cuenta" class="error-text">{{ fieldErrors.tipo_cuenta }}</small>
             </div>
           </div>
           <div class="corriente">
@@ -129,15 +136,10 @@
                 <option value="CORRIENTE">CORRIENTE</option>
                 <option value="NO CORRIENTE">NO CORRIENTE</option>
               </select>
+              <small v-if="fieldErrors.corriente" class="error-text">{{ fieldErrors.corriente }}</small>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Mensajes -->
-      <div class="messages-container">
-        <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
-        <p v-if="successMessage" class="text-success">{{ successMessage }}</p>
       </div>
 
       <!-- Botones -->
@@ -154,17 +156,36 @@
       </div>
 
     </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
+  </div><!-- /page-wrapper -->  <!-- **MODAL DE CREACIÓN/ACTUALIZACIÓN CORRECTA** ================================================================================================================================ -->
+  <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
+    <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Operación Exitosa!</h3>
+        <p style="color: #6c757d;">Los datos de la cuenta se han guardado/actualizado correctamente.</p>
+      </div>
+      <div class="form-actions" style="justify-content: center;">
+        <button class="btn-primary" @click="cerrarModalExitoFormulario" style="min-width: 120px;">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted, watch } from 'vue';
-import '@/styles/global.css';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import '@/styles/global.css';;
+import '../../styles/css/GlobalAlertsModals.css';
+import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'Cuentas',
   setup() {
+    const router = useRouter();
+    const mostrarModalExitoFormulario = ref(false);
     const cuenta = ref('');
     const estado = ref('');
     const codigo = ref('');
@@ -183,13 +204,59 @@ export default {
     // Variable para almacenar el id_cuentas seleccionado
     const selectedIdCuentas = ref('');
 
+    const fieldErrors = reactive({
+      selectedProject: '',
+      cuenta: '',
+      estado: '',
+      codigo: '',
+      selectedClasificacion: '',
+      selectedTipoProyecto: '',
+      tipo_cuenta: '',
+      corriente: ''
+    });
+
+    const mostrarErrorCampo = (campo, mensaje) => {
+      fieldErrors[campo] = mensaje;
+      setTimeout(() => {
+        fieldErrors[campo] = '';
+      }, 5000);
+    };
+
+    onMounted(() => { 
+      cargarProyectos();
+      cargarClasificaciones();
+      cargarProyectosTipos();
+      window.addEventListener('keydown', manejarEnter);
+    });
+
+    onUnmounted(() => {
+      // Apagamos el detector de teclado al salir de la pantalla
+      window.removeEventListener('keydown', manejarEnter);
+    });
+
+    const manejarEnter = (event) => {
+      if (event.key === 'Enter') {
+        // En esta pantalla SOLO existe este modal de éxito
+        if (mostrarModalExitoFormulario.value) {
+          event.preventDefault();
+          cerrarModalExitoFormulario(); 
+        }
+      }
+    };
+
+    const cerrarModalExitoFormulario = () => {
+        mostrarModalExitoFormulario.value = false;
+        limpiar(); 
+    };
+
     const cargarProyectos = () => {
       axios.get('http://127.0.0.1:8000/cuentas/get')
         .then(response => {
           projects.splice(0, projects.length, ...response.data);
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar las cuentas.';
+        .catch((err) => {
+          console.error("Error al cargar cuentas:", err);
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -198,8 +265,9 @@ export default {
         .then(response => {
           clasificaciones.splice(0, clasificaciones.length, ...response.data);
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar las clasificaciones.';
+        .catch((err) => {
+          console.error("Error al cargar clasificaciones:", err);
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -208,8 +276,9 @@ export default {
         .then(response => {
           proyectos.splice(0, proyectos.length, ...response.data);
         })
-        .catch(() => {
-          errorMessage.value = 'Error al cargar los tipos de proyectos.';
+        .catch((err) => {
+          console.error("Error al cargar tipos de proyectos:", err);
+          manejarErrorRuta(err, router);
         });
     };
 
@@ -244,19 +313,22 @@ export default {
         }
       })
       .catch(error => {
-        console.error('Error:', error);
-        errorMessage.value = 'Error al cargar los datos del proyecto.';
+        console.error('Error al cargar datos específicos:', error);
+        manejarErrorRuta(error, router);
       });
     };
 
     const insertar = () => {
-      errorMessage.value = '';
-      successMessage.value = '';
+      let tieneErrores = false;
 
-      if (!cuenta.value || !codigo.value || !selectedClasificacion.value || !selectedTipoProyecto.value || !tipo_cuenta.value || !corriente.value) {
-        errorMessage.value = 'Por favor, completa todos los campos.';
-        return;
-      }
+      if (!cuenta.value) { mostrarErrorCampo('cuenta', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!codigo.value) { mostrarErrorCampo('codigo', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!selectedClasificacion.value) { mostrarErrorCampo('selectedClasificacion', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!selectedTipoProyecto.value) { mostrarErrorCampo('selectedTipoProyecto', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!tipo_cuenta.value) { mostrarErrorCampo('tipo_cuenta', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!corriente.value) { mostrarErrorCampo('corriente', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (tieneErrores) return;
 
       const tipo_cuentaFlag = tipo_cuenta.value === 'ACTIVO' ? 1 : tipo_cuenta.value === 'PASIVO' ? 0 : null;
       const corrienteFlag = corriente.value === 'CORRIENTE' ? 1 : corriente.value === 'NO CORRIENTE' ? 0 : null;
@@ -271,71 +343,55 @@ export default {
       };
 
       axios.post('http://127.0.0.1:8000/cuentas/create', datos)
-        .then(response => {
-          successMessage.value = 'Cuenta guardada correctamente.';
+        .then(() => {
+          mostrarModalExitoFormulario.value = true;
           cargarProyectos();
-          limpiar();
         })
         .catch(error => {
-          if (error.response && error.response.data) {
-            errorMessage.value = 'Error al guardar la cuenta: ' + JSON.stringify(error.response.data.errors);
-          } else {
-            errorMessage.value = 'Error al guardar la cuenta.';
-          }
+          console.error('Error al guardar la cuenta:', error);
+          manejarErrorRuta(error, router);
         });
     };
 
     const actualizar = () => {
-      if (!selectedIdCuentas.value) {
-        errorMessage.value = 'Por favor, selecciona una cuenta para actualizar.';
-        return;
-      }
+      let tieneErrores = false;
 
-      const datos = {};
-
-      if (cuenta.value.trim() !== '') {
-        datos.cuenta = cuenta.value;
+      if (!selectedProject.value) {
+        mostrarErrorCampo('selectedProject', 'Por favor, selecciona una cuenta para actualizar.');
+        tieneErrores = true;
       }
+      if (!cuenta.value) { mostrarErrorCampo('cuenta', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!estado.value) { mostrarErrorCampo('estado', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!codigo.value) { mostrarErrorCampo('codigo', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!selectedClasificacion.value) { mostrarErrorCampo('selectedClasificacion', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!selectedTipoProyecto.value) { mostrarErrorCampo('selectedTipoProyecto', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!tipo_cuenta.value) { mostrarErrorCampo('tipo_cuenta', 'Falta por llenar datos'); tieneErrores = true; }
+      if (!corriente.value) { mostrarErrorCampo('corriente', 'Falta por llenar datos'); tieneErrores = true; }
 
-      if (estado.value.trim() !== '') {
-        datos.estado = estado.value;
-      }
-
-      if (codigo.value.trim() !== '') {
-        datos.codigo = codigo.value;
-      }
-
-      if (selectedClasificacion.value) {
-        datos.clasificacion = selectedClasificacion.value;
-      }
-
-      if (selectedTipoProyecto.value) {
-        datos.proyecto = selectedTipoProyecto.value;
-      }
+      if (tieneErrores) return;
 
       const tipo_cuentaFlag = tipo_cuenta.value === 'ACTIVO' ? 1 : tipo_cuenta.value === 'PASIVO' ? 0 : null;
-      if (tipo_cuentaFlag !== null) {
-        datos.tipo_cuenta = tipo_cuentaFlag;
-      }
-
       const corrienteFlag = corriente.value === 'CORRIENTE' ? 1 : corriente.value === 'NO CORRIENTE' ? 0 : null;
-      if (corrienteFlag !== null) {
-        datos.corriente = corrienteFlag;
-      }
 
-      if (Object.keys(datos).length === 0) {
-        errorMessage.value = 'No hay campos para actualizar.';
-        return;
-      }
+      const datos = {
+        cuenta: cuenta.value,
+        estado: estado.value,
+        codigo: codigo.value,
+        clasificacion: selectedClasificacion.value,
+        proyecto: selectedTipoProyecto.value,
+        tipo_cuenta: tipo_cuentaFlag,
+        corriente: corrienteFlag
+      };
 
       // Actualizar usando el id_cuentas
       axios.put(`http://127.0.0.1:8000/cuentas/updateById/${selectedIdCuentas.value}`, datos)
-        .then(response => {
-          successMessage.value = 'Cuenta actualizada correctamente.';
+        .then(() => {
+          mostrarModalExitoFormulario.value = true;
           cargarProyectos();
         })
         .catch(error => {
-          errorMessage.value = 'Error al actualizar la cuenta.';
+          console.error('Error al actualizar la cuenta:', error);
+          manejarErrorRuta(error, router);
         });
     };
 
@@ -353,12 +409,6 @@ export default {
       isEstadoEnabled.value = false;
       selectedIdCuentas.value = '';
     };
-
-    onMounted(() => {
-      cargarProyectos();
-      cargarClasificaciones();
-      cargarProyectosTipos();
-    });
 
     watch(selectedProject, () => {
       isEstadoEnabled.value = !!selectedProject.value;
@@ -385,7 +435,11 @@ export default {
       successMessage,
       isEstadoEnabled,
       tipo_cuenta,
-      corriente
+      corriente,
+      /////////////
+      fieldErrors,
+      cerrarModalExitoFormulario,
+      mostrarModalExitoFormulario  
     };
   },
 };
