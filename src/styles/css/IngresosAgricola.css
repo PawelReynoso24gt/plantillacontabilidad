@@ -65,7 +65,7 @@
 .division-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #41251c;
+  color: var(--cui-body-color);
   margin: 0 0 0.75rem 0;
 }
 

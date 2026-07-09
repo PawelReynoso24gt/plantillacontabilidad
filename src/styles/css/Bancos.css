@@ -1,6 +1,6 @@
 /* Fondo general del módulo */
 .estado-wrapper {
-  background-color: #f7f7f7;
+  background-color: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
@@ -10,13 +10,14 @@
 
 /* Card principal */
 .estado-card {
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
   max-width: 900px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
 }
 
 /* Encabezado */
@@ -28,7 +29,7 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57;
+  color: var(--cui-body-color);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -36,7 +37,7 @@
 .estado-subtitle {
   margin-top: 0.3rem;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Contenedor de campos */
@@ -44,7 +45,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.2rem;
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 1.1rem 1.3rem;
   border-left: 4px solid #bd9f69;
@@ -82,7 +83,7 @@
 .field-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);
   margin-bottom: 0.25rem;
 }
 
@@ -90,23 +91,25 @@
   width: 100%;
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--cui-border-color);
   font-size: 0.95rem;
   outline: none;
-  background-color: #ffffff;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
   transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    background-color 0.2s ease;
+  background-color 0.2s ease;
 }
 
 .field-control:focus {
   border-color: #bd9f69;
   box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.5);
-  background-color: #fffdf8;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
 }
 
 .field-control:disabled {
-  background-color: #f1f1f1;
-  color: #888;
+  background-color: var(--cui-tertiary-bg);
+  color: var(--cui-secondary-color);
   cursor: not-allowed;
 }
 
@@ -166,8 +169,8 @@
 
 /* Actualizar */
 .btn-secondary {
-  background: #f7f7f7;
-  color: #292b57;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
   border: 1px solid #bd9f69;
 }
 
@@ -179,8 +182,8 @@
 
 /* Limpiar */
 .btn-ghost {
-  background: transparent;
-  color: #41251c;
+  background: var(--cui-tertiary-bg);
+  color: var(--cui-body-color);
   border: 1px dashed #bd9f69;
 }
 

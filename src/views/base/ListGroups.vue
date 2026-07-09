@@ -108,33 +108,30 @@
       </div>
 
       <!-- Encabezado tipo PDF / vista previa -->
-      <div v-if="reporteData" class="encabezado-container">
-        <div class="encabezado-box">
-          <div class="encabezado-titulo">
-            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
-          </div>
+      <ReportPreviewHeader
+        v-if="reporteData"
+        :empresa="`REPORTE FINAL ${selectedPeriodo.toUpperCase()} ${currentYear}`"
+      >
+        <div>
+          <strong>INFORME CORRESPONDIENTE AL:</strong>
+          {{ periodoTexto }}
         </div>
-
-        <div class="encabezado-detalles">
-          <div>
-            <strong>INFORME CORRESPONDIENTE AL:</strong>
-            {{ periodoTexto }}
-          </div>
-          <div v-if="selectedPeriodo !== 'Anual'">
-          <strong>AÑO:</strong> {{ selectedYear }}
+        <div v-if="selectedPeriodo !== 'Anual'">
+          <strong>AÑO:</strong> <span class="rp-value">{{ selectedYear }}</span>
         </div>
 
         <div v-else>
-          <strong>FECHA SELECCIONADA:</strong> {{ fechaInicio }} a {{ fechaFin }}
+          <strong>FECHA SELECCIONADA:</strong>
+          <span class="rp-value">{{ fechaInicio }}</span> a
+          <span class="rp-value">{{ fechaFin }}</span>
         </div>
 
-          <div>
-            <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
-          </div>
-          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-          <div><strong>FECHA DE CREACIÓN:</strong> {{ fechaHoy }}</div>
+        <div>
+          <strong>PROYECTO:</strong> PROYECTO CAPILLA HOGAR SANTA LUISA
         </div>
-      </div>
+        <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+        <div><strong>FECHA DE CREACIÓN:</strong> {{ fechaHoy }}</div>
+      </ReportPreviewHeader>
 
       <!-- Tabla resumen -->
       <div v-if="reporteData" class="tabla-wrapper">
@@ -219,13 +216,15 @@
 <script>
 import axios from 'axios';
 import { ref, computed } from 'vue';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { buildReportPdf } from '@/pdf/PdfReportBuilder';
+import { formatCurrency } from '@/pdf/format';
+import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/InformeInEgr.css'
 
 export default {
   name: 'ReporteCapillaFinal',
+  components: { ReportPreviewHeader },
   setup() {
     // Form fields
     const responsable = ref('');
@@ -329,20 +328,6 @@ export default {
       }
     };
 
-    // helper dinero
-    const formatQ = (n) => {
-      if (n === null || n === undefined || n === '') return '';
-      const num = parseFloat(n);
-      if (isNaN(num)) return '';
-      return (
-        'Q ' +
-        num.toLocaleString('es-GT', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      );
-    };
-
     // Tabla que mostramos en pantalla: construida con reporteData
     const tablaPreview = computed(() => {
       if (!reporteData.value) return [];
@@ -357,20 +342,20 @@ export default {
           col1: 'SALDO INICIAL',
           col2: '',
           col3: '',
-          col4: formatQ(d.saldo_inicial)
+          col4: formatCurrency(d.saldo_inicial)
         },
         {
           tipo: 'normal',
           col1: 'SALDO INICIAL EN CAJA GENERAL',
           col2: '',
-          col3: formatQ(d.saldo_inicial_caja),
+          col3: formatCurrency(d.saldo_inicial_caja),
           col4: ''
         },
         {
           tipo: 'normal',
           col1: 'SALDO INICIAL EN BANCO',
           col2: '',
-          col3: formatQ(d.saldo_inicial_bancos),
+          col3: formatCurrency(d.saldo_inicial_bancos),
           col4: ''
         },
 
@@ -380,13 +365,13 @@ export default {
           col1: 'INGRESOS',
           col2: '',
           col3: '',
-          col4: formatQ(d.total_general_ingresos)
+          col4: formatCurrency(d.total_general_ingresos)
         },
         {
           tipo: 'normal',
           col1: 'CAJA GENERAL',
           col2: '',
-          col3: formatQ(d.total_ingresos_caja),
+          col3: formatCurrency(d.total_ingresos_caja),
           col4: ''
         },
         ...d.data_caja
@@ -396,7 +381,7 @@ export default {
           .map((ingreso) => ({
             tipo: 'normal',
             col1: ingreso.cuenta,
-            col2: formatQ(ingreso.ingresos),
+            col2: formatCurrency(ingreso.ingresos),
             col3: '',
             col4: ''
           })),
@@ -404,7 +389,7 @@ export default {
           tipo: 'normal',
           col1: 'BANCO',
           col2: '',
-          col3: formatQ(d.total_ingresos_bancos),
+          col3: formatCurrency(d.total_ingresos_bancos),
           col4: ''
         },
         ...d.data_bancos
@@ -414,7 +399,7 @@ export default {
           .map((ingreso) => ({
             tipo: 'normal',
             col1: ingreso.cuenta,
-            col2: formatQ(ingreso.ingresos),
+            col2: formatCurrency(ingreso.ingresos),
             col3: '',
             col4: ''
           })),
@@ -425,13 +410,13 @@ export default {
           col1: 'EGRESOS',
           col2: '',
           col3: '',
-          col4: formatQ(d.total_general_egresos)
+          col4: formatCurrency(d.total_general_egresos)
         },
         {
           tipo: 'normal',
           col1: 'CAJA GENERAL',
           col2: '',
-          col3: formatQ(d.total_egresos_caja),
+          col3: formatCurrency(d.total_egresos_caja),
           col4: ''
         },
         ...d.data_caja
@@ -441,7 +426,7 @@ export default {
           .map((egreso) => ({
             tipo: 'normal',
             col1: egreso.cuenta,
-            col2: formatQ(egreso.egresos),
+            col2: formatCurrency(egreso.egresos),
             col3: '',
             col4: ''
           })),
@@ -449,7 +434,7 @@ export default {
           tipo: 'normal',
           col1: 'BANCO',
           col2: '',
-          col3: formatQ(d.total_egresos_bancos),
+          col3: formatCurrency(d.total_egresos_bancos),
           col4: ''
         },
         ...d.data_bancos
@@ -459,7 +444,7 @@ export default {
           .map((egreso) => ({
             tipo: 'normal',
             col1: egreso.cuenta,
-            col2: formatQ(egreso.egresos),
+            col2: formatCurrency(egreso.egresos),
             col3: '',
             col4: ''
           })),
@@ -470,20 +455,20 @@ export default {
           col1: 'SALDO FINAL',
           col2: '',
           col3: '',
-          col4: formatQ(d.total_saldo_final)
+          col4: formatCurrency(d.total_saldo_final)
         },
         {
           tipo: 'normal',
           col1: 'SALDO FINAL EN CAJA GENERAL',
           col2: '',
-          col3: formatQ(d.total_saldo_final_caja),
+          col3: formatCurrency(d.total_saldo_final_caja),
           col4: ''
         },
         {
           tipo: 'normal',
           col1: 'SALDO FINAL EN BANCO',
           col2: '',
-          col3: formatQ(d.total_saldo_final_bancos),
+          col3: formatCurrency(d.total_saldo_final_bancos),
           col4: ''
         },
 
@@ -492,8 +477,8 @@ export default {
           tipo: 'heading',
           col1: 'SUMAS IGUALES',
           col2: '',
-          col3: formatQ(d.total_saldo_final),
-          col4: formatQ(d.total_saldo_final)
+          col3: formatCurrency(d.total_saldo_final),
+          col4: formatCurrency(d.total_saldo_final)
         }
       ];
 
@@ -542,39 +527,6 @@ export default {
 
         const data = response.data;
 
-        const doc = new jsPDF();
-        let yOffset = 20;
-        const pageHeight = doc.internal.pageSize.height;
-        const pageMargin = 20;
-
-        const addPageIfNeeded = () => {
-          if (yOffset > pageHeight - pageMargin) {
-            doc.addPage();
-            yOffset = 20;
-          }
-        };
-
-        const addTable = (head, body) => {
-          doc.autoTable({
-            head: [head],
-            body: body,
-            startY: yOffset,
-            theme: 'grid',
-            styles: {
-              cellPadding: 2.5,
-              fontSize: 8,
-              halign: 'center',
-              valign: 'middle',
-              overflow: 'linebreak'
-            },
-            headStyles: {
-              fillColor: [41, 128, 185],
-              textColor: [255, 255, 255]
-            }
-          });
-          yOffset = doc.autoTable.previous.finalY + 10;
-        };
-
         // Determinar texto de periodo (mismo que periodoTexto)
         let periodoTextoPDF;
         if (selectedPeriodo.value === 'Mensual') {
@@ -598,162 +550,66 @@ export default {
           periodoTextoPDF = 'RESUMEN ANUAL';
         }
 
-        // Encabezado
-        doc.setFontSize(16);
-        const tituloPDF =
-  selectedPeriodo.value === 'Anual'
-    ? `REPORTE FINAL ANUAL`
-    : `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${selectedYear.value}`; 
-    doc.text(tituloPDF, 105, 27, { align: 'center' });
-        doc.setLineWidth(0.5);
-        doc.line(60, 32, 150, 32);
-
-        doc.setFontSize(12);
-        yOffset = 40;
-        doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
-        doc.text(periodoTextoPDF, 91, 40);
-        doc.text(`DE`, 165, 40);
-        doc.text(`${currentYear}`, 175, 40);
-        doc.text(
-          `PROYECTO CAPILLA HOGAR SANTA LUISA`,
-          20,
-          50
-        );
-        doc.text(`LUGAR:`, 130, 50);
-        doc.text(`QUETZALTENANGO`, 155, 50);
-        doc.text(`GUATEMALA`, 20, 60);
-        doc.text(`FECHA:`, 130, 60);
-        doc.text(fechaHoy, 160, 60);
-
-        // Tabla
-        yOffset = 75;
-        const tableData = [
-          ['SALDO INICIAL', '', '', 'Q ' + data.saldo_inicial.toFixed(2)],
-          [
-            'SALDO INICIAL EN CAJA GENERAL',
-            '',
-            'Q ' + data.saldo_inicial_caja.toFixed(2),
-            ''
-          ],
-          [
-            'SALDO INICIAL EN BANCO',
-            '',
-            'Q ' + data.saldo_inicial_bancos.toFixed(2),
-            ''
-          ],
-          [
-            'INGRESOS',
-            '',
-            '',
-            'Q ' + data.total_general_ingresos.toFixed(2)
-          ],
-          [
-            'CAJA GENERAL',
-            '',
-            'Q ' + data.total_ingresos_caja.toFixed(2),
-            ''
-          ],
-          ...data.data_caja
-            .filter(
-              (item) => item.ingresos && parseFloat(item.ingresos) > 0
-            )
-            .map((ingreso) => [
-              ingreso.cuenta,
-              'Q ' + ingreso.ingresos,
-              '',
-              ''
-            ]),
-          [
-            'BANCO',
-            '',
-            'Q ' + data.total_ingresos_bancos.toFixed(2),
-            ''
-          ],
-          ...data.data_bancos
-            .filter(
-              (item) => item.ingresos && parseFloat(item.ingresos) > 0
-            )
-            .map((ingreso) => [
-              ingreso.cuenta,
-              'Q ' + ingreso.ingresos,
-              '',
-              ''
-            ]),
-          [
-            'EGRESOS',
-            '',
-            '',
-            'Q ' + data.total_general_egresos.toFixed(2)
-          ],
-          [
-            'CAJA GENERAL',
-            '',
-            'Q ' + data.total_egresos_caja.toFixed(2),
-            ''
-          ],
-          ...data.data_caja
-            .filter(
-              (item) => item.egresos && parseFloat(item.egresos) > 0
-            )
-            .map((egreso) => [
-              egreso.cuenta,
-              'Q ' + egreso.egresos,
-              '',
-              ''
-            ]),
-          [
-            'BANCO',
-            '',
-            'Q ' + data.total_egresos_bancos.toFixed(2),
-            ''
-          ],
-          ...data.data_bancos
-            .filter(
-              (item) => item.egresos && parseFloat(item.egresos) > 0
-            )
-            .map((egreso) => [
-              egreso.cuenta,
-              'Q ' + egreso.egresos,
-              '',
-              ''
-            ]),
-          [
-            'SALDO FINAL',
-            '',
-            '',
-            'Q ' + data.total_saldo_final.toFixed(2)
-          ],
-          [
-            'SALDO FINAL EN CAJA GENERAL',
-            '',
-            'Q ' + data.total_saldo_final_caja.toFixed(2),
-            ''
-          ],
-          [
-            'SALDO FINAL EN BANCO',
-            '',
-            'Q ' + data.total_saldo_final_bancos.toFixed(2),
-            ''
-          ],
-          [
-            'SUMAS IGUALES',
-            '',
-            'Q ' + data.total_saldo_final.toFixed(2),
-            'Q ' + data.total_saldo_final.toFixed(2)
+        const metadata = {
+          empresa: 'PROYECTO CAPILLA HOGAR SANTA LUISA',
+          direccion: 'QUETZALTENANGO, GUATEMALA',
+          tipoReporte:
+            selectedPeriodo.value === 'Anual'
+              ? 'REPORTE FINAL ANUAL'
+              : `REPORTE FINAL ${selectedPeriodo.value.toUpperCase()} ${selectedYear.value}`,
+          especificacion: [
+            `Informe correspondiente al ${periodoTextoPDF}`,
+            `Fecha: ${fechaHoy}`
           ]
+        };
+
+        const columns = [
+          { header: 'Descripción', dataKey: 'descripcion', align: 'left' },
+          { header: 'Detalle', dataKey: 'detalle', type: 'currency' },
+          { header: 'Saldo suma', dataKey: 'saldo_suma', type: 'currency' },
+          { header: 'Suma', dataKey: 'suma', type: 'currency' }
         ];
 
-        const tableHeaders = [
-          'Descripción',
-          'Detalle',
-          'Saldo suma',
-          'Suma'
-        ];
+        const rows = [];
+        const pushRow = (descripcion, detalle, saldo_suma, suma, highlight = false) => {
+          rows.push({ descripcion, detalle, saldo_suma, suma, ...(highlight ? { _variant: 'highlight' } : {}) });
+        };
 
-        addTable(tableHeaders, tableData);
+        pushRow('SALDO INICIAL', '', '', formatCurrency(data.saldo_inicial), true);
+        pushRow('SALDO INICIAL EN CAJA GENERAL', '', formatCurrency(data.saldo_inicial_caja), '');
+        pushRow('SALDO INICIAL EN BANCO', '', formatCurrency(data.saldo_inicial_bancos), '');
+
+        pushRow('INGRESOS', '', '', formatCurrency(data.total_general_ingresos), true);
+        pushRow('CAJA GENERAL', '', formatCurrency(data.total_ingresos_caja), '');
+        data.data_caja
+          .filter((item) => item.ingresos && parseFloat(item.ingresos) > 0)
+          .forEach((ingreso) => pushRow(ingreso.cuenta, formatCurrency(ingreso.ingresos), '', ''));
+        pushRow('BANCO', '', formatCurrency(data.total_ingresos_bancos), '');
+        data.data_bancos
+          .filter((item) => item.ingresos && parseFloat(item.ingresos) > 0)
+          .forEach((ingreso) => pushRow(ingreso.cuenta, formatCurrency(ingreso.ingresos), '', ''));
+
+        pushRow('EGRESOS', '', '', formatCurrency(data.total_general_egresos), true);
+        pushRow('CAJA GENERAL', '', formatCurrency(data.total_egresos_caja), '');
+        data.data_caja
+          .filter((item) => item.egresos && parseFloat(item.egresos) > 0)
+          .forEach((egreso) => pushRow(egreso.cuenta, formatCurrency(egreso.egresos), '', ''));
+        pushRow('BANCO', '', formatCurrency(data.total_egresos_bancos), '');
+        data.data_bancos
+          .filter((item) => item.egresos && parseFloat(item.egresos) > 0)
+          .forEach((egreso) => pushRow(egreso.cuenta, formatCurrency(egreso.egresos), '', ''));
+
+        pushRow('SALDO FINAL', '', '', formatCurrency(data.total_saldo_final), true);
+        pushRow('SALDO FINAL EN CAJA GENERAL', '', formatCurrency(data.total_saldo_final_caja), '');
+        pushRow('SALDO FINAL EN BANCO', '', formatCurrency(data.total_saldo_final_bancos), '');
+        pushRow('SUMAS IGUALES', '', formatCurrency(data.total_saldo_final), formatCurrency(data.total_saldo_final), true);
+
+        const doc = buildReportPdf({ orientation: 'portrait', metadata, columns, rows });
 
         // Firmas
-        yOffset += 5;
+        let yOffset = doc.lastAutoTable.finalY + 15;
+        const pageHeight = doc.internal.pageSize.height;
+        const pageMargin = 20;
         const espacioNecesario = 60;
         if (yOffset + espacioNecesario > pageHeight - pageMargin) {
           doc.addPage();

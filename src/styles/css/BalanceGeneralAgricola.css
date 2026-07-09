@@ -1,29 +1,6 @@
-/* Números de cuenta con estilo de link */
-.link-cuenta {
-  color: var(--cui-link-color);       
-  text-decoration: underline;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* Efecto hover para que se sienta clickeable */
-.link-cuenta:hover {
-  text-decoration: underline;
-  color: var(--cui-link-hover-color);         
-}
-
-.reporte-wrapper {
-  background-color: var(--cui-body-bg);
-  min-height: calc(100vh - 100px);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2.5rem 1.5rem;
-}
-
-.reporte-card {
-  max-width: 1100px;
+.balance-agricola-page {
   width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 2.5rem;
   border-radius: 18px;
@@ -31,16 +8,29 @@
   color: var(--cui-body-color);
   border: 1px solid var(--cui-border-color);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
 }
 
+/* Números de cuenta con estilo de link */
+.balance-agricola-page .link-cuenta {
+  color: var(--cui-link-color);       
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Efecto hover para que se sienta clickeable */
+.balance-agricola-page .link-cuenta:hover {
+  text-decoration: underline;
+  color: var(--cui-link-hover-color);         
+}
+
+
 /* Encabezado principal */
-.reporte-header {
+.balance-agricola-page .reporte-header {
   margin-bottom: 1.5rem;
 }
 
-.reporte-title {
+.balance-agricola-page .reporte-title {
   font-size: 1.9rem;
   font-weight: 700;
   color: var(--cui-body-color);
@@ -49,14 +39,14 @@
   letter-spacing: 1px;
 }
 
-.reporte-subtitle {
+.balance-agricola-page .reporte-subtitle {
   margin-top: 0.35rem;
   font-size: 0.95rem;
   color: var(--cui-secondary-color);
 }
 
 /* Contenedor de filtros */
-.division-container {
+.balance-agricola-page .division-container {
   border-radius: 12px;
   padding: 1rem 1.3rem;
   margin-top: 0.5rem;
@@ -64,14 +54,14 @@
   border-left: 4px solid #bd9f69;
 }
 
-.nombre-fecha-container {
+.balance-agricola-page .nombre-fecha-container {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   width: 100%;
 }
 
-.id-inputs {
+.balance-agricola-page .id-inputs {
   flex: 1;
   min-width: 260px;
   display: flex;
@@ -79,13 +69,13 @@
   gap: 10px;
 }
 
-.select-group {
+.balance-agricola-page .select-group {
   flex: 1 1 140px;
   min-width: 140px;
 }
 
 /* Labels / campos */
-label {
+.balance-agricola-page label {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--cui-body-color);
@@ -93,10 +83,10 @@ label {
   display: block;
 }
 
-input[type='text'],
-input[type='number'],
-input[type='date'],
-select {
+.balance-agricola-page input[type='text'],
+.balance-agricola-page input[type='number'],
+.balance-agricola-page input[type='date'],
+.balance-agricola-page select {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--cui-border-color);
@@ -108,26 +98,26 @@ select {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-input[type='text']:focus,
-input[type='number']:focus,
-input[type='date']:focus,
-select:focus {
+.balance-agricola-page input[type='text']:focus,
+.balance-agricola-page input[type='number']:focus,
+.balance-agricola-page input[type='date']:focus,
+.balance-agricola-page select:focus {
   border-color: #bd9f69;
   box-shadow: 0 0 0 0.14rem rgba(189, 159, 105, 0.35);
   outline: none;
 }
 
 /* Botones */
-.form-actions {
+.balance-agricola-page .form-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   margin: 1.4rem 0 1.1rem;
 }
 
-.btn-primary,
-.btn-secondary,
-.btn-ghost {
+.balance-agricola-page .btn-primary,
+.balance-agricola-page .btn-secondary,
+.balance-agricola-page .btn-ghost {
   padding: 10px 16px;
   border-radius: 999px;
   border: none;
@@ -140,40 +130,40 @@ select:focus {
 }
 
 /* Generar PDF */
-.btn-primary {
+.balance-agricola-page .btn-primary {
   background-color: #14491b;
   color: #fff;
 }
-.btn-primary:hover {
+.balance-agricola-page .btn-primary:hover {
   background-color: #1a5a23;
   box-shadow: 0 4px 10px rgba(20, 73, 27, 0.3);
   transform: translateY(-1px);
 }
 
 /* Vista previa */
-.btn-secondary {
+.balance-agricola-page .btn-secondary {
   background-color: #bd9f69;
   color: #fff;
 }
-.btn-secondary:hover {
+.balance-agricola-page .btn-secondary:hover {
   background-color: #d3b37f;
   box-shadow: 0 4px 10px rgba(189, 159, 105, 0.4);
   transform: translateY(-1px);
 }
 
 /* Limpiar */
-.btn-ghost {
+.balance-agricola-page .btn-ghost {
   background-color: transparent;
   color: var(--cui-body-color);
   border: 1px dashed #bd9f69;
 }
-.btn-ghost:hover {
+.balance-agricola-page .btn-ghost:hover {
   background-color: #f8f9fa;
   transform: translateY(-1px);
 }
 
 /* Tabla */
-.tabla-wrapper {
+.balance-agricola-page .tabla-wrapper {
   width: 100%;
   overflow-x: auto;
   margin-top: 20px;
@@ -182,14 +172,14 @@ select:focus {
   background-color: var(--cui-card-bg);
 }
 
-.tabla-libro {
+.balance-agricola-page .tabla-libro {
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
   font-size: 0.82rem;
 }
 
-.tabla-libro thead th {
+.balance-agricola-page .tabla-libro thead th {
   background-color: #292b57;
   color: #fff;
   text-align: center;
@@ -199,7 +189,7 @@ select:focus {
   white-space: nowrap;
 }
 
-.tabla-libro tbody td {
+.balance-agricola-page .tabla-libro tbody td {
   color: var(--cui-body-color);
   border-color: var(--cui-border-color);
   padding: 6px 8px;
@@ -208,16 +198,16 @@ select:focus {
   word-break: break-word;
 }
 
-.tabla-libro tbody td.bold-text {
+.balance-agricola-page .tabla-libro tbody td.bold-text {
   font-weight: 600;
 }
 
-.right {
+.balance-agricola-page .right {
   text-align: right !important;
 }
 
 /* Mensaje sin datos */
-.sin-datos {
+.balance-agricola-page .sin-datos {
   margin-top: 30px;
   font-size: 0.9rem;
   color: var(--cui-secondary-color);
@@ -227,15 +217,16 @@ select:focus {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .reporte-card {
+  .balance-agricola-page {
     padding: 1.5rem 1.25rem;
   }
 
-  .nombre-fecha-container {
+  .balance-agricola-page .nombre-fecha-container {
     flex-direction: column;
   }
 
-  .id-inputs {
+  .balance-agricola-page .id-inputs {
     flex-direction: column;
   }
 }
+

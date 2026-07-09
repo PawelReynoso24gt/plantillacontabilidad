@@ -85,35 +85,32 @@
       </div>
 
       <!-- Encabezado tipo PDF / vista previa -->
-      <div v-if="reporteData" class="encabezado-container">
-        <div class="encabezado-box">
-          <div class="encabezado-titulo">
-            ESTADO DE RESULTADOS {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
-          </div>
+      <ReportPreviewHeader
+        v-if="reporteData"
+        :empresa="`ESTADO DE RESULTADOS ${selectedPeriodo.toUpperCase()} ${currentYear}`"
+      >
+        <div>
+          <strong>INFORME CORRESPONDIENTE AL:</strong>
+          {{ periodoTexto }}
+        </div>
+        <!-- SI ES ANUAL: MOSTRAR FECHAS -->
+        <div v-if="selectedPeriodo === 'Anual'">
+          <strong>FECHAS SELECCIONADAS:</strong>
+          <span class="rp-value">{{ fechaInicio }}</span> al
+          <span class="rp-value">{{ fechaFin }}</span>
         </div>
 
-        <div class="encabezado-detalles">
-          <div>
-            <strong>INFORME CORRESPONDIENTE AL:</strong>
-            {{ periodoTexto }}
-          </div>
-         <!-- SI ES ANUAL: MOSTRAR FECHAS -->
-          <div v-if="selectedPeriodo === 'Anual'">
-            <strong>FECHAS SELECCIONADAS:</strong> {{ fechaInicio }} al {{ fechaFin }}
-          </div>
-
-          <!-- SI NO ES ANUAL: MOSTRAR AÑO -->
-          <div v-else>
-            <strong>AÑO:</strong> {{ selectedAnio }}
-          </div>
-
-          <div>
-            <strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA
-          </div>
-          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-          <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
+        <!-- SI NO ES ANUAL: MOSTRAR AÑO -->
+        <div v-else>
+          <strong>AÑO:</strong> <span class="rp-value">{{ selectedAnio }}</span>
         </div>
-      </div>
+
+        <div>
+          <strong>PROYECTO:</strong> PROYECTO AGRÍCOLA HOGAR SANTA LUISA
+        </div>
+        <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+        <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
+      </ReportPreviewHeader>
 
       <!-- Tabla resumen -->
       <div v-if="reporteData" class="tabla-wrapper">
@@ -186,15 +183,17 @@
 <script>
 import axios from 'axios';
 import { ref, computed } from 'vue';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
-import { useRouter } from 'vue-router';   
+import { useRouter } from 'vue-router';
 import { aplicarNumeracion } from '../../../utils/numeracion';
+import { buildReportPdf } from '@/pdf/PdfReportBuilder';
+import { formatCurrency } from '@/pdf/format';
+import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/EstadoResultadosAgricola.css'
 
 export default {
-  name: 'ReporteAgricolaFinal',          
+  name: 'ReporteAgricolaFinal',
+  components: { ReportPreviewHeader },
   setup() {
     const router = useRouter();          
     const now = new Date();
@@ -298,17 +297,6 @@ export default {
       return isNaN(n) ? 0 : n;
     };
 
-    const formatQ = (n) => {
-      const num = parseNumber(n);
-      return (
-        'Q ' +
-        num.toLocaleString('es-GT', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      );
-    };
-
       const irDetalleCuenta = (codigoCuenta, nombreCuenta) => {
       router.push({
         name: 'ReporteCuentaAgricolaCuenta',
@@ -332,7 +320,7 @@ export default {
         col1: 'SALDO INICIAL',
         col2: '',
         col3: '',
-        col4: formatQ(d.saldo_inicial)
+        col4: formatCurrency(d.saldo_inicial)
       });
 
       rows.push({
@@ -340,7 +328,7 @@ export default {
         nivel: 2,
         col1: 'SALDO INICIAL EN CAJA GENERAL',
         col2: '',
-        col3: formatQ(d.saldo_inicial_caja),
+        col3: formatCurrency(d.saldo_inicial_caja),
         col4: ''
       });
 
@@ -349,7 +337,7 @@ export default {
         nivel: 2,
         col1: 'SALDO INICIAL EN BANCO',
         col2: '',
-        col3: formatQ(d.saldo_inicial_bancos),
+        col3: formatCurrency(d.saldo_inicial_bancos),
         col4: ''
       });
 
@@ -360,7 +348,7 @@ export default {
         col1: 'EGRESOS',
         col2: '',
         col3: '',
-        col4: formatQ(d.total_general_egresos)
+        col4: formatCurrency(d.total_general_egresos)
       });
 
       rows.push({
@@ -368,7 +356,7 @@ export default {
         nivel: 2,
         col1: 'CAJA GENERAL',
         col2: '',
-        col3: formatQ(d.total_egresos_caja),
+        col3: formatCurrency(d.total_egresos_caja),
         col4: ''
       });
 
@@ -380,7 +368,7 @@ export default {
             nivel: 3,
             esCuenta: true,         
             col1: eg.cuenta,
-            col2: formatQ(eg.egresos),
+            col2: formatCurrency(eg.egresos),
             col3: '',
             col4: ''
           });
@@ -391,7 +379,7 @@ export default {
         nivel: 2,
         col1: 'BANCO',
         col2: '',
-        col3: formatQ(d.total_egresos_bancos),
+        col3: formatCurrency(d.total_egresos_bancos),
         col4: ''
       });
 
@@ -403,7 +391,7 @@ export default {
             nivel: 3,
             esCuenta: true,
             col1: eg.cuenta,
-            col2: formatQ(eg.egresos),
+            col2: formatCurrency(eg.egresos),
             col3: '',
             col4: ''
           });
@@ -416,7 +404,7 @@ export default {
         col1: 'SALDO FINAL',
         col2: '',
         col3: '',
-        col4: formatQ(d.total_saldo_final)
+        col4: formatCurrency(d.total_saldo_final)
       });
 
       rows.push({
@@ -424,7 +412,7 @@ export default {
         nivel: 2,
         col1: 'SALDO FINAL EN CAJA GENERAL',
         col2: '',
-        col3: formatQ(d.total_saldo_final_caja),
+        col3: formatCurrency(d.total_saldo_final_caja),
         col4: ''
       });
 
@@ -433,7 +421,7 @@ export default {
         nivel: 2,
         col1: 'SALDO FINAL EN BANCO',
         col2: '',
-        col3: formatQ(d.total_saldo_final_bancos),
+        col3: formatCurrency(d.total_saldo_final_bancos),
         col4: ''
       });
 
@@ -443,8 +431,8 @@ export default {
         nivel: 1,
         col1: 'SUMAS IGUALES',
         col2: '',
-        col3: formatQ(d.total_saldo_final),
-        col4: formatQ(d.total_saldo_final)
+        col3: formatCurrency(d.total_saldo_final),
+        col4: formatCurrency(d.total_saldo_final)
       });
 
       return aplicarNumeracion(rows);
@@ -482,39 +470,6 @@ export default {
     );
     const data = response.data;
 
-    const doc = new jsPDF();
-    let yOffset = 20;
-    const pageHeight = doc.internal.pageSize.height;
-    const pageMargin = 20;
-
-    const addPageIfNeeded = () => {
-      if (yOffset > pageHeight - pageMargin) {
-        doc.addPage();
-        yOffset = 20;
-      }
-    };
-
-    const addTable = (head, body) => {
-      doc.autoTable({
-        head: [head],
-        body: body,
-        startY: yOffset,
-        theme: 'grid',
-        styles: {
-          cellPadding: 2.5,
-          fontSize: 8,
-          halign: 'center',
-          valign: 'middle',
-          overflow: 'linebreak'
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: [255, 255, 255]
-        }
-      });
-      yOffset = doc.autoTable.previous.finalY + 10;
-    };
-
     // ---- Texto de periodo (igual que periodoTexto) ----
     let periodoTextoPDF;
     if (selectedPeriodo.value === 'Mensual') {
@@ -536,90 +491,60 @@ export default {
       periodoTextoPDF = 'RESUMEN ANUAL';
     }
 
-    // ---------- ENCABEZADO PDF (AQUÍ CAMBIAMOS CAPILLA → AGRÍCOLA) ----------
-    doc.setFontSize(16);
-      doc.text(
-      `ESTADO DE RESULTADOS ${selectedPeriodo.value.toUpperCase()} ${selectedAnio.value}`,
-      105,
-      27,
-      { align: 'center' }
-    );
-    doc.setLineWidth(0.5);
-    doc.line(40, 32, 170, 32);
-
-    doc.setFontSize(12);
-    yOffset = 40;
-    doc.text(`INFORME CORRESPONDIENTE AL`, 20, 40);
-    doc.text(periodoTextoPDF, 91, 40);
-    doc.text(`DE`, 165, 40);
-    doc.text(`${currentYear}`, 175, 40);
-
-    // ⬇️ AQUÍ ESTABA EL TEXTO DE CAPILLA
-    doc.text(
-      `PROYECTO AGRÍCOLA HOGAR SANTA LUISA`,
-      20,
-      50
-    );
-    doc.text(`LUGAR:`, 130, 50);
-    doc.text(`QUETZALTENANGO`, 155, 50);
-    doc.text(`GUATEMALA`, 20, 60);
-    doc.text(`FECHA:`, 130, 60);
-    doc.text(fechaHoy, 160, 60);
-
-    // ---------- TABLA ----------
-    yOffset = 75;
-
-    // (puedes eliminar esta redefinición si quieres, ya tienes parseNumber arriba)
-    const parseNumberLocal = (v) => {
-      if (v === null || v === undefined || v === '') return 0;
-      const s = String(v).replace(/,/g, '');
-      const n = parseFloat(s);
-      return isNaN(n) ? 0 : n;
+    const metadata = {
+      empresa: 'PROYECTO AGRÍCOLA HOGAR SANTA LUISA',
+      direccion: 'QUETZALTENANGO, GUATEMALA',
+      tipoReporte: `ESTADO DE RESULTADOS ${selectedPeriodo.value.toUpperCase()} ${selectedAnio.value}`,
+      especificacion: [
+        `Informe correspondiente al ${periodoTextoPDF} de ${selectedAnio.value}`,
+        `Fecha: ${fechaHoy}`
+      ]
     };
 
-    const tableData = [];
+    const columns = [
+      { header: 'Descripción', dataKey: 'descripcion', align: 'left' },
+      { header: 'Detalle', dataKey: 'detalle', type: 'currency' },
+      { header: 'Saldo suma', dataKey: 'saldo_suma', type: 'currency' },
+      { header: 'Suma', dataKey: 'suma', type: 'currency' }
+    ];
+
+    const rows = [];
+    const pushRow = (descripcion, detalle, saldo_suma, suma, highlight = false) => {
+      rows.push({ descripcion, detalle, saldo_suma, suma, ...(highlight ? { _variant: 'highlight' } : {}) });
+    };
 
     // SALDO INICIAL
-    tableData.push(['SALDO INICIAL', '', '', formatQ(parseNumberLocal(data.saldo_inicial))]);
-    tableData.push(['SALDO INICIAL EN CAJA GENERAL', '', formatQ(parseNumberLocal(data.saldo_inicial_caja)), '']);
-    tableData.push(['SALDO INICIAL EN BANCO', '', formatQ(parseNumberLocal(data.saldo_inicial_bancos)), '']);
+    pushRow('SALDO INICIAL', '', '', formatCurrency(data.saldo_inicial), true);
+    pushRow('SALDO INICIAL EN CAJA GENERAL', '', formatCurrency(data.saldo_inicial_caja), '');
+    pushRow('SALDO INICIAL EN BANCO', '', formatCurrency(data.saldo_inicial_bancos), '');
 
     // EGRESOS - CAJA
-    tableData.push(['EGRESOS', '', '', formatQ(parseNumberLocal(data.total_general_egresos))]);
-    tableData.push(['CAJA GENERAL', '', formatQ(parseNumberLocal(data.total_egresos_caja)), '']);
+    pushRow('EGRESOS', '', '', formatCurrency(data.total_general_egresos), true);
+    pushRow('CAJA GENERAL', '', formatCurrency(data.total_egresos_caja), '');
     data.data_caja
-      .filter((item) => parseNumberLocal(item.egresos) > 0)
+      .filter((item) => parseNumber(item.egresos) > 0)
       .forEach((eg) => {
-        tableData.push([eg.cuenta, formatQ(parseNumberLocal(eg.egresos)), '', '']);
+        pushRow(eg.cuenta, formatCurrency(eg.egresos), '', '');
       });
 
     // EGRESOS - BANCOS
-    tableData.push(['BANCO', '', formatQ(parseNumberLocal(data.total_egresos_bancos)), '']);
+    pushRow('BANCO', '', formatCurrency(data.total_egresos_bancos), '');
     data.data_bancos
-      .filter((item) => parseNumberLocal(item.egresos) > 0)
+      .filter((item) => parseNumber(item.egresos) > 0)
       .forEach((eg) => {
-        tableData.push([eg.cuenta, formatQ(parseNumberLocal(eg.egresos)), '', '']);
+        pushRow(eg.cuenta, formatCurrency(eg.egresos), '', '');
       });
 
     // SALDO FINAL
-    tableData.push(['SALDO FINAL', '', '', formatQ(parseNumberLocal(data.total_saldo_final))]);
-    tableData.push(['SALDO FINAL EN CAJA GENERAL', '', formatQ(parseNumberLocal(data.total_saldo_final_caja)), '']);
-    tableData.push(['SALDO FINAL EN BANCO', '', formatQ(parseNumberLocal(data.total_saldo_final_bancos)), '']);
+    pushRow('SALDO FINAL', '', '', formatCurrency(data.total_saldo_final), true);
+    pushRow('SALDO FINAL EN CAJA GENERAL', '', formatCurrency(data.total_saldo_final_caja), '');
+    pushRow('SALDO FINAL EN BANCO', '', formatCurrency(data.total_saldo_final_bancos), '');
 
     // SUMAS IGUALES
-    tableData.push([
-      'SUMAS IGUALES',
-      '',
-      formatQ(parseNumberLocal(data.total_saldo_final)),
-      formatQ(parseNumberLocal(data.total_saldo_final))
-    ]);
+    pushRow('SUMAS IGUALES', '', formatCurrency(data.total_saldo_final), formatCurrency(data.total_saldo_final), true);
 
-    const tableHeaders = ['Descripción', 'Detalle', 'Saldo suma', 'Suma'];
-    addTable(tableHeaders, tableData);
-
+    const doc = buildReportPdf({ orientation: 'portrait', metadata, columns, rows });
     const blob = doc.output('blob');
-
-    // ⬇️ AQUÍ CAMBIAMOS EL NOMBRE DEL ARCHIVO
     saveAs(blob, 'estado_resultados_agricola.pdf');
   } catch (error) {
     console.error('Error al generar el PDF:', error);

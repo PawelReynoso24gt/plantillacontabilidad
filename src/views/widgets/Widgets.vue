@@ -47,12 +47,6 @@ export default {
           inactive: false
         },
         {
-          name: 'Ing. Alejandra González Monterrosa',
-          photo: 'src/assets/images/avatars/photoAle.jpg',
-          description: 'Nacida en San Felipe, Retalhuleu, egresada del Colegio Mixto D’antoni de Bachillerato en ciencias y letras con orientación en computación, Actualmente egresada de la carrera de Ingeniería en Sistemas, Informática y Ciencias de la Computación en la Universidad Mesoamericana, sede Quetzaltenango.',
-          inactive: true   
-        },
-        {
           name: 'Ing. Pablo Daniel Vásquez Monzón',
           photo: 'src/assets/images/avatars/photoPablo.jpg',
           description:

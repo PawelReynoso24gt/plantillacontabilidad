@@ -138,48 +138,6 @@
   transform: translateY(-1px);
 }
 
-/* Encabezado del reporte / vista previa */
-.encabezado-container {
-  margin-top: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--cui-body-color);
-}
-
-.encabezado-box {
-  background-color: var(--cui-tertiary-bg);
-  color: var(--cui-body-color);
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
-  border-left: 4px solid #bd9f69;
-  flex: 1 1 260px;
-}
-
-.encabezado-titulo {
-  font-weight: 700;
-  font-size: 1rem;
-  text-transform: uppercase;
-}
-
-.encabezado-direccion {
-  margin-top: 0.25rem;
-  color: #6c757d;
-}
-
-.encabezado-detalles {
-  flex: 1 1 220px;
-  background-color: var(--cui-tertiary-bg);
-  color: var(--cui-body-color);
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
-  border-left: 4px solid #292b57;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
 /* Tabla de resultados */
 .tabla-wrapper {
   margin-top: 1.5rem;

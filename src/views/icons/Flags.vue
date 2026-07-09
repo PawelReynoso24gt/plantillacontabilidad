@@ -32,22 +32,18 @@
   </div>
 
   <!-- Encabezado tipo PDF / vista previa -->
-  <div v-if="ingresosEgresos.length" class="encabezado-container">
-    <div class="encabezado-box">
-      <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
-      <div class="encabezado-direccion">
-        Dirección del Proyecto: {{ direccionProyecto }}
-      </div>
+  <ReportPreviewHeader
+    v-if="ingresosEgresos.length"
+    :empresa="nombreEncabezado"
+    :subtitulo="`Dirección del Proyecto: ${direccionProyecto}`"
+  >
+    <div><strong>REPORTE:</strong> LIBRO DIARIO</div>
+    <div>
+      <strong>ESPECIFICACIÓN:</strong>
+      Desde: <span class="rp-value">{{ fechaInicial || '—' }}</span>, Hasta:
+      <span class="rp-value">{{ fechaFinal || '—' }}</span>
     </div>
-
-    <div class="encabezado-detalles">
-      <div><strong>REPORTE:</strong> LIBRO DIARIO</div>
-      <div>
-        <strong>ESPECIFICACIÓN:</strong>
-        Desde: {{ fechaInicial || '—' }}, Hasta: {{ fechaFinal || '—' }}
-      </div>
-    </div>
-  </div>
+  </ReportPreviewHeader>
 
   <!-- Tabla de resultados -->
   <div v-if="ingresosEgresos.length" class="tabla-wrapper">
@@ -115,14 +111,16 @@
 
 <script>
 import { ref, computed } from 'vue';
-import jsPDF from 'jspdf';
 import axios from 'axios';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { buildReportPdf } from '@/pdf/PdfReportBuilder';
+import { formatCurrency } from '@/pdf/format';
+import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/LibroDiarioA.css'
 
 export default {
   name: 'LibroDiario',
+  components: { ReportPreviewHeader },
   setup() {
     const fechaInicial = ref('');
     const fechaFinal = ref('');
@@ -130,19 +128,6 @@ export default {
     const direccionProyecto = ref('8va calle 5-21 zona 10, Quetzaltenango');
 
     const ingresosEgresos = ref([]);
-
-    const formatNumber = (value) => {
-      if (value === null || value === undefined || value === '') return '';
-      const num = parseFloat(value);
-      if (isNaN(num)) return '';
-      return (
-        'Q. ' +
-        num.toLocaleString('es-GT', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      );
-    };
 
     const tablaFormateada = computed(() => {
       return ingresosEgresos.value.map((item) => {
@@ -158,14 +143,14 @@ export default {
           acredita: esEspecial
             ? ''
             : item.acredita
-              ? formatNumber(item.acredita)
+              ? formatCurrency(item.acredita)
               : '',
           debita: esEspecial
             ? ''
             : item.debita
-              ? formatNumber(item.debita)
+              ? formatCurrency(item.debita)
               : '',
-          total: item.total ? formatNumber(item.total) : ''
+          total: item.total ? formatCurrency(item.total) : ''
         };
       });
     });
@@ -197,116 +182,44 @@ export default {
         );
         const data = response.data;
 
-        const doc = new jsPDF('landscape');
-
-        doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
-        doc.rect(60, 17, 170, 15);
-
-        doc.setFontSize(12);
-        doc.text(
-          `Dirección del Proyecto: ${direccionProyecto.value}`,
-          20,
-          40
-        );
-
-        const textoAdicional = 'REPORTE: LIBRO DIARIO';
-        doc.setFontSize(10);
-        doc.text(textoAdicional, 20, 50);
-
-        const especificacionFechas = `ESPECIFICACIÓN: Desde: ${fechaInicial.value}, Hasta: ${fechaFinal.value}`;
-        doc.text(especificacionFechas, 20, 60);
+        const metadata = {
+          empresa: nombreEncabezado.value,
+          direccion: direccionProyecto.value,
+          tipoReporte: 'LIBRO DIARIO',
+          especificacion: `Desde: ${fechaInicial.value || '-'}, Hasta: ${fechaFinal.value || '-'}`
+        };
 
         const columnas = [
-          { title: 'Conteo', dataKey: 'nomenclatura' },
-          { title: 'Número de Documento', dataKey: 'numero_documento' },
-          { title: 'Fecha', dataKey: 'fecha' },
-          { title: 'Cuenta', dataKey: 'cuenta' },
-          { title: 'Descripción', dataKey: 'descripcion' },
-          { title: 'Acredita', dataKey: 'acredita' },
-          { title: 'Debita', dataKey: 'debita' },
-          { title: 'Saldo', dataKey: 'total' }
+          { header: 'Conteo', dataKey: 'nomenclatura', align: 'center' },
+          { header: 'Número de Documento', dataKey: 'numero_documento', align: 'center' },
+          { header: 'Fecha', dataKey: 'fecha', align: 'center' },
+          { header: 'Cuenta', dataKey: 'cuenta', align: 'left' },
+          { header: 'Descripción', dataKey: 'descripcion', align: 'left' },
+          { header: 'Acredita', dataKey: 'acredita', type: 'acredita' },
+          { header: 'Debita', dataKey: 'debita', type: 'debita' },
+          { header: 'Saldo', dataKey: 'total', type: 'currency' }
         ];
 
         // Filas del PDF
         const filas = data.map((row) => {
-          const total = row.total ? formatNumber(row.total) : '';
-
-          if (
+          const esResumen =
             row.cuenta === 'Saldo inicial' ||
-            row.cuenta === 'Suma total'
-          ) {
-            return {
-              nomenclatura: row.nomenclatura,
-              numero_documento: row.numero_documento || '-',
-              fecha: row.fecha || '',
-              cuenta: row.cuenta,
-              descripcion: row.descripcion,
-              acredita: '',
-              debita: '',
-              total: { content: total, styles: { fontStyle: 'bold' } }
-            };
-          }
+            row.cuenta === 'Suma total';
 
           return {
             nomenclatura: row.nomenclatura,
             numero_documento: row.numero_documento || '-',
-            fecha: row.fecha,
+            fecha: row.fecha || '',
             cuenta: row.cuenta,
             descripcion: row.descripcion,
-            acredita: row.acredita ? formatNumber(row.acredita) : '',
-            debita: row.debita ? formatNumber(row.debita) : '',
-            total: total
+            acredita: esResumen ? '' : (row.acredita ? formatCurrency(row.acredita) : ''),
+            debita: esResumen ? '' : (row.debita ? formatCurrency(row.debita) : ''),
+            total: row.total ? formatCurrency(row.total) : '',
+            ...(esResumen ? { _variant: 'highlight' } : {})
           };
         });
 
-        doc.autoTable({
-          columns: columnas,
-          body: filas,
-          startY: 80,
-          theme: 'grid',
-          styles: {
-            cellPadding: 3,
-            fontSize: 8,
-            halign: 'left',
-            valign: 'middle'
-          },
-          headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: [255, 255, 255]
-          },
-          columnStyles: {
-            nomenclatura: {
-              minCellWidth: 20,
-              overflow: 'visible',
-              halign: 'left'
-            },
-            numero_documento: {
-              minCellWidth: 30,
-              overflow: 'visible',
-              halign: 'left'
-            },
-            fecha: {
-              minCellWidth: 20,
-              overflow: 'visible',
-              halign: 'left'
-            },
-            cuenta: {
-              minCellWidth: 40,
-              overflow: 'linebreak',
-              halign: 'left'
-            },
-            descripcion: {
-              minCellWidth: 40,
-              overflow: 'linebreak',
-              halign: 'left'
-            },
-            acredita: { minCellWidth: 20, halign: 'right' },
-            debita: { minCellWidth: 20, halign: 'right' },
-            total: { minCellWidth: 20, halign: 'right' }
-          }
-        });
-
+        const doc = buildReportPdf({ orientation: 'landscape', metadata, columns: columnas, rows: filas });
         const blob = doc.output('blob');
         saveAs(blob, 'libro_diario_agrícola.pdf');
       } catch (error) {
