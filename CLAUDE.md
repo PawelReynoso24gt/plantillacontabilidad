@@ -30,7 +30,7 @@ There is no test suite/framework configured in this repo (no Jest/Vitest/Cypress
 - The two projects get **different sidebar navigation configs**: `src/_nav.js` is the **Agrícola** nav, `src/_nav2.js` is the **Capilla** nav — confirmed by the route content of each file (`AppSidebarNav.js` uses this mapping correctly). Confusingly, `DefaultLayout.vue` and `AppSidebar.vue` import them with the labels swapped (`useNavAgricola` bound to `_nav2`, `useNavCapilla` bound to `_nav`), but that mismapped `navConfig` is passed as an unused prop — `AppSidebarNav.js` ignores it and recomputes nav from `store.state.projectToken` itself, so the swap is dead/misleading code, not a live bug. Double-check which file you're editing.
 
 ### No centralized API client — read the filenames, not the config
-Every view hardcodes its own `axios.post('http://127.0.0.1:8000/...')` calls inline. `src/config/constant.js` exports `apiUrl` and `laravelUrl`, but **nothing in the codebase imports them** — it's dead config, not the real source of truth for the backend URL. If you need to change the API host, you have to grep and update every view individually.
+Every view hardcodes its own `axios.post('http://127.0.0.1:8000/...')` calls inline, using the absolute URL rather than a relative `/api/...` path. `src/config/constant.js` exports `apiUrl` (currently `http://192.168.19.66:8080`, stale/wrong and not `127.0.0.1:8000`) and `laravelUrl`, but **nothing in the codebase imports them** — it's dead config, not the real source of truth for the backend URL. `vite.config.mjs` also defines a dev-server proxy (`/api` → `http://127.0.0.1:8000`), but since views call the absolute URL directly, that proxy is likewise unused in practice. If you need to change the API host, you have to grep and update every view individually.
 
 ### View files vs. what they actually render
 This is the single biggest gotcha in the codebase: many `.vue` files still carry their original CoreUI template demo name (and still live at the original demo route), but their content was fully replaced with a real accounting report. The component's internal `name:` field (not the filename) tells you what it really is. Known mappings:
@@ -56,6 +56,7 @@ All PDF-producing views (there are 15) build their PDFs through a shared engine 
 - `PdfHeaderRenderer.js` — draws the shared navy/gold header card (logo, empresa/dirección, tipo de reporte, especificación).
 - `PdfTableRenderer.js` — wraps `autoTable` with the shared navy header row, beige highlight rows, green/red coloring for `acredita`/`debita` columns, and the footer (page numbers + generation date).
 - `theme.js` / `format.js` — shared color palette and `formatCurrency()` (handles comma-formatted numeric strings from the API, not just plain numbers).
+- `logo.js` — base64-embedded logo used by the header renderer.
 
 Contract: `columns` is `[{ header, dataKey, align?, type? }]` (`type` one of `'text' | 'currency' | 'acredita' | 'debita'`); `rows` are plain objects keyed by `dataKey`, optionally with `_variant: 'highlight'` (saldo inicial / totals rows → beige+bold) and/or `_cellColors: { [dataKey]: 'positive'|'negative' }` for one-off cell coloring (e.g. an unbalanced "Partida"). Adding a new report = new columns/rows shape, not a new copy of the drawing code.
 

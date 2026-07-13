@@ -187,12 +187,11 @@
   background: transparent;
   border-radius: 999px;
   color: #a0834e;
-  border: 1px solid transparent;
+  border: 1px solid #bd9f69;
 }
 
 .btn-link:hover {
-  border-color: #bd9f69;
-  background-color: #fffaf1;
+  border-color: #a0834e;
 }
 
 /* Tabla de anticipos */
