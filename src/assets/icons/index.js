@@ -54,9 +54,12 @@ import {
   cilGlobeAlt,
   cilGrid,
   cilFile,
+  cilHeart,
+  cilHome,
   cilJustifyCenter,
   cilLaptop,
   cilLayers,
+  cilLeaf,
   cilLightbulb,
   cilList,
   cilLocationPin,
@@ -70,6 +73,7 @@ import {
   cilPencil,
   cilPeople,
   cilPuzzle,
+  cilSchool,
   cilSettings,
   cilShieldAlt,
   cilSpeech,
@@ -81,7 +85,7 @@ import {
   cilUserFemale,
   cilUserFollow,
   cilXCircle,
-  
+
 } from '@coreui/icons'
 
 export const iconsSet = Object.assign(
@@ -115,9 +119,12 @@ export const iconsSet = Object.assign(
     cilGlobeAlt,
     cilGrid,
     cilFile,
+    cilHeart,
+    cilHome,
     cilJustifyCenter,
     cilLaptop,
     cilLayers,
+    cilLeaf,
     cilLightbulb,
     cilList,
     cilLocationPin,
@@ -131,6 +138,7 @@ export const iconsSet = Object.assign(
     cilPencil,
     cilPeople,
     cilPuzzle,
+    cilSchool,
     cilSettings,
     cilShieldAlt,
     cilSpeech,

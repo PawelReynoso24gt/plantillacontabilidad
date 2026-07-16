@@ -165,7 +165,7 @@
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
@@ -178,7 +178,7 @@
 }
 
 .btn-ghost:hover {
-  background: #fff9f0;
+  background: var(--cui-tertiary-bg);
 }
 
 /* Botón link para acción en tabla */
@@ -229,7 +229,7 @@
 .tabla-empty {
   margin: 0.3rem 0 0.2rem;
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 .table-anticipo {
@@ -252,11 +252,11 @@
 }
 
 .table-anticipo tbody tr:nth-child(even) {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .table-anticipo tbody tr:hover {
-  background-color: #f5f5f5;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .table-anticipo .right {

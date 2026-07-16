@@ -22,6 +22,8 @@ There is no test suite/framework configured in this repo (no Jest/Vitest/Cypress
 ### Path alias
 `@` and `@/` both resolve to `src/` (configured in `vite.config.mjs`). Use `@/...` imports for new code.
 
+Note: `vite.config.ts` also exists at the repo root and is a near-empty stub (no aliases, no dev-server proxy, no port). It's dead/leftover — `vite.config.mjs` is the one actually loaded and holds all real config (aliases, `/api` proxy, port 3000). Edit `.mjs`, not `.ts`.
+
 ### Auth and the dual-project model
 - Login (`src/views/pages/Login.vue`) posts to `POST http://127.0.0.1:8000/api/authenticate` with `{ usuarios, contrasenias, tipoProyecto }` where `tipoProyecto` is `'agricola'` or `'capilla'`.
 - On success, the JWT-like token, a human label (`selectedProject`), and a `projectToken` (`'1'` for Agrícola, `'2'` for Capilla) are saved to both Vuex (`src/store/index.js`) and `localStorage`.
@@ -45,6 +47,8 @@ This is the single biggest gotcha in the codebase: many `.vue` files still carry
 | `views/forms/Layout.vue` | Layout | Libro Diario (Capilla) |
 | `views/base/Collapses.vue` | Collapses | Reporte Final (Agrícola), component name `ReporteAG` |
 | `views/base/ListGroups.vue` | List Groups | Informe/Reporte Final (Capilla), component name `ReporteCapillaFinal` |
+| `views/theme/Colors.vue` | Colors | Proyecto Agrícola landing/home page, component name `Dashboard` |
+| `views/widgets/Widgets.vue` | Widgets | "Desarrolladores" (developer credits page), component name `Agradecimientos` |
 
 Before touching one of these views, read the `<script>` block's `name:` and the template header — don't assume from the path.
 
@@ -61,7 +65,7 @@ All PDF-producing views (there are 15) build their PDFs through a shared engine 
 Contract: `columns` is `[{ header, dataKey, align?, type? }]` (`type` one of `'text' | 'currency' | 'acredita' | 'debita'`); `rows` are plain objects keyed by `dataKey`, optionally with `_variant: 'highlight'` (saldo inicial / totals rows → beige+bold) and/or `_cellColors: { [dataKey]: 'positive'|'negative' }` for one-off cell coloring (e.g. an unbalanced "Partida"). Adding a new report = new columns/rows shape, not a new copy of the drawing code.
 
 ### Row numbering helper
-`utils/numeracion.js` (`aplicarNumeracion`) computes hierarchical row numbers (e.g. `1`, `1.1`, `1.2`, `2`) for the Balance General / Estado de Resultados-style reports, based on each row's `nivel` field. Rows without a `nivel` get `cuenta: ''`.
+`aplicarNumeracion` (in `utils/numeracion.js` at the **project root**, not `src/utils/` — the file's own header comment says `src/utils/numeracion.js` but that's stale/wrong, and views import it via `../../../utils/numeracion`) computes hierarchical row numbers (e.g. `1`, `1.1`, `1.2`, `2`) for the Balance General / Estado de Resultados-style reports, based on each row's `nivel` field. Rows without a `nivel` get `cuenta: ''`.
 
 ### Styling
 Global SCSS entry is `src/styles/style.scss` (imports CoreUI/Bootstrap). Most report views additionally import a dedicated, non-scoped CSS file from `src/styles/css/` directly in their `<script>` block (e.g. `import '../../styles/css/LibroCajaA.css'`) rather than using SFC `<style scoped>`.

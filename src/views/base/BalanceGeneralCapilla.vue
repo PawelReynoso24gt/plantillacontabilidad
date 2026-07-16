@@ -1,4 +1,5 @@
 <template>
+  <div class="balance-capilla-page">
   <!-- Título principal -->
   <div class="reporte-header">
     <h2 class="reporte-title">Balance General - Capilla</h2>
@@ -146,6 +147,7 @@
   <div v-else class="sin-datos">
     No hay datos para mostrar. Selecciona período y mes y presiona
     <strong>"Vista previa"</strong>.
+  </div>
   </div>
 </template>
 

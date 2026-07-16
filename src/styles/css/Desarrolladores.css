@@ -1,67 +1,163 @@
 .thanks-page {
-  padding: 2rem;
+  position: relative;
+  padding: 2.5rem 2rem 3rem;
   min-height: 100vh;
-  background: radial-gradient(circle at top, #ffffff, #ffffff);
+  background-color: var(--cui-body-bg);
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
+}
+
+/* Puntos decorativos en las esquinas superiores */
+.thanks-decor {
+  position: absolute;
+  top: 0;
+  width: 220px;
+  height: 220px;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(189, 159, 105, 0.35) 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+  opacity: 0.5;
+}
+
+.thanks-decor--left {
+  left: 0;
+}
+
+.thanks-decor--right {
+  right: 0;
+}
+
+/* Encabezado */
+.thanks-header {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.thanks-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin: 0;
+  color: #bd9f69;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.thanks-eyebrow-line {
+  width: 46px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #bd9f69);
+}
+
+.thanks-eyebrow-line--right {
+  background: linear-gradient(90deg, #bd9f69, transparent);
 }
 
 .thanks-title {
-  color: #bd9f69;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
+  margin: 0.5rem 0 0;
+  color: var(--cui-body-color);
+  font-size: 2.2rem;
+  font-weight: 800;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
 
+.thanks-icon-badge {
+  width: 52px;
+  height: 52px;
+  margin: 1.1rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #bd9f69, #a0834e);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(160, 131, 78, 0.35);
+}
+
+.thanks-subtitle {
+  margin: 1.1rem 0 0;
+  color: var(--cui-secondary-color);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Tarjetas de desarrolladores */
 .developers-list {
+  position: relative;
   width: 100%;
   max-width: 1100px;
   display: grid;
-  gap: 1.8rem;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.8rem 1.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .developer-card {
-  background: #292b57;
-  border-radius: 18px;
-  border: 1px solid rgba(0,0,0,0.18);
-  padding: 1.5rem;
+  position: relative;
+  background: var(--cui-card-bg);
+  color: var(--cui-body-color);
+  border-radius: 20px;
+  border: 1px solid var(--cui-border-color);
+  padding: 2.2rem 1.6rem 1.8rem;
   text-align: center;
-  color: #f7f7f7;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.85rem;
 }
 
 .photo img {
-  width: 120px;
-  height: 120px;
+  width: 96px;
+  height: 96px;
   border-radius: 999px;
   object-fit: cover;
-  border: 3px solid #bd9f69;
-  margin: auto;
+  box-shadow: 0 0 0 3px #bd9f69;
 }
 
 .dev-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #bd9f69;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cui-body-color);
 }
 
 .dev-description {
+  margin: 0;
   font-size: 0.85rem;
-  line-height: 1.4;
-  color: #e6e6e6;
+  line-height: 1.5;
+  color: var(--cui-secondary-color);
+}
+
+.dev-badge {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #bd9f69, #a0834e);
+  color: #ffffff;
+  border: 3px solid var(--cui-body-bg);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
 }
 
 /* Etiqueta de inactividad */
 .inactive-label {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   font-size: 0.85rem;
   font-weight: 700;
   color: #ff7373;
@@ -70,4 +166,48 @@
   padding: 0.3rem 0.8rem;
   display: inline-block;
   border: 1px solid rgba(255, 115, 115, 0.35);
+}
+
+/* Banner inferior */
+.thanks-banner {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 2.75rem;
+  padding: 1.1rem 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--cui-tertiary-bg);
+  border: 1px solid var(--cui-border-color);
+  border-radius: 999px;
+}
+
+.thanks-banner-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #bd9f69, #a0834e);
+  color: #ffffff;
+}
+
+.thanks-banner-text {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--cui-body-color);
+}
+
+@media (max-width: 576px) {
+  .thanks-banner {
+    flex-direction: column;
+    border-radius: 20px;
+    text-align: center;
+  }
 }

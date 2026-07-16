@@ -319,15 +319,15 @@
         </p>
         <div class="confirm-modal-summary">
           <div class="modal-id-row">
-            <label>Fecha:</label>
+            <label>Fecha: </label>
             <span>{{ registroAEliminar?.fecha }}</span>
           </div>
           <div class="modal-id-row">
-            <label>Nombre:</label>
+            <label>Nombre: </label>
             <span>{{ registroAEliminar?.nombre }}</span>
           </div>
           <div class="modal-id-row">
-            <label>Monto:</label>
+            <label>Monto: </label>
             <span>{{ formatMonto(registroAEliminar?.monto) }}</span>
           </div>
         </div>
@@ -359,15 +359,15 @@
         <p>¿Deseas continuar para registrar un abono a este pendiente?</p>
         <div class="confirm-modal-summary">
           <div class="modal-id-row">
-            <label>Fecha:</label>
+            <label>Fecha: </label>
             <span>{{ itemASaldar?.fecha }}</span>
           </div>
           <div class="modal-id-row">
-            <label>Nombre:</label>
+            <label>Nombre: </label>
             <span>{{ itemASaldar?.nombre }}</span>
           </div>
           <div class="modal-id-row">
-            <label>Saldo pendiente:</label>
+            <label>Saldo pendiente: </label>
             <span>Q {{ itemASaldar?.saldo_pendiente }}</span>
           </div>
         </div>

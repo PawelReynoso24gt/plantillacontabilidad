@@ -158,7 +158,7 @@
   border: 1px dashed #bd9f69;
 }
 .balance-agricola-page .btn-ghost:hover {
-  background-color: #f8f9fa;
+  background-color: var(--cui-tertiary-bg);
   transform: translateY(-1px);
 }
 

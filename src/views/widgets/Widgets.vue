@@ -1,6 +1,16 @@
 <template>
   <div class="thanks-page">
-    <h1 class="thanks-title">Agradecimientos a los Desarrolladores</h1>
+    <div class="thanks-decor thanks-decor--left" aria-hidden="true"></div>
+    <div class="thanks-decor thanks-decor--right" aria-hidden="true"></div>
+
+    <div class="thanks-header">
+      <h1 class="thanks-title">Desarrollado por:</h1>
+
+      <div class="thanks-icon-badge">
+        <CIcon icon="cil-code" size="lg" />
+      </div>
+
+    </div>
 
     <div class="developers-list">
       <div
@@ -26,7 +36,21 @@
             Actualmente inactiva
           </p>
         </div>
+
+        <div class="dev-badge">
+          <CIcon icon="cil-code" />
+        </div>
       </div>
+    </div>
+
+    <div class="thanks-banner">
+      <div class="thanks-banner-icon">
+        <CIcon icon="cil-star" />
+      </div>
+      <p class="thanks-banner-text">
+        Desarrollado por ingenieros de la Universidad Mesoamericana
+        Quetzaltenango, para el hogar de ancianas Santa Luisa de Marillac.
+      </p>
     </div>
   </div>
 </template>
@@ -41,7 +65,7 @@ export default {
       developers: [
         {
           name: 'Ing. Angely Esmeralda Vennayappillil Cortéz',
-          photo: 'src/assets/images/avatars/photoAngy.jpg',
+          photo: 'src/assets/images/avatars/AngelyDeveloper.jpeg',
           description:
             'Nacida en Quetzaltenango, Guatemala, el 10 de noviembre de 2004. Egresada del Colegio IEA campus “Los Altos”, donde obtuvo el título de Bachiller en Ciencias Exactas con Orientación en Computación. Actualmente egresada de la carrera de Ingeniería en Sistemas, Informática y Ciencias de la Computación en la Universidad Mesoamericana, sede Quetzaltenango.',
           inactive: false
@@ -55,7 +79,7 @@ export default {
         },
         {
           name: 'Ing. Pawel Alessandro Reynoso Marquez',
-          photo: 'src/assets/images/avatars/photoPawel.jpg',
+          photo: 'src/assets/images/avatars/PawelDeveloper.jpeg',
           description:
             'Nacido en Santa Cruz del Quiché, Quiché, Guatemala, el 24 de julio de 2002. Actualmente egresado de la carrera de Ingeniería en Sistemas, Informática y Ciencias de la Computación en la Universidad Mesoamericana, sede Quetzaltenango, en 2025. Además, obtuvo el título de Perito Contador con Especialidad en Computación en el Colegio Evangélico Metodista "UTATLÁN" de Santa Cruz del Quiché en 2020.',
           inactive: false

@@ -152,7 +152,7 @@
   border: 1px dashed #bd9f69;
 }
 .btn-ghost:hover {
-  background: #f7f7f7;
+  background: var(--cui-tertiary-bg);
   transform: translateY(-1px);
 }
 

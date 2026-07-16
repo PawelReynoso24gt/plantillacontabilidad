@@ -137,7 +137,7 @@
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
@@ -183,7 +183,7 @@
 }
 
 .fila-resaltada {
-  background-color: #fdf7e9;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .bold-text {

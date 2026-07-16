@@ -175,7 +175,7 @@
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
@@ -188,7 +188,7 @@
 }
 
 .btn-ghost:hover {
-  background: #f7f7f7;
+  background: var(--cui-tertiary-bg);
   transform: translateY(-1px);
 }
 
