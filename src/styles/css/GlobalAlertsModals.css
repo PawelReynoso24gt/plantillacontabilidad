@@ -33,6 +33,17 @@
   z-index: 1001;
 }
 
+/* Especificidad más alta que .deposito-card u otras clases de tarjeta que
+   algunas vistas combinan en el mismo elemento, para que el modal de
+   éxito/error siempre gane el fondo y se adapte al tema (claro/oscuro).
+   Se usa --cui-body-bg (variable de :root/[data-coreui-theme]) en vez de
+   --cui-card-bg porque esta última solo se define dentro de .card y no
+   se hereda fuera de ese contexto. */
+.modal-overlay .modal-content {
+  background-color: var(--cui-body-bg, #ffffff);
+  color: var(--cui-body-color, #212529);
+}
+
 /* Para el modal de éxito o error genérico (más pequeño) */
 .modal-overlay .modal-content[style*="max-width: 450px"] {
   max-width: 450px;
@@ -110,16 +121,16 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #ffffff; 
-  border-left: 5px solid #ef4444; 
-  color: #991b1b;
+  background-color: var(--cui-body-bg, #ffffff);
+  border-left: 5px solid #ef4444;
+  color: #ef4444;
   padding: 14px 18px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.95rem;
-  margin: 0; 
+  margin: 0;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  pointer-events: auto; 
+  pointer-events: auto;
   animation: shakeAlert 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 

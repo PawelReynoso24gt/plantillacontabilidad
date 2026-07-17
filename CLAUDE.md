@@ -8,6 +8,11 @@ This is a Vue 3 + Vite frontend, originally scaffolded from the **CoreUI Free Vu
 
 ## Commands
 
+- `npm run dev` — start the Vite dev server (`--force`) at `http://localhost:3000`.
+- `npm run build` — production build via `vite build`.
+- `npm run lint` — ESLint over `src/**/*.{js,vue}` (config: `.eslintrc.js`).
+- `npm run preview` — serve the production build locally.
+
 There is no test suite/framework configured in this repo (no Jest/Vitest/Cypress, no `test` script).
 
 ## Architecture

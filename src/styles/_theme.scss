@@ -7,6 +7,19 @@
 @use "@coreui/coreui/scss/mixins" as core;
 
 
+// --cui-card-bg solo la define CoreUI dentro de .card (ver
+// @coreui/coreui/scss/... .card { --cui-card-bg: var(--cui-body-bg); }).
+// Muchos modales y "tarjetas" propias del proyecto (.modal-content,
+// .deposito-card, .modal-box, etc.) usan var(--cui-card-bg) fuera de un
+// .card real, así que la variable nunca se resolvía: el fondo quedaba
+// transparente en modo claro y prácticamente invisible en modo oscuro.
+// Al declararla también en :root queda disponible en toda la app y sigue
+// automáticamente al tema (claro/oscuro) porque referencia --cui-body-bg,
+// que CoreUI sí redefine en [data-coreui-theme=dark].
+:root {
+  --cui-card-bg: var(--cui-body-bg);
+}
+
 .wrapper {
   width: 100%;
   @include core.ltr-rtl("padding-left", var(--cui-sidebar-occupy-start, 0));

@@ -136,6 +136,7 @@ import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/LibroDiarioA.css'
+import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
   name: 'LibroDiario',
