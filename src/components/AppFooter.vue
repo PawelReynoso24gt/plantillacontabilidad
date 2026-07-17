@@ -1,7 +1,5 @@
 <template>
-  <CFooter class="px-4">
-    <span class="center-text">Hecho por: Estudiantes de la Univerisdad Mesoamericana 2024</span> <!-- Texto más largo -->
-  </CFooter>
+
 </template>
 
 <script>

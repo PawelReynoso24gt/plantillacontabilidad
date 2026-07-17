@@ -1,6 +1,6 @@
 /* Fondo general del módulo */
 .libro-mayor-wrapper {
-  background-color: #f7f7f7;
+  background-color: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
@@ -10,13 +10,14 @@
 
 /* Card principal */
 .libro-card {
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
   max-width: 1200px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
 }
 
 /* Encabezado */
@@ -28,7 +29,7 @@
   margin: 0;
   font-size: 1.9rem;
   font-weight: 700;
-  color: #292b57;
+  color: var(--cui-body-color);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -36,7 +37,7 @@
 .libro-subtitle {
   margin-top: 0.3rem;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Contenedor de “filtros” / info */
@@ -44,7 +45,7 @@
   border-radius: 12px;
   padding: 1.1rem 1.3rem;
   margin-top: 0.4rem;
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-left: 4px solid #bd9f69;
 }
 
@@ -63,7 +64,7 @@
 label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);
   margin-bottom: 0.25rem;
   display: block;
 }
@@ -74,10 +75,11 @@ label {
   width: 100%;
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--cui-border-color);
   font-size: 0.95rem;
   outline: none;
-  background-color: #ffffff;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -120,11 +122,11 @@ label {
 /* Regresar */
 .btn-ghost {
   background: transparent;
-  color: #41251c;
+  color: var(--cui-body-color);
   border: 1px dashed #bd9f69;
 }
 .btn-ghost:hover {
-  background: #f7f7f7;
+  background: var(--cui-tertiary-bg);
   transform: translateY(-1px);
 }
 
@@ -141,26 +143,26 @@ label {
 .encabezado-box {
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  background: #f7f7f7;
-  border: 1px solid #e2e2e2;
+  background: var(--cui-tertiary-bg);
+  border: 1px solid var(--cui-border-color);
 }
 
 .encabezado-titulo {
   font-size: 1rem;
   font-weight: 700;
-  color: #292b57;
+  color: var(--cui-body-color);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .encabezado-direccion {
   font-size: 0.8rem;
-  color: #41251c;
+  color: var(--cui-secondary-color);
 }
 
 .encabezado-detalles {
   font-size: 0.9rem;
-  color: #080808;
+  color: var(--cui-body-color);
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -176,7 +178,7 @@ label {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
 }
 
 .tabla-libro thead {
@@ -187,7 +189,7 @@ label {
 .tabla-libro th,
 .tabla-libro td {
   padding: 0.45rem 0.55rem;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--cui-border-color);
   text-align: left;
 }
 
@@ -201,7 +203,7 @@ label {
 }
 
 .fila-resaltada {
-  background-color: #f3f6fa;
+  background-color: var(--cui-tertiary-bg);
 }
 
 /* Mensaje sin datos */
@@ -209,7 +211,7 @@ label {
   margin-top: 1.5rem;
   text-align: center;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Responsivo */

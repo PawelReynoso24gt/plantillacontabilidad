@@ -198,51 +198,209 @@
       </div>
     </div>
 
-  <!-- pendientes -->
-  <div class="division-container" style="margin-top: 40px; padding: 1.5rem;">
-    <h3 class="division-title">Cuentas Pendientes por Pagar (Proyecto Capilla)</h3>
-    
-    <p v-if="mensajeVacio" class="text-danger" style="margin-top: 10px;">{{ mensajeVacio }}</p>
-
-      <div v-if="pendientes.length > 0" style="margin-top: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h4 style="margin: 0; color: #292b57;">Deudas Pendientes Encontradas ({{ pendientes.length }})</h4>
-          <button @click="cargarPendientes" class="btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">
-            Actualizar
-          </button>
+  <!-- Egresos: registrados + pendientes por pagar, en un solo panel -->
+  <div class="listado-registros">
+    <div class="listado-header">
+      <h3 class="listado-title">Egresos (Capilla)</h3>
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span v-if="cargandoRegistros" class="listado-badge">Cargando...</span>
+        <button
+          class="btn-toggle-icon"
+          :title="mostrarRegistros ? 'Ocultar tabla' : 'Mostrar tabla'"
+          :aria-expanded="mostrarRegistros"
+          @click="mostrarRegistros = !mostrarRegistros"
+        >
+          <span class="chevron" :class="{ 'is-open': mostrarRegistros }">▾</span>
+        </button>
       </div>
-        <table class="pendientes-table">
+    </div>
+
+    <template v-if="mostrarRegistros">
+      <div class="listado-tabs">
+        <button
+          :class="['listado-tab', { active: tabEgresos === 'todos' }]"
+          @click="tabEgresos = 'todos'"
+        >
+          Todos los registros
+        </button>
+        <button
+          :class="['listado-tab', { active: tabEgresos === 'pendientes' }]"
+          @click="tabEgresos = 'pendientes'"
+        >
+          Pendientes por Pagar
+        </button>
+      </div>
+
+      <template v-if="tabEgresos === 'todos'">
+        <p v-if="!cargandoRegistros && registros.length === 0" class="listado-empty">
+          No hay registros.
+        </p>
+
+        <div v-if="!cargandoRegistros && registros.length" style="overflow-x: auto;">
+          <table class="table-listado">
             <thead>
-                <tr>
-                    <!-- <th>ID</th> -->
-                    <th>Fecha</th>
-                    <th>Nomenclatura</th>
-                    <th>Nombre</th>
-                    <th>Cuenta Contable</th>
-                    <th>Tipo</th>
-                    <th>Monto Deuda (Q)</th>
-                    <th>Tipo de Saldo</th>
-                    <th>Acción</th>
-                </tr>
+              <tr>
+                <th>Fecha</th>
+                <th>Nomenclatura</th>
+                <th>Nombre</th>
+                <th>Cuenta</th>
+                <th>Tipo</th>
+                <th class="right">Monto</th>
+                <th class="center">Acción</th>
+              </tr>
             </thead>
             <tbody>
-                <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
-                    <!-- <td>{{ item.id_ingresos_egresos }}</td> -->
-                    <td>{{ item.fecha }}</td>
-                    <td>{{ item.nomenclatura }}</td>
-                    <td>{{ item.nombre }}</td>
-                    <td>{{ item.cuentas.cuenta }}</td>
-                    <td>{{ item.tipo }}</td>
-                    <td>Q {{ item.saldo_pendiente }}</td>
-                    <td>
-                        <!-- Usamos los montos originales para determinar el tipo de saldo -->
-                        <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
-                        <span v-else class="saldo-haber">HABER</span>
-                    </td>
-                    <td><button @click="abrirModalSaldado(item)">Saldar</button></td>
-                </tr>
+              <tr v-for="r in registros" :key="r.id_ingresos_egresos">
+                <td>{{ r.fecha }}</td>
+                <td>{{ r.nomenclatura }}</td>
+                <td>{{ r.nombre }}</td>
+                <td>{{ r.cuenta }}</td>
+                <td>{{ r.tipo }}</td>
+                <td class="right">{{ formatMonto(r.monto) }}</td>
+                <td class="center">
+                  <button class="btn-link" @click="abrirConfirmEliminar(r)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
             </tbody>
-        </table>
+          </table>
+
+          <div class="listado-pagination">
+            <button
+              class="btn-secondary"
+              :disabled="paginaActual <= 1"
+              @click="cargarRegistros(paginaActual - 1)"
+            >
+              Anterior
+            </button>
+            <span class="listado-pagination-info">
+              Página {{ paginaActual }} de {{ totalPaginas }}
+            </span>
+            <button
+              class="btn-secondary"
+              :disabled="paginaActual >= totalPaginas"
+              @click="cargarRegistros(paginaActual + 1)"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <template v-else>
+        <p v-if="mensajeVacio" class="text-danger" style="margin-top: 10px;">{{ mensajeVacio }}</p>
+
+        <p v-else-if="pendientes.length === 0" class="listado-empty">
+          No hay pendientes por pagar.
+        </p>
+
+        <div v-if="pendientes.length > 0" style="overflow-x: auto;">
+          <table class="pendientes-table">
+              <thead>
+                  <tr>
+                      <th>Fecha</th>
+                      <th>Nomenclatura</th>
+                      <th>Nombre</th>
+                      <th>Cuenta Contable</th>
+                      <th>Tipo</th>
+                      <th>Monto Deuda (Q)</th>
+                      <th>Tipo de Saldo</th>
+                      <th>Acción</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
+                      <td>{{ item.fecha }}</td>
+                      <td>{{ item.nomenclatura }}</td>
+                      <td>{{ item.nombre }}</td>
+                      <td>{{ item.cuentas.cuenta }}</td>
+                      <td>{{ item.tipo }}</td>
+                      <td>Q {{ item.saldo_pendiente }}</td>
+                      <td>
+                          <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
+                          <span v-else class="saldo-haber">HABER</span>
+                      </td>
+                      <td><button class="btn-link" @click="abrirConfirmSaldar(item)">Saldar</button></td>
+                  </tr>
+              </tbody>
+          </table>
+        </div>
+      </template>
+    </template>
+  </div>
+
+  <!-- ******* MODAL CONFIRMAR ELIMINAR ******* -->
+  <div v-if="mostrarConfirmEliminar" class="confirm-modal-overlay">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-header confirm-modal-header--danger">
+        <span class="confirm-modal-icon">⚠</span>
+        <h3>Eliminar registro</h3>
+      </div>
+      <div class="confirm-modal-body">
+        <p>
+          ¿Seguro que deseas eliminar este registro? Esta acción no se puede
+          deshacer.
+        </p>
+        <div class="confirm-modal-summary">
+          <div class="modal-id-row">
+            <label>Fecha: </label>
+            <span>{{ registroAEliminar?.fecha }}</span>
+          </div>
+          <div class="modal-id-row">
+            <label>Nombre: </label>
+            <span>{{ registroAEliminar?.nombre }}</span>
+          </div>
+          <div class="modal-id-row">
+            <label>Monto: </label>
+            <span>{{ formatMonto(registroAEliminar?.monto) }}</span>
+          </div>
+        </div>
+        <p v-if="errorEliminar" class="modal-error">{{ errorEliminar }}</p>
+      </div>
+      <div class="confirm-modal-actions">
+        <button class="btn-secondary" :disabled="eliminando" @click="cerrarConfirmEliminar">
+          Cancelar
+        </button>
+        <button
+          class="btn-danger btn-danger-solid"
+          :disabled="eliminando"
+          @click="confirmarEliminar"
+        >
+          {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ******* MODAL CONFIRMAR SALDAR ******* -->
+  <div v-if="mostrarConfirmSaldar" class="confirm-modal-overlay">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-header">
+        <span class="confirm-modal-icon">💰</span>
+        <h3>Saldar registro</h3>
+      </div>
+      <div class="confirm-modal-body">
+        <p>¿Deseas continuar para registrar un abono a este pendiente?</p>
+        <div class="confirm-modal-summary">
+          <div class="modal-id-row">
+            <label>Fecha: </label>
+            <span>{{ itemASaldar?.fecha }}</span>
+          </div>
+          <div class="modal-id-row">
+            <label>Nombre: </label>
+            <span>{{ itemASaldar?.nombre }}</span>
+          </div>
+          <div class="modal-id-row">
+            <label>Saldo pendiente: </label>
+            <span>Q {{ itemASaldar?.saldo_pendiente }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="confirm-modal-actions">
+        <button class="btn-secondary" @click="cerrarConfirmSaldar">Cancelar</button>
+        <button class="btn-primary" @click="confirmarIrASaldar">Continuar</button>
+      </div>
     </div>
   </div>
 
@@ -423,6 +581,7 @@ import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/EgresosIngresosC.css'
 import '../../styles/css/GlobalAlertsModals.css';
+import '../../styles/css/ListadoRegistrosA.css'
 
 export default {
   name: 'Accordion',
@@ -548,6 +707,91 @@ export default {
       }
     };
 
+    // Registros de egresos (listado paginado + eliminar)
+    const registros = ref([]);
+    const paginaActual = ref(1);
+    const totalPaginas = ref(1);
+    const cargandoRegistros = ref(false);
+    const mostrarRegistros = ref(true);
+    const tabEgresos = ref('todos');
+    const mostrarConfirmEliminar = ref(false);
+    const registroAEliminar = ref(null);
+    const eliminando = ref(false);
+    const errorEliminar = ref('');
+
+    const formatMonto = (m) => {
+      const n = Number(m);
+      if (Number.isNaN(n)) return m;
+      return n.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    };
+
+    const cargarRegistros = async (page = 1) => {
+      cargandoRegistros.value = true;
+      try {
+        const { data } = await axios.get(
+          'http://127.0.0.1:8000/in_eg/getListaEgresosCA',
+          { params: { page, per_page: 5 } }
+        );
+        registros.value = data.data || [];
+        paginaActual.value = data.current_page || 1;
+        totalPaginas.value = data.last_page || 1;
+      } catch (e) {
+        console.error('Error cargando egresos:', e?.response?.data || e.message);
+        registros.value = [];
+      } finally {
+        cargandoRegistros.value = false;
+      }
+    };
+
+    const abrirConfirmEliminar = (row) => {
+      registroAEliminar.value = row;
+      errorEliminar.value = '';
+      mostrarConfirmEliminar.value = true;
+    };
+
+    const cerrarConfirmEliminar = () => {
+      mostrarConfirmEliminar.value = false;
+      registroAEliminar.value = null;
+      errorEliminar.value = '';
+    };
+
+    const confirmarEliminar = async () => {
+      if (!registroAEliminar.value) return;
+      eliminando.value = true;
+      errorEliminar.value = '';
+      try {
+        await axios.put(
+          `http://127.0.0.1:8000/in_eg/desactivarCA/${registroAEliminar.value.id_ingresos_egresos}`
+        );
+        mostrarConfirmEliminar.value = false;
+        registroAEliminar.value = null;
+        successMessage.value = 'Registro eliminado correctamente';
+        const siguientePagina =
+          registros.value.length === 1 && paginaActual.value > 1
+            ? paginaActual.value - 1
+            : paginaActual.value;
+        await cargarRegistros(siguientePagina);
+      } catch (e) {
+        const status = e?.response?.status;
+        if (status === 404) {
+          errorEliminar.value = 'El registro ya no existe.';
+        } else if (status === 400) {
+          errorEliminar.value = 'El registro no pertenece al proyecto Capilla.';
+        } else if (status === 409) {
+          errorEliminar.value =
+            e?.response?.data?.error || 'No se puede eliminar este registro.';
+        } else {
+          errorEliminar.value =
+            e?.response?.data?.error || 'Error al eliminar el registro.';
+        }
+      } finally {
+        eliminando.value = false;
+      }
+    };
+
     const limpiar = () => {
       tipo.value = '';
       fecha.value = '';
@@ -597,6 +841,27 @@ export default {
         formSaldar.id_clasificacion = CLASIFICACION_ID; 
 
         mostrarModalSaldado.value = true;
+    };
+
+    // ** CONFIRMAR ANTES DE SALDAR **
+    const mostrarConfirmSaldar = ref(false);
+    const itemASaldar = ref(null);
+
+    const abrirConfirmSaldar = (item) => {
+      itemASaldar.value = item;
+      mostrarConfirmSaldar.value = true;
+    };
+
+    const cerrarConfirmSaldar = () => {
+      mostrarConfirmSaldar.value = false;
+      itemASaldar.value = null;
+    };
+
+    const confirmarIrASaldar = () => {
+      const item = itemASaldar.value;
+      mostrarConfirmSaldar.value = false;
+      itemASaldar.value = null;
+      if (item) abrirModalSaldado(item);
     };
 
     // ** CERRAR MODAL **
@@ -787,7 +1052,8 @@ export default {
         .then(response => {
           mostrarModalExitoFormulario.value = 'true';
           cargarPendientes();
-          //console.log(response.data); 
+          cargarRegistros();
+          //console.log(response.data);
         })
         .catch(error => {
           console.error(error);
@@ -814,7 +1080,8 @@ export default {
           .then(response => {
             mostrarModalExitoFormulario.value = 'true';
             cargarPendientes();
-            //console.log(response.data); 
+            cargarRegistros();
+            //console.log(response.data);
           })
           .catch(error => {
             console.error(error);
@@ -852,6 +1119,7 @@ export default {
       cargarBancos();
       cargarBancosNoCuenta();
       cargarPendientes();
+      cargarRegistros();
       // Encendemos el detector de teclado
       window.addEventListener('keydown', manejarEnter);
     });
@@ -906,7 +1174,27 @@ export default {
       cerrarModalExitoFormulario,
       mostrarModalError,
       mensajeError,
-      cerrarModalError
+      cerrarModalError,
+      registros,
+      paginaActual,
+      totalPaginas,
+      cargandoRegistros,
+      mostrarRegistros,
+      tabEgresos,
+      mostrarConfirmEliminar,
+      registroAEliminar,
+      eliminando,
+      errorEliminar,
+      formatMonto,
+      cargarRegistros,
+      abrirConfirmEliminar,
+      cerrarConfirmEliminar,
+      confirmarEliminar,
+      mostrarConfirmSaldar,
+      itemASaldar,
+      abrirConfirmSaldar,
+      cerrarConfirmSaldar,
+      confirmarIrASaldar
     }
   },
 }

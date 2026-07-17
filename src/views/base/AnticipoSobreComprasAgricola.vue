@@ -127,8 +127,13 @@
       <div class="form-actions">
         <button class="btn-primary" @click="enviarDatos">Guardar</button>
         <button class="btn-secondary" @click="limpiar">Limpiar</button>
-        <button class="btn-ghost" @click="toggleMostrarTabla">
-          {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
+        <button
+          class="btn-toggle-icon"
+          :title="showTabla ? 'Ocultar tabla' : 'Mostrar tabla'"
+          :aria-expanded="showTabla"
+          @click="toggleMostrarTabla"
+        >
+          <span class="chevron" :class="{ 'is-open': showTabla }">▾</span>
         </button>
       </div>
       </div>
@@ -140,12 +145,12 @@
           <span v-if="loading" class="tabla-badge">Cargando...</span>
         </div>
 
-        <p v-if="!loading && anticipoRows.length === 0" class="tabla-empty">
+        <p v-if="!loading && anticipoRowsActivos.length === 0" class="tabla-empty">
           No hay registros.
         </p>
 
         <table
-          v-if="!loading && anticipoRows.length"
+          v-if="!loading && anticipoRowsActivos.length"
           class="table-anticipo"
         >
           <thead>
@@ -161,7 +166,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(r, idx) in anticipoRows" :key="idx">
+            <tr v-for="(r, idx) in anticipoRowsActivos" :key="idx">
               <td>{{ r.fecha }}</td>
               <td>{{ r.nomenclatura }}</td>
               <td>{{ r.nombre }}</td>
@@ -170,13 +175,90 @@
               <td class="right">{{ formatMonto(r.monto) }}</td>
               <td class="right">{{ formatMonto(r.monto_faltante) }}</td>
               <td class="center">
-                <button class="btn-link" @click="openSaldarModal(r)">
+                <button class="btn-link" @click="abrirConfirmSaldar(r)">
                   Saldar
+                </button>
+                <button class="btn-link" @click="abrirConfirmEliminar(r)">
+                  Eliminar
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- ******* MODAL CONFIRMAR ELIMINAR ******* -->
+      <div v-if="mostrarConfirmEliminar" class="confirm-modal-overlay">
+        <div class="confirm-modal-box">
+          <div class="confirm-modal-header confirm-modal-header--danger">
+            <span class="confirm-modal-icon">⚠</span>
+            <h3>Eliminar registro</h3>
+          </div>
+          <div class="confirm-modal-body">
+            <p>
+              ¿Seguro que deseas eliminar este registro? Esta acción no se
+              puede deshacer.
+            </p>
+            <div class="confirm-modal-summary">
+              <div class="modal-id-row">
+                <label>Fecha: </label>
+                <span>{{ registroAEliminar?.fecha }}</span>
+              </div>
+              <div class="modal-id-row">
+                <label>Nombre: </label>
+                <span>{{ registroAEliminar?.nombre }}</span>
+              </div>
+              <div class="modal-id-row">
+                <label>Monto: </label>
+                <span>{{ formatMonto(registroAEliminar?.monto) }}</span>
+              </div>
+            </div>
+            <p v-if="errorEliminar" class="modal-error">{{ errorEliminar }}</p>
+          </div>
+          <div class="confirm-modal-actions">
+            <button class="btn-secondary" :disabled="eliminando" @click="cerrarConfirmEliminar">
+              Cancelar
+            </button>
+            <button
+              class="btn-danger btn-danger-solid"
+              :disabled="eliminando"
+              @click="confirmarEliminar"
+            >
+              {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ******* MODAL CONFIRMAR SALDAR ******* -->
+      <div v-if="mostrarConfirmSaldar" class="confirm-modal-overlay">
+        <div class="confirm-modal-box">
+          <div class="confirm-modal-header">
+            <span class="confirm-modal-icon">💰</span>
+            <h3>Saldar registro</h3>
+          </div>
+          <div class="confirm-modal-body">
+            <p>¿Deseas continuar para registrar un abono a este anticipo?</p>
+            <div class="confirm-modal-summary">
+              <div class="modal-id-row">
+                <label>Fecha: </label>
+                <span>{{ itemASaldar?.fecha }}</span>
+              </div>
+              <div class="modal-id-row">
+                <label>Nombre: </label>
+                <span>{{ itemASaldar?.nombre }}</span>
+              </div>
+              <div class="modal-id-row">
+                <label>Monto faltante: </label>
+                <span>{{ formatMonto(itemASaldar?.monto_faltante) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="confirm-modal-actions">
+            <button class="btn-secondary" @click="cerrarConfirmSaldar">Cancelar</button>
+            <button class="btn-primary" @click="confirmarIrASaldar">Continuar</button>
+          </div>
+        </div>
       </div>
 
       <!-- Modal para saldar -->
@@ -185,7 +267,7 @@
           <h3>Saldar registro</h3>
 
           <div class="modal-id-row">
-            <label>ID cuenta:</label>
+            <label>ID cuenta: </label>
             <span>
               {{
                 modalData.id_ingresos_egresos !== null &&
@@ -371,11 +453,12 @@
 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/AnticipoComprasA.css';
 import '../../styles/css/GlobalAlertsModals.css';
+import '../../styles/css/ListadoRegistrosA.css';
 
 export default {
   name: 'Accordion',
@@ -449,6 +532,59 @@ export default {
     const anticipoRows = ref([]);
     const loading = ref(false);
     const showTabla = ref(true);
+
+    // Registros activos (la API no filtra estado=0, se filtra en cliente)
+    const anticipoRowsActivos = computed(() =>
+      anticipoRows.value.filter((r) => r.estado !== 0)
+    );
+
+    // Eliminar (desactivar) un registro
+    const mostrarConfirmEliminar = ref(false);
+    const registroAEliminar = ref(null);
+    const eliminando = ref(false);
+    const errorEliminar = ref('');
+
+    const abrirConfirmEliminar = (row) => {
+      registroAEliminar.value = row;
+      errorEliminar.value = '';
+      mostrarConfirmEliminar.value = true;
+    };
+
+    const cerrarConfirmEliminar = () => {
+      mostrarConfirmEliminar.value = false;
+      registroAEliminar.value = null;
+      errorEliminar.value = '';
+    };
+
+    const confirmarEliminar = async () => {
+      if (!registroAEliminar.value) return;
+      eliminando.value = true;
+      errorEliminar.value = '';
+      try {
+        await axios.put(
+          `http://127.0.0.1:8000/in_eg/desactivarAG/${registroAEliminar.value.id_ingresos_egresos}`
+        );
+        mostrarConfirmEliminar.value = false;
+        registroAEliminar.value = null;
+        successMessage.value = 'Registro eliminado correctamente';
+        await fetchTablaAnticipoAG();
+      } catch (e) {
+        const status = e?.response?.status;
+        if (status === 404) {
+          errorEliminar.value = 'El registro ya no existe.';
+        } else if (status === 400) {
+          errorEliminar.value = 'El registro no pertenece al proyecto Agrícola.';
+        } else if (status === 409) {
+          errorEliminar.value =
+            e?.response?.data?.error || 'No se puede eliminar este registro.';
+        } else {
+          errorEliminar.value =
+            e?.response?.data?.error || 'Error al eliminar el registro.';
+        }
+      } finally {
+        eliminando.value = false;
+      }
+    };
 
     const limpiar = () => {
       tipo.value = '';
@@ -749,7 +885,28 @@ export default {
       showModal.value = false;
     };
 
-const saldarRegistroConfirm = async () => {
+    // ** CONFIRMAR ANTES DE SALDAR **
+    const mostrarConfirmSaldar = ref(false);
+    const itemASaldar = ref(null);
+
+    const abrirConfirmSaldar = (row) => {
+      itemASaldar.value = row;
+      mostrarConfirmSaldar.value = true;
+    };
+
+    const cerrarConfirmSaldar = () => {
+      mostrarConfirmSaldar.value = false;
+      itemASaldar.value = null;
+    };
+
+    const confirmarIrASaldar = () => {
+      const row = itemASaldar.value;
+      mostrarConfirmSaldar.value = false;
+      itemASaldar.value = null;
+      if (row) openSaldarModal(row);
+    };
+
+    const saldarRegistroConfirm = async () => {
       let tieneErrores = false;
 
       // 1. Limpieza de montos y parseo seguro
@@ -887,7 +1044,20 @@ const saldarRegistroConfirm = async () => {
       mostrarModalExitoFormulario,
       mostrarModalExito,
       cerrarModalExitoFormulario,
-      mensajeError
+      mensajeError,
+      anticipoRowsActivos,
+      mostrarConfirmEliminar,
+      registroAEliminar,
+      eliminando,
+      errorEliminar,
+      abrirConfirmEliminar,
+      cerrarConfirmEliminar,
+      confirmarEliminar,
+      mostrarConfirmSaldar,
+      itemASaldar,
+      abrirConfirmSaldar,
+      cerrarConfirmSaldar,
+      confirmarIrASaldar
     };
   }
 };

@@ -45,3 +45,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.body {
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
+  padding-bottom: 3rem;
+}
+</style>

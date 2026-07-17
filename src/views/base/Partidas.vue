@@ -187,10 +187,10 @@
 <script>
 import axios from 'axios';
 import { ref, computed, onMounted, onUnmounted, reactive } from 'vue';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
-import { useRoute, useRouter } from 'vue-router'; 
+import { useRoute, useRouter } from 'vue-router';
+import { buildReportPdf } from '@/pdf/PdfReportBuilder';
+import { formatCurrency } from '@/pdf/format';
 import '../../styles/css/PartidasCSS.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
@@ -325,56 +325,34 @@ export default {
       if (!partidaContable.value) return;
 
       try {
-        const doc = new jsPDF('portrait');
         const data = partidaContable.value;
 
-        // 1. Encabezado PDF
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text(data.proyecto || 'Proyecto Sin Nombre', 105, 20, { align: 'center' });
-        
-        // Caja alrededor del título
-        doc.setDrawColor(0);
-        doc.rect(20, 12, 170, 12); 
+        const metadata = {
+          empresa: data.proyecto || 'Proyecto Sin Nombre',
+          direccion: direccionProyecto.value,
+          tipoReporte: 'PARTIDA CONTABLE',
+          especificacion: [
+            `Partida No.: ${data.nomenclatura}`,
+            `Fecha: ${data.fecha}`,
+            `Tipo: ${data.tipo_clasificacion}`,
+            `Descripción: ${data.descripcion}`
+          ]
+        };
 
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
-        doc.text(direccionProyecto.value, 105, 30, { align: 'center' });
-
-        // 2. Detalles Informativos
-        let yPos = 45;
-        doc.setFontSize(9);
-        
-        const leftMargin = 20;
-        const lineHeight = 6;
-
-        doc.text(`PARTIDA No.: ${data.nomenclatura}`, leftMargin, yPos);
-        yPos += lineHeight;
-        doc.text(`FECHA: ${data.fecha}`, leftMargin, yPos);
-        yPos += lineHeight;
-        doc.text(`TIPO: ${data.tipo_clasificacion}`, leftMargin, yPos);
-        yPos += lineHeight;
-        
-        // Descripción con ajuste de línea si es muy larga
-        const splitDesc = doc.splitTextToSize(`DESCRIPCIÓN: ${data.descripcion}`, 170);
-        doc.text(splitDesc, leftMargin, yPos);
-        yPos += (splitDesc.length * 5) + 5; 
-
-        // 3. Tabla
         const columns = [
-          { title: 'Código', dataKey: 'codigo' },
-          { title: 'Cuenta', dataKey: 'cuenta' },
-          { title: 'Descripción', dataKey: 'descripcion' },
-          { title: 'Débito', dataKey: 'debito' },
-          { title: 'Crédito', dataKey: 'credito' }
+          { header: 'Código', dataKey: 'codigo', align: 'center' },
+          { header: 'Cuenta', dataKey: 'cuenta', align: 'left' },
+          { header: 'Descripción', dataKey: 'descripcion', align: 'left' },
+          { header: 'Débito', dataKey: 'debito', type: 'debita' },
+          { header: 'Crédito', dataKey: 'credito', type: 'acredita' }
         ];
 
-        const rows = data.movimientos.map(m => ({
+        const rows = data.movimientos.map((m) => ({
           codigo: m.codigo,
           cuenta: m.cuenta,
           descripcion: m.descripcion || '',
-          debito: m.debito ? formatNumber(m.debito) : '0.00',
-          credito: m.credito ? formatNumber(m.credito) : '0.00'
+          debito: m.debito ? formatCurrency(m.debito) : '',
+          credito: m.credito ? formatCurrency(m.credito) : ''
         }));
 
         // Fila de Totales
@@ -382,42 +360,23 @@ export default {
           codigo: '',
           cuenta: 'TOTALES',
           descripcion: '',
-          debito: `Q ${data.totales.total_debito}`,
-          credito: `Q ${data.totales.total_credito}`
+          debito: formatCurrency(data.totales.total_debito),
+          credito: formatCurrency(data.totales.total_credito),
+          _variant: 'highlight'
         });
 
-        // Fila de Diferencia
+        // Fila de Diferencia (crédito en rojo si la partida no cuadra)
         rows.push({
           codigo: '',
           cuenta: 'DIFERENCIA',
           descripcion: data.totales.balanceada ? 'BALANCEADA' : 'DESCUADRADA',
           debito: '',
-          credito: `Q ${data.totales.diferencia}`
+          credito: formatCurrency(data.totales.diferencia),
+          _variant: 'highlight',
+          ...(!data.totales.balanceada ? { _cellColors: { credito: 'negative' } } : {})
         });
 
-        doc.autoTable({
-          columns: columns,
-          body: rows,
-          startY: yPos,
-          theme: 'grid',
-          styles: { fontSize: 8, cellPadding: 3 },
-          headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-          columnStyles: {
-            codigo: { cellWidth: 20 },
-            cuenta: { cellWidth: 50 },
-            descripcion: { cellWidth: 50 },
-            debito: { cellWidth: 25, halign: 'right' },
-            credito: { cellWidth: 25, halign: 'right' }
-          },
-          didDrawCell: (hookData) => {
-            if (hookData.section === 'body' && hookData.row.index >= data.movimientos.length) {
-              doc.setFont(undefined, 'bold');
-              if (hookData.row.index === data.movimientos.length + 1 && !data.totales.balanceada && hookData.column.dataKey === 'credito') {
-                 doc.setTextColor(220, 53, 69);
-              }
-            }
-          }
-        });
+        const doc = buildReportPdf({ orientation: 'portrait', metadata, columns, rows });
 
         const finalY = doc.lastAutoTable.finalY + 10;
         doc.setTextColor(100);

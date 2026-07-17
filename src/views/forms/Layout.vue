@@ -34,22 +34,18 @@
   </div>
 
   <!-- Encabezado tipo PDF / vista previa -->
-  <div v-if="ingresosEgresos.length" class="encabezado-container">
-    <div class="encabezado-box">
-      <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
-      <div class="encabezado-direccion">
-        Dirección del Proyecto: {{ direccionProyecto }}
-      </div>
+  <ReportPreviewHeader
+    v-if="ingresosEgresos.length"
+    :empresa="nombreEncabezado"
+    :subtitulo="`Dirección del Proyecto: ${direccionProyecto}`"
+  >
+    <div><strong>REPORTE:</strong> LIBRO DIARIO</div>
+    <div>
+      <strong>ESPECIFICACIÓN:</strong>
+      Desde <span class="rp-value">{{ fechaInicial }}</span> hasta
+      <span class="rp-value">{{ fechaFinal }}</span>
     </div>
-
-    <div class="encabezado-detalles">
-      <div><strong>REPORTE:</strong> LIBRO DIARIO</div>
-      <div>
-        <strong>ESPECIFICACIÓN:</strong>
-        Desde {{ fechaInicial }} hasta {{ fechaFinal }}
-      </div>
-    </div>
-  </div>
+  </ReportPreviewHeader>
 
   <!-- Tabla resultados -->
   <div v-if="ingresosEgresos.length" class="tabla-wrapper">
@@ -132,10 +128,11 @@
 
 <script>
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
-import jsPDF from 'jspdf';
 import axios from 'axios';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { buildReportPdf } from '@/pdf/PdfReportBuilder';
+import { formatCurrency } from '@/pdf/format';
+import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/InformeLDiario.css'
 import '../../styles/css/GlobalAlertsModals.css';
 import { useRouter } from 'vue-router'; // para redirección de rutas
@@ -143,6 +140,7 @@ import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
 export default {
   name: 'LibroDiarioCapilla',
+  components: { ReportPreviewHeader },
   setup() {
     const router = useRouter();
     const mostrarModalExitoFormulario = ref(false);
@@ -179,14 +177,14 @@ export default {
         // En esta pantalla SOLO existe este modal de éxito
         if (mostrarModalExitoFormulario.value) {
           event.preventDefault();
-          cerrarModalExitoFormulario(); 
+          cerrarModalExitoFormulario();
         }
       }
     };
 
     const cerrarModalExitoFormulario = () => {
         mostrarModalExitoFormulario.value = false;
-        limpiar(); 
+        limpiar();
     };
 
     const limpiar = () => {
@@ -195,18 +193,6 @@ export default {
       ingresosEgresos.value = [];
     };
 
-    const formatNumber = (value) => {
-      if (value === null || value === undefined || value === '') return '';
-      const num = parseFloat(value);
-      if (isNaN(num)) return '';
-      return (
-        'Q. ' +
-        num.toLocaleString('es-GT', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      );
-    };
 
     const tablaFormateada = computed(() => {
       return ingresosEgresos.value.map((item) => {
@@ -223,14 +209,14 @@ export default {
           acredita: esEspecial
             ? ''
             : item.acredita
-              ? formatNumber(item.acredita)
+              ? formatCurrency(item.acredita)
               : '',
           debita: esEspecial
             ? ''
             : item.debita
-              ? formatNumber(item.debita)
+              ? formatCurrency(item.debita)
               : '',
-          total: item.total ? formatNumber(item.total) : ''
+          total: item.total ? formatCurrency(item.total) : ''
         };
       });
     });
@@ -279,121 +265,42 @@ export default {
         );
         const data = response.data;
 
-        const doc = new jsPDF('landscape');
-
-        // Encabezado
-        doc.setFontSize(16);
-        doc.text(nombreEncabezado.value, 148.5, 27, { align: 'center' });
-        doc.rect(60, 17, 170, 15);
-
-        doc.setFontSize(12);
-        doc.text(
-          `Dirección del Proyecto: ${direccionProyecto.value}`,
-          20,
-          40
-        );
-
-        const textoAdicional = 'REPORTE FINANCIERO';
-        doc.setFontSize(10);
-        doc.text(textoAdicional || textoAdicional, 20, 50);
-
-        const especificacionFechas = `ESPECIFICACIÓN: Desde: ${fechaInicial.value}, Hasta: ${fechaFinal.value}`;
-        doc.text(especificacionFechas, 20, 60);
+        const metadata = {
+          empresa: nombreEncabezado.value,
+          direccion: direccionProyecto.value,
+          tipoReporte: 'LIBRO DIARIO',
+          especificacion: `Desde: ${fechaInicial.value || '-'}, Hasta: ${fechaFinal.value || '-'}`
+        };
 
         const columns = [
-          { title: 'Conteo', dataKey: 'nomenclatura' },
-          { title: 'Fecha', dataKey: 'fecha' },
-          { title: 'Cuenta', dataKey: 'cuenta' },
-          { title: 'Descripción', dataKey: 'descripcion' },
-          { title: 'Acredita', dataKey: 'acredita' },
-          { title: 'Debita', dataKey: 'debita' },
-          { title: 'Saldo', dataKey: 'total' }
+          { header: 'Conteo', dataKey: 'nomenclatura', align: 'center' },
+          { header: 'Fecha', dataKey: 'fecha', align: 'center' },
+          { header: 'Cuenta', dataKey: 'cuenta', align: 'left' },
+          { header: 'Descripción', dataKey: 'descripcion', align: 'left' },
+          { header: 'Acredita', dataKey: 'acredita', type: 'acredita' },
+          { header: 'Debita', dataKey: 'debita', type: 'debita' },
+          { header: 'Saldo', dataKey: 'total', type: 'currency' }
         ];
 
-        const filas = data.map((row) => {
-          const total = row.total ? formatNumber(row.total) : '';
-
+        const rows = data.map((row) => {
           const esEspecialFila =
             row.cuenta === 'Saldo inicial' ||
             row.cuenta === 'Suma total' ||
             row.cuenta === 'Suma total ';
 
-          if (esEspecialFila) {
-            return {
-              nomenclatura: row.nomenclatura,
-              fecha: row.fecha || '',
-              cuenta: row.cuenta,
-              descripcion: row.descripcion,
-              acredita: '',
-              debita: '',
-              total: {
-                content: total,
-                styles: { fontStyle: 'bold' }
-              },
-              borderBottom: {
-                width: 4,
-                color: [0, 0, 0],
-                double: true
-              }
-            };
-          }
-
           return {
             nomenclatura: row.nomenclatura,
-            fecha: row.fecha,
+            fecha: row.fecha || '',
             cuenta: row.cuenta,
             descripcion: row.descripcion,
-            acredita: row.acredita ? formatNumber(row.acredita) : '',
-            debita: row.debita ? formatNumber(row.debita) : '',
-            total: total
+            acredita: esEspecialFila ? '' : (row.acredita ? formatCurrency(row.acredita) : ''),
+            debita: esEspecialFila ? '' : (row.debita ? formatCurrency(row.debita) : ''),
+            total: row.total ? formatCurrency(row.total) : '',
+            ...(esEspecialFila ? { _variant: 'highlight' } : {})
           };
         });
 
-        doc.autoTable({
-          columns,
-          body: filas,
-          startY: 65,
-          theme: 'grid',
-          styles: {
-            cellPadding: 2.5,
-            fontSize: 7,
-            halign: 'center',
-            valign: 'middle',
-            overflow: 'linebreak'
-          },
-          headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: [255, 255, 255]
-          },
-          columnStyles: {
-            nomenclatura: {
-              minCellWidth: 20,
-              overflow: 'visible',
-              halign: 'left'
-            },
-            fecha: {
-              minCellWidth: 20,
-              overflow: 'visible',
-              halign: 'left'
-            },
-            cuenta: {
-              minCellWidth: 40,
-              overflow: 'linebreak',
-              halign: 'left'
-            },
-            descripcion: {
-              minCellWidth: 40,
-              overflow: 'linebreak',
-              halign: 'left'
-            },
-            acredita: { minCellWidth: 20, halign: 'right' },
-            debita: { minCellWidth: 20, halign: 'right' },
-            total: { minCellWidth: 20, halign: 'right' }
-          },
-          tableWidth: 'auto',
-          margin: { left: 10, right: 10 }
-        });
-
+        const doc = buildReportPdf({ orientation: 'landscape', metadata, columns, rows });
         const blob = doc.output('blob');
         saveAs(blob, 'libro_diario_capilla.pdf');
         mostrarModalExitoFormulario.value = true;

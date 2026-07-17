@@ -1,6 +1,6 @@
 /* Fondo y centrado general */
 .deposito-wrapper {
-  background-color: #f7f7f7;
+  background-color: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
@@ -10,13 +10,14 @@
 
 /* Card principal */
 .deposito-card {
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
   max-width: 900px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
 }
 
 /* Encabezado */
@@ -28,7 +29,7 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57; /* azul oscuro */
+  color: var(--cui-body-color);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -36,12 +37,12 @@
 .deposito-subtitle {
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Contenedores de secciones */
 .division-container {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 1rem 1.2rem;
   margin-bottom: 1rem;
@@ -59,7 +60,7 @@
 .division-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #41251c;
+  color: var(--cui-body-color);
   margin: 0 0 0.75rem 0;
   flex-basis: 100%;
 }
@@ -80,7 +81,7 @@
 .field-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);
   margin-bottom: 0.3rem;
 }
 
@@ -88,16 +89,19 @@
   width: 100%;
   padding: 0.5rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--cui-border-color);
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  background-color: #ffffff;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
 }
 
 .field-control:focus {
   border-color: #bd9f69;
   box-shadow: 0 0 0 0.12rem rgba(189, 159, 105, 0.45);
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
 }
 
 /* Mensajes */
@@ -151,13 +155,13 @@
 
 /* Botón secundario */
 .btn-secondary {
-  background: #f7f7f7;
-  color: #292b57;
+  background: var(--cui-tertiary-bg);
+  color: var(--cui-body-color);
   border: 1px solid #bd9f69;
 }
 
 .btn-secondary:hover {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }

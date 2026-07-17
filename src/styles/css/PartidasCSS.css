@@ -1,6 +1,6 @@
 /* Fondo y centrado general */
 .partida-wrapper {
-  background-color: #f7f7f7;
+  background-color: var(--cui-body-bg);
   min-height: calc(100vh - 100px);
   display: flex;
   justify-content: center;
@@ -10,13 +10,14 @@
 
 /* Card principal */
 .partida-card {
-  background-color: #ffffff;
+  background-color: var(--cui-card-bg);
+  color: var(--cui-body-color);
   border-radius: 18px;
   padding: 2rem 2.5rem;
   width: 100%;
   max-width: 1100px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--cui-border-color);
 }
 
 /* Encabezado */
@@ -31,18 +32,18 @@
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #292b57; /* azul oscuro */
+  color: var(--cui-body-color);
 }
 
 .partida-subtitle {
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
 }
 
 /* Contenedor de secciones (similar a libro/estado resultados) */
 .division-container {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
   border-radius: 12px;
   padding: 1rem 1.2rem;
   margin-bottom: 1rem;
@@ -64,7 +65,7 @@
 .field-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #292b57;
+  color: var(--cui-body-color);
   margin-bottom: 0.3rem;
 }
 
@@ -72,12 +73,13 @@
   width: 100%;
   padding: 0.5rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--cui-border-color);
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease,
     background-color 0.2s ease;
-  background-color: #ffffff;
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
 }
 
 .field-control:focus {
@@ -120,13 +122,13 @@
 
 /* Botón secundario */
 .btn-secondary {
-  background: #f7f7f7;
-  color: #292b57;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
   border: 1px solid #bd9f69;
 }
 
 .btn-secondary:hover:enabled {
-  background: #ffffff;
+  background: var(--cui-tertiary-bg);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }
@@ -134,12 +136,12 @@
 /* Botón ghost / texto */
 .btn-ghost {
   background: transparent;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
   border: 1px solid transparent;
 }
 
 .btn-ghost:hover {
-  background: #f2f2f2;
+  background: var(--cui-tertiary-bg);
 }
 
 /* Deshabilitados */
@@ -173,7 +175,7 @@ button:disabled {
   margin-top: 1.5rem;
   text-align: center;
   font-size: 0.95rem;
-  color: #777;
+  color: var(--cui-secondary-color);
 }
 
 .badge-ayuda {
@@ -191,9 +193,9 @@ button:disabled {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
   padding: 1rem 1.2rem;
-  background: #fbfbfb;
+  background: var(--cui-tertiary-bg);
   border-radius: 14px;
-  border: 1px solid #eee;
+  border: 1px solid var(--cui-border-color);
 }
 
 .encabezado-box {
@@ -204,14 +206,14 @@ button:disabled {
 .encabezado-titulo {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #292b57;
+  color: var(--cui-body-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .encabezado-direccion {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--cui-secondary-color);
   margin-top: 0.2rem;
 }
 
@@ -220,7 +222,7 @@ button:disabled {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.4rem 1.2rem;
   font-size: 0.9rem;
-  color: #444;
+  color: var(--cui-body-color);
   margin-top: 0.5rem;
 }
 
@@ -233,9 +235,9 @@ button:disabled {
 .tabla-wrapper {
   margin-top: 1rem;
   border-radius: 14px;
-  border: 1px solid #eee;
+  border: 1px solid var(--cui-border-color);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--cui-card-bg);
 }
 
 .tabla-libro {
@@ -245,27 +247,27 @@ button:disabled {
 }
 
 .tabla-libro thead {
-  background: #f1f3f6;
+  background: var(--cui-tertiary-bg);
 }
 
 .tabla-libro th,
 .tabla-libro td {
   padding: 0.45rem 0.7rem;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--cui-border-color);
 }
 
 .tabla-libro th {
   font-weight: 600;
-  color: #495057;
+  color: var(--cui-body-color);
   text-align: left;
 }
 
 .tabla-libro tbody tr:nth-child(even) {
-  background-color: #fafafa;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .tabla-libro tbody tr:hover {
-  background-color: #f2f6ff;
+  background-color: var(--cui-tertiary-bg);
 }
 
 /* Columnas auxiliares */
@@ -286,7 +288,7 @@ button:disabled {
 
 /* Fila resaltada (totales, diferencia) */
 .fila-resaltada {
-  background-color: #f5f0e5;
+  background-color: var(--cui-tertiary-bg);
 }
 
 .bold-text {
@@ -303,7 +305,7 @@ button:disabled {
 }
 
 .balance-correcto {
-  background-color: #ecf8f0;
+  background-color: rgba(40, 167, 69, 0.18);
 }
 
 /* Resumen simple */
@@ -313,7 +315,7 @@ button:disabled {
   flex-wrap: wrap;
   gap: 0.8rem 2rem;
   padding: 0.9rem 1.1rem;
-  background: #fafafa;
+  background: var(--cui-tertiary-bg);
   border-radius: 12px;
   border-left: 4px solid #bd9f69;
   font-size: 0.92rem;
@@ -326,7 +328,7 @@ button:disabled {
 }
 
 .resumen-item .label {
-  color: #555;
+  color: var(--cui-secondary-color);
   font-weight: 500;
 }
 

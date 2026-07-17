@@ -172,9 +172,9 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { saveAs } from 'file-saver';
+import { buildReportPdf } from '@/pdf/PdfReportBuilder';
+import { formatCurrency } from '@/pdf/format';
 import '../../styles/css/LibroDiarioA.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
@@ -198,19 +198,6 @@ export default {
     const loading = ref(false);
     const error = ref(false);
 
-    const formatNumber = (value) => {
-      if (value === null || value === undefined || value === '') return '';
-      const num = parseFloat(value);
-      if (isNaN(num)) return '';
-      return (
-        'Q. ' +
-        num.toLocaleString('es-GT', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })
-      );
-    };
-
     const tablaFormateada = computed(() => {
       return ingresosEgresos.value.map((item) => {
         const esEspecial =
@@ -226,14 +213,14 @@ export default {
           acredita: esEspecial
             ? ''
             : item.acredita
-            ? formatNumber(item.acredita)
+            ? formatCurrency(item.acredita)
             : '',
           debita: esEspecial
             ? ''
             : item.debita
-            ? formatNumber(item.debita)
+            ? formatCurrency(item.debita)
             : '',
-          total: item.total ? formatNumber(item.total) : ''
+          total: item.total ? formatCurrency(item.total) : ''
         };
       });
     });
@@ -277,96 +264,43 @@ export default {
         return;
       }
 
-      const doc = new jsPDF('landscape');
-
-      // Encabezado
-      doc.setFontSize(16);
-      doc.text('PROYECTO CAPILLA HOGAR SANTA LUISA', 148.5, 27, { align: 'center' });
-      doc.rect(60, 17, 170, 15);
-
-      doc.setFontSize(12);
-      doc.text(
-        'Dirección del Proyecto: 8va calle 5-21 zona 10, Quetzaltenango',
-        20,
-        40
-      );
-
-      const textoAdicional = 'REPORTE: LIBRO MAYOR - ESTADO DE MOVIMIENTOS POR CUENTA (CAPILLA)';
-      doc.setFontSize(10);
-      doc.text(textoAdicional, 20, 50);
-
-      const especificacion = `CUENTA: ${nombreCuenta.value} | PERÍODO: Anual ${year}`;
-      doc.text(especificacion, 20, 60);
+      const metadata = {
+        empresa: 'PROYECTO CAPILLA HOGAR SANTA LUISA',
+        direccion: '8va calle 5-21 zona 10, Quetzaltenango',
+        tipoReporte: 'LIBRO MAYOR - ESTADO DE MOVIMIENTOS POR CUENTA (CAPILLA)',
+        especificacion: `Cuenta: ${nombreCuenta.value} | Período: Anual ${year}`
+      };
 
       const columns = [
-        { title: 'Conteo', dataKey: 'nomenclatura' },
-        { title: 'Número de Documento', dataKey: 'numero_documento' },
-        { title: 'Fecha', dataKey: 'fecha' },
-        { title: 'Cuenta', dataKey: 'cuenta' },
-        { title: 'Descripción', dataKey: 'descripcion' },
-        { title: 'Acredita', dataKey: 'acredita' },
-        { title: 'Debita', dataKey: 'debita' },
-        { title: 'Saldo', dataKey: 'total' }
+        { header: 'Conteo', dataKey: 'nomenclatura', align: 'center' },
+        { header: 'Número de Documento', dataKey: 'numero_documento', align: 'center' },
+        { header: 'Fecha', dataKey: 'fecha', align: 'center' },
+        { header: 'Cuenta', dataKey: 'cuenta', align: 'left' },
+        { header: 'Descripción', dataKey: 'descripcion', align: 'left' },
+        { header: 'Acredita', dataKey: 'acredita', type: 'acredita' },
+        { header: 'Debita', dataKey: 'debita', type: 'debita' },
+        { header: 'Saldo', dataKey: 'total', type: 'currency' }
       ];
 
       const filas = ingresosEgresos.value.map((row) => {
-        const total = row.total ? formatNumber(row.total) : '';
-
-        if (
+        const esResumen =
           row.cuenta === 'Saldo inicial' ||
-          row.cuenta === 'Suma total'
-        ) {
-          return {
-            nomenclatura: row.nomenclatura,
-            numero_documento: row.numero_documento || '-',
-            fecha: row.fecha || '',
-            cuenta: row.cuenta,
-            descripcion: row.descripcion,
-            acredita: '',
-            debita: '',
-            total: { content: total, styles: { fontStyle: 'bold' } }
-          };
-        }
+          row.cuenta === 'Suma total';
 
         return {
           nomenclatura: row.nomenclatura,
           numero_documento: row.numero_documento || '-',
-          fecha: row.fecha,
+          fecha: row.fecha || '',
           cuenta: row.cuenta,
           descripcion: row.descripcion,
-          acredita: row.acredita ? formatNumber(row.acredita) : '',
-          debita: row.debita ? formatNumber(row.debita) : '',
-          total: total
+          acredita: esResumen ? '' : (row.acredita ? formatCurrency(row.acredita) : ''),
+          debita: esResumen ? '' : (row.debita ? formatCurrency(row.debita) : ''),
+          total: row.total ? formatCurrency(row.total) : '',
+          ...(esResumen ? { _variant: 'highlight' } : {})
         };
       });
 
-      doc.autoTable({
-        columns,         
-        body: filas,
-        startY: 80,
-        theme: 'grid',
-        styles: {
-          cellPadding: 3,
-          fontSize: 8,
-          halign: 'left',
-          valign: 'middle'
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: [255, 255, 255]
-        },
-        columnStyles: {
-          nomenclatura: { minCellWidth: 20, halign: 'left' },
-          numero_documento: { minCellWidth: 30, halign: 'left' },
-          fecha: { minCellWidth: 20, halign: 'left' },
-          cuenta: { minCellWidth: 40, halign: 'left' },
-          descripcion: { minCellWidth: 40, halign: 'left' },
-          acredita: { minCellWidth: 20, halign: 'right' },
-          debita: { minCellWidth: 20, halign: 'right' },
-          total: { minCellWidth: 20, halign: 'right' }
-        }
-      });
-
+      const doc = buildReportPdf({ orientation: 'landscape', metadata, columns, rows: filas });
       const blob = doc.output('blob');
       saveAs(blob, `libro_mayor_capilla_cuenta_${codigoCuenta.value}.pdf`);
       mostrarModalExitoFormulario.value = true;
