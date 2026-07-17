@@ -386,6 +386,7 @@
         <div>
           <h3 class="egreso-title">Saldar Deuda Pendiente</h3>
           <p class="egreso-subtitle">
+            
             Complete los datos del pago para registrar el abono.
           </p>
         </div>

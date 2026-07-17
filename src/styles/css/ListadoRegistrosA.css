@@ -295,6 +295,17 @@
   margin: 0.75rem 0;
 }
 
+.modal-id-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-id-row label {
+  font-weight: 600;
+  color: var(--cui-body-color);
+}
+
 .confirm-modal-summary .modal-id-row {
   margin-bottom: 0.3rem;
 }

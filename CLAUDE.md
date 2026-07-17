@@ -8,13 +8,6 @@ This is a Vue 3 + Vite frontend, originally scaffolded from the **CoreUI Free Vu
 
 ## Commands
 
-```bash
-npm run dev      # Vite dev server (--force), default port 3000 per vite.config.mjs
-npm run build    # production build via vite build
-npm run preview  # preview a production build
-npm run lint     # eslint "src/**/*.{js,vue}"
-```
-
 There is no test suite/framework configured in this repo (no Jest/Vitest/Cypress, no `test` script).
 
 ## Architecture
@@ -47,22 +40,23 @@ This is the single biggest gotcha in the codebase: many `.vue` files still carry
 | `views/forms/Layout.vue` | Layout | Libro Diario (Capilla) |
 | `views/base/Collapses.vue` | Collapses | Reporte Final (Agrícola), component name `ReporteAG` |
 | `views/base/ListGroups.vue` | List Groups | Informe/Reporte Final (Capilla), component name `ReporteCapillaFinal` |
-| `views/theme/Colors.vue` | Colors | Proyecto Agrícola landing/home page, component name `Dashboard` |
+| `views/theme/Colors.vue` | Colors (route `/theme/colors`) | Proyecto Agrícola landing/home page, component name `Dashboard` |
+| `views/dashboard/Dashboard.vue` | Dashboard (route `/honey123`) | Proyecto Capilla landing/home page, component name `DashboardCapilla` |
 | `views/widgets/Widgets.vue` | Widgets | "Desarrolladores" (developer credits page), component name `Agradecimientos` |
+| `views/base/Accordion.vue` | Accordion | Registro de Egreso (Agrícola) |
+| `views/base/Breadcrumbs.vue` | Breadcrumbs | Registro de Egresos (Capilla) |
+| `views/buttons/Buttons.vue` | Buttons2 | Registro de Ingreso (Agrícola) |
+| `views/buttons/ButtonGroups.vue` | Button Groups | Registro de Ingresos (Capilla) |
+| `views/forms/ChecksRadios.vue` | Checks & Radios | Depósitos de Caja (Capilla) |
+| `views/forms/Range.vue` | Range | Retiros de Bancos (Capilla) |
+| `views/forms/FormControl.vue` | Form Control | Depósitos/Traslados internos de Caja (Agrícola-only; no routed Capilla twin found) |
+| `views/forms/Select.vue` | Select | Retiros/Traslados internos de Bancos (Agrícola-only; no routed Capilla twin found) |
 
-Before touching one of these views, read the `<script>` block's `name:` and the template header — don't assume from the path.
+The two project landing pages are themselves a gotcha: neither lives at an intuitive `/dashboard` route. Agrícola's home is at `/theme/colors`, Capilla's is at `/honey123`.
+
+Before touching one of these views, read the `<script>` block's `name:` and the template header — don't assume from the path. **Caveat:** for the `Accordion`/`Breadcrumbs`/`Buttons`/`ButtonGroups`/`ChecksRadios`/`Range`/`FormControl`/`Select` group above, the internal `name:` field is itself useless — every one of them was copy-pasted with `name: 'Accordion'` left unchanged. For these, identify the view by its route (`router/index.js`) or the template's `<h1>`/`<h2>` title text instead.
 
 Beyond those, most report views come in explicit Agrícola/Capilla pairs with parallel (largely duplicated) logic: `BalanceGeneralAgricola.vue`/`BalanceGeneralCapilla.vue`, `EstadoResultadosAgricola.vue`/`EstadoResultadosCapilla.vue`, `DetalleCuentaAgricola.vue`/`DetalleCuentaCapilla.vue` ("Libro Mayor" per-account detail), `AnticipoSobreComprasAgricola.vue`/`...Capilla.vue`. A fix or feature typically needs to be applied to both twins.
-
-### PDF report generation (`src/pdf/`)
-All PDF-producing views (there are 15) build their PDFs through a shared engine instead of hand-rolling `jsPDF`/`jspdf-autotable` calls:
-- `PdfReportBuilder.js` — `buildReportPdf({ orientation, metadata, columns, rows })` is the single entry point every view calls; it composes the header and table renderers and returns the `jsPDF` doc (caller still does `doc.output('blob')` + `saveAs`).
-- `PdfHeaderRenderer.js` — draws the shared navy/gold header card (logo, empresa/dirección, tipo de reporte, especificación).
-- `PdfTableRenderer.js` — wraps `autoTable` with the shared navy header row, beige highlight rows, green/red coloring for `acredita`/`debita` columns, and the footer (page numbers + generation date).
-- `theme.js` / `format.js` — shared color palette and `formatCurrency()` (handles comma-formatted numeric strings from the API, not just plain numbers).
-- `logo.js` — base64-embedded logo used by the header renderer.
-
-Contract: `columns` is `[{ header, dataKey, align?, type? }]` (`type` one of `'text' | 'currency' | 'acredita' | 'debita'`); `rows` are plain objects keyed by `dataKey`, optionally with `_variant: 'highlight'` (saldo inicial / totals rows → beige+bold) and/or `_cellColors: { [dataKey]: 'positive'|'negative' }` for one-off cell coloring (e.g. an unbalanced "Partida"). Adding a new report = new columns/rows shape, not a new copy of the drawing code.
 
 ### Row numbering helper
 `aplicarNumeracion` (in `utils/numeracion.js` at the **project root**, not `src/utils/` — the file's own header comment says `src/utils/numeracion.js` but that's stale/wrong, and views import it via `../../../utils/numeracion`) computes hierarchical row numbers (e.g. `1`, `1.1`, `1.2`, `2`) for the Balance General / Estado de Resultados-style reports, based on each row's `nivel` field. Rows without a `nivel` get `cuenta: ''`.
