@@ -186,6 +186,7 @@
           </table>
         </div>
       </div>
+      </div>
  
     </div><!-- /page-card -->
   </div><!-- /page-wrapper -->

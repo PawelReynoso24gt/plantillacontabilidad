@@ -318,13 +318,12 @@
           <label class="field-label">Fecha emisión</label>
           <input type="date" v-model="modalData.fecha_emision" class="field-control" />
         </div>
-      </div>
 
-      <!-- Botones del modal -->
-      <div class="form-actions">
-        <button class="btn btn-secondary" @click="closeModal">Cancelar</button>
-        <button class="btn btn-primary" @click="saldarRegistroConfirm">Confirmar</button>
-      </div>
+        <!-- Botones del modal -->
+        <div class="form-actions">
+          <button class="btn btn-secondary" @click="closeModal">Cancelar</button>
+          <button class="btn btn-primary" @click="saldarRegistroConfirm">Confirmar</button>
+        </div>
 
     </div><!-- /modal-box -->
   </div>

@@ -327,6 +327,7 @@
           <input type="date" v-model="modalData.fecha_emision" class="field-control" />
         </div>
       </div>
+      </div>
     <!-- **MODAL DE INGRESO CORRECTO** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">

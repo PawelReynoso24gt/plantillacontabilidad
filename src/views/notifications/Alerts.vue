@@ -134,7 +134,7 @@
       </div>
 
     </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
+  <!-- /page-wrapper -->
 </template>
 
 
