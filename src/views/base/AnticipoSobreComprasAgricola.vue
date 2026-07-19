@@ -1,16 +1,20 @@
 <template>
-     <!-- Encabezado -->
-      <div class="anticipo-header">
+
+  <div class="page-wrapper">
+    <div class="page-card">
+
+      <!-- Encabezado -->
+      <div class="module-header">
         <div>
-          <h2 class="anticipo-title">Anticipo sobre compras</h2>
-          <p class="anticipo-subtitle">
+          <h2 class="module-title">Anticipo sobre compras</h2>
+          <p class="module-subtitle">
             Registro de anticipos pagados para compras agrícolas.
           </p>
         </div>
       </div>
 
       <!-- Egreso para -->
-      <div class="division-container division-inline">
+      <div class="section-container section-container--inline">
         <div class="field-group">
           <label class="field-label">Egreso para</label>
           <select v-model="tipo" class="field-control">
@@ -23,7 +27,7 @@
       </div>
 
       <!-- Fecha -->
-      <div class="division-container division-inline">
+      <div class="section-container section-container--inline">
         <div class="field-group">
           <label class="field-label">Fecha</label>
           <input type="date" v-model="fecha" class="field-control" />
@@ -32,27 +36,25 @@
       </div>
 
       <!-- Identificación / nombre / observaciones -->
-      <div class="division-container">
+      <div class="section-container">
         <div class="field-group">
-          <label class="field-label">DPI/NIT/CF</label>
+          <label class="field-label">DPI / NIT / CF</label>
           <input type="text" v-model="identificacion" class="field-control" />
           <small v-if="fieldErrors.identificacion" class="error-text">{{ fieldErrors.identificacion }}</small>
         </div>
-
         <div class="field-group">
-          <label class="field-label">Nombre/CF</label>
+          <label class="field-label">Nombre / CF</label>
           <input type="text" v-model="nombre" class="field-control" />
           <small v-if="fieldErrors.nombre" class="error-text">{{ fieldErrors.nombre }}</small>
         </div>
-
-        <div class="field-group full-width">
+        <div class="field-group field-group--full">
           <label class="field-label">Observaciones del comprobante</label>
           <input type="text" v-model="descripcion" class="field-control" />
         </div>
       </div>
 
       <!-- Monto -->
-      <div class="division-container division-inline">
+      <div class="section-container section-container--inline">
         <div class="field-group">
           <label class="field-label">Monto</label>
           <input type="text" v-model="monto" class="field-control" placeholder="0.00"/>
@@ -61,8 +63,8 @@
       </div>
 
       <!-- Datos del pago (solo cuando es bancos) -->
-      <div class="division-container division-block" v-if="mostrarDivisionCuatro">
-        <h3 class="division-title">Datos del pago</h3>
+      <div class="section-container section-container--block" v-if="mostrarDivisionCuatro">
+        <h3 class="section-title">Datos del pago</h3>
 
         <div class="field-group">
           <label class="field-label">Documento</label>
@@ -79,11 +81,7 @@
           <label class="field-label">Cuenta bancaria</label>
           <select v-model.number="idCuentaBancaria" class="field-control">
             <option disabled value="">Seleccione una cuenta</option>
-            <option
-              v-for="c in cuentas_bancarias"
-              :key="c.id"
-              :value="c.id"
-            >
+            <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">
               {{ c.label }}
             </option>
           </select>
@@ -125,158 +123,82 @@
 
       <!-- Botones principales -->
       <div class="form-actions">
-        <button class="btn-primary" @click="enviarDatos">Guardar</button>
-        <button class="btn-secondary" @click="limpiar">Limpiar</button>
-        <button
-          class="btn-toggle-icon"
-          :title="showTabla ? 'Ocultar tabla' : 'Mostrar tabla'"
-          :aria-expanded="showTabla"
-          @click="toggleMostrarTabla"
-        >
-          <span class="chevron" :class="{ 'is-open': showTabla }">▾</span>
+        <button class="btn btn-primary" @click="enviarDatos">Guardar</button>
+        <button class="btn btn-secondary" @click="limpiar">Limpiar</button>
+        <button class="btn btn-ghost" @click="toggleMostrarTabla">
+          {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
         </button>
       </div>
       </div>
 
       <!-- Tabla de anticipos (colapsable) -->
-      <div v-if="showTabla" class="tabla-anticipos">
-        <div class="tabla-header">
-          <h3 class="tabla-title">Anticipos registrados</h3>
-          <span v-if="loading" class="tabla-badge">Cargando...</span>
+      <div v-if="showTabla" class="section-container section-container--block mt-3">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 class="section-title" style="margin: 0;">Anticipos registrados</h3>
+          <span v-if="loading" class="badge badge--warning">Cargando...</span>
         </div>
 
-        <p v-if="!loading && anticipoRowsActivos.length === 0" class="tabla-empty">
+        <p v-if="!loading && anticipoRows.length === 0" class="table-empty">
           No hay registros.
         </p>
 
-        <table
-          v-if="!loading && anticipoRowsActivos.length"
-          class="table-anticipo"
-        >
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Nomenclatura</th>
-              <th>Nombre</th>
-              <th>Cuenta</th>
-              <th>Tipo</th>
-              <th class="right">Monto</th>
-              <th class="right">Monto faltante</th>
-              <th class="center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(r, idx) in anticipoRowsActivos" :key="idx">
-              <td>{{ r.fecha }}</td>
-              <td>{{ r.nomenclatura }}</td>
-              <td>{{ r.nombre }}</td>
-              <td>{{ r.id_cuentas }}</td>
-              <td>{{ r.tipo }}</td>
-              <td class="right">{{ formatMonto(r.monto) }}</td>
-              <td class="right">{{ formatMonto(r.monto_faltante) }}</td>
-              <td class="center">
-                <button class="btn-link" @click="abrirConfirmSaldar(r)">
-                  Saldar
-                </button>
-                <button class="btn-link" @click="abrirConfirmEliminar(r)">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ******* MODAL CONFIRMAR ELIMINAR ******* -->
-      <div v-if="mostrarConfirmEliminar" class="confirm-modal-overlay">
-        <div class="confirm-modal-box">
-          <div class="confirm-modal-header confirm-modal-header--danger">
-            <span class="confirm-modal-icon">⚠</span>
-            <h3>Eliminar registro</h3>
-          </div>
-          <div class="confirm-modal-body">
-            <p>
-              ¿Seguro que deseas eliminar este registro? Esta acción no se
-              puede deshacer.
-            </p>
-            <div class="confirm-modal-summary">
-              <div class="modal-id-row">
-                <label>Fecha: </label>
-                <span>{{ registroAEliminar?.fecha }}</span>
-              </div>
-              <div class="modal-id-row">
-                <label>Nombre: </label>
-                <span>{{ registroAEliminar?.nombre }}</span>
-              </div>
-              <div class="modal-id-row">
-                <label>Monto: </label>
-                <span>{{ formatMonto(registroAEliminar?.monto) }}</span>
-              </div>
-            </div>
-            <p v-if="errorEliminar" class="modal-error">{{ errorEliminar }}</p>
-          </div>
-          <div class="confirm-modal-actions">
-            <button class="btn-secondary" :disabled="eliminando" @click="cerrarConfirmEliminar">
-              Cancelar
-            </button>
-            <button
-              class="btn-danger btn-danger-solid"
-              :disabled="eliminando"
-              @click="confirmarEliminar"
-            >
-              {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
-            </button>
-          </div>
+        <div v-if="!loading && anticipoRows.length" class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Nomenclatura</th>
+                <th>Nombre</th>
+                <th>Cuenta</th>
+                <th>Tipo</th>
+                <th class="cell-right">Monto</th>
+                <th class="cell-right">Monto faltante</th>
+                <th class="cell-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(r, idx) in anticipoRows" :key="idx">
+                <td>{{ r.fecha }}</td>
+                <td>{{ r.nomenclatura }}</td>
+                <td>{{ r.nombre }}</td>
+                <td>{{ r.id_cuentas }}</td>
+                <td>{{ r.tipo }}</td>
+                <td class="cell-right">{{ formatMonto(r.monto) }}</td>
+                <td class="cell-right">{{ formatMonto(r.monto_faltante) }}</td>
+                <td class="cell-center">
+                  <button class="btn-link" @click="openSaldarModal(r)">Saldar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- ******* MODAL CONFIRMAR SALDAR ******* -->
-      <div v-if="mostrarConfirmSaldar" class="confirm-modal-overlay">
-        <div class="confirm-modal-box">
-          <div class="confirm-modal-header">
-            <span class="confirm-modal-icon">💰</span>
-            <h3>Saldar registro</h3>
-          </div>
-          <div class="confirm-modal-body">
-            <p>¿Deseas continuar para registrar un abono a este anticipo?</p>
-            <div class="confirm-modal-summary">
-              <div class="modal-id-row">
-                <label>Fecha: </label>
-                <span>{{ itemASaldar?.fecha }}</span>
-              </div>
-              <div class="modal-id-row">
-                <label>Nombre: </label>
-                <span>{{ itemASaldar?.nombre }}</span>
-              </div>
-              <div class="modal-id-row">
-                <label>Monto faltante: </label>
-                <span>{{ formatMonto(itemASaldar?.monto_faltante) }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="confirm-modal-actions">
-            <button class="btn-secondary" @click="cerrarConfirmSaldar">Cancelar</button>
-            <button class="btn-primary" @click="confirmarIrASaldar">Continuar</button>
-          </div>
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->
+
+  <!-- Modal para saldar -->
+  <div v-if="showModal" class="modal-overlay">
+    <div class="modal-box">
+
+      <div class="module-header">
+        <div>
+          <h3 class="module-title">Saldar registro</h3>
         </div>
       </div>
 
-      <!-- Modal para saldar -->
-      <div v-if="showModal" class="modal-overlay">
-        <div class="modal-box">
-          <h3>Saldar registro</h3>
-
-          <div class="modal-id-row">
-            <label>ID cuenta: </label>
-            <span>
-              {{
-                modalData.id_ingresos_egresos !== null &&
-                modalData.id_ingresos_egresos !== undefined
-                  ? modalData.id_ingresos_egresos
-                  : '-'
-              }}
-            </span>
-          </div>
+      <!-- ID -->
+      <div class="section-container">
+        <div class="field-group">
+          <label class="field-label">ID cuenta</label>
+          <input
+            type="text"
+            :value="modalData.id_ingresos_egresos !== null && modalData.id_ingresos_egresos !== undefined ? modalData.id_ingresos_egresos : '-'"
+            class="field-control"
+            disabled
+          />
+        </div>
+      </div>
 
           <div class="modal-form">
             <div class="input-container">
@@ -401,15 +323,11 @@
             </template>
           </div>
 
-          <div class="modal-actions">
-            <button class="btn-primary" @click="saldarRegistroConfirm">
-              Confirmar
-            </button>
-            <button class="btn-secondary" @click="closeModal">
-              Cancelar
-            </button>
-          </div>
+        <div class="field-group">
+          <label class="field-label">Fecha emisión</label>
+          <input type="date" v-model="modalData.fecha_emision" class="field-control" />
         </div>
+      </div>
       </div>
     <!-- **MODAL DE INGRESO CORRECTO** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
@@ -452,11 +370,12 @@
 </template>
 
 <script>
+
 import axios from 'axios';
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '../../styles/css/AnticipoComprasA.css';
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css';
 

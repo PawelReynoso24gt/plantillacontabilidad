@@ -1,4 +1,5 @@
 <template>
+
   <div class="page-wrapper">
     <div class="page-card">
      <!-- Encabezado -->
@@ -97,10 +98,11 @@
 </template>
 
 <script>
+
 import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import '../../styles/css/Bancos.css';
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 

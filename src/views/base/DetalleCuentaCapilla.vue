@@ -1,4 +1,5 @@
 <template>
+
   <div class="page-wrapper">
     <div class="page-card">
 
@@ -129,13 +130,14 @@
 </template>
 
 <script>
+
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
-import '../../styles/css/LibroDiarioA.css';
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 
@@ -313,4 +315,3 @@ export default {
   }
 };
 </script>
-

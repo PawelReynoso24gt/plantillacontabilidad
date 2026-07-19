@@ -1,4 +1,5 @@
 <template>
+
   <div class="page-wrapper">
     <div class="page-card">
 
@@ -202,211 +203,6 @@
           </table>
         </div>
       </div>
-  <!-- Egresos: registrados + pendientes por pagar, en un solo panel -->
-  <div class="listado-registros">
-    <div class="listado-header">
-      <h3 class="listado-title">Egresos</h3>
-      <div style="display: flex; align-items: center; gap: 0.6rem;">
-        <span v-if="cargandoRegistros" class="listado-badge">Cargando...</span>
-        <button
-          class="btn-toggle-icon"
-          :title="mostrarRegistros ? 'Ocultar tabla' : 'Mostrar tabla'"
-          :aria-expanded="mostrarRegistros"
-          @click="mostrarRegistros = !mostrarRegistros"
-        >
-          <span class="chevron" :class="{ 'is-open': mostrarRegistros }">▾</span>
-        </button>
-      </div>
-    </div>
-
-    <template v-if="mostrarRegistros">
-      <div class="listado-tabs">
-        <button
-          :class="['listado-tab', { active: tabEgresos === 'todos' }]"
-          @click="tabEgresos = 'todos'"
-        >
-          Todos los registros
-        </button>
-        <button
-          :class="['listado-tab', { active: tabEgresos === 'pendientes' }]"
-          @click="tabEgresos = 'pendientes'"
-        >
-          Pendientes por Pagar
-        </button>
-      </div>
-
-      <template v-if="tabEgresos === 'todos'">
-        <p v-if="!cargandoRegistros && registros.length === 0" class="listado-empty">
-          No hay registros.
-        </p>
-
-        <div v-if="!cargandoRegistros && registros.length" style="overflow-x: auto;">
-          <table class="table-listado">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Nomenclatura</th>
-                <th>Nombre</th>
-                <th>Cuenta</th>
-                <th>Tipo</th>
-                <th class="right">Monto</th>
-                <th class="center">Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="r in registros" :key="r.id_ingresos_egresos">
-                <td>{{ r.fecha }}</td>
-                <td>{{ r.nomenclatura }}</td>
-                <td>{{ r.nombre }}</td>
-                <td>{{ r.cuenta }}</td>
-                <td>{{ r.tipo }}</td>
-                <td class="right">{{ formatMonto(r.monto) }}</td>
-                <td class="center">
-                  <button class="btn-link" @click="abrirConfirmEliminar(r)">
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="listado-pagination">
-            <button
-              class="btn-secondary"
-              :disabled="paginaActual <= 1"
-              @click="cargarRegistros(paginaActual - 1)"
-            >
-              Anterior
-            </button>
-            <span class="listado-pagination-info">
-              Página {{ paginaActual }} de {{ totalPaginas }}
-            </span>
-            <button
-              class="btn-secondary"
-              :disabled="paginaActual >= totalPaginas"
-              @click="cargarRegistros(paginaActual + 1)"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      </template>
-
-      <template v-else>
-        <p v-if="mensajeVacio" class="text-danger" style="margin-top: 10px;">{{ mensajeVacio }}</p>
-
-        <p v-else-if="pendientes.length === 0" class="listado-empty">
-          No hay pendientes por pagar.
-        </p>
-
-        <div v-if="pendientes.length > 0" style="overflow-x: auto;">
-          <table class="pendientes-table">
-              <thead>
-                  <tr>
-                      <th>Fecha</th>
-                      <th>Nomenclatura</th>
-                      <th>Nombre</th>
-                      <th>Cuenta Contable</th>
-                      <th>Tipo</th>
-                      <th>Monto Deuda (Q)</th>
-                      <th>Tipo de Saldo</th>
-                      <th>Acción</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
-                      <td>{{ item.fecha }}</td>
-                      <td>{{ item.nomenclatura }}</td>
-                      <td>{{ item.nombre }}</td>
-                      <td>{{ item.cuentas.cuenta }}</td>
-                      <td>{{ item.tipo }}</td>
-                      <td>Q {{ item.saldo_pendiente }}</td>
-                      <td>
-                          <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
-                          <span v-else class="saldo-haber">HABER</span>
-                      </td>
-                      <td><button class="btn-link" @click="abrirConfirmSaldar(item)">Saldar</button></td>
-                  </tr>
-              </tbody>
-          </table>
-        </div>
-      </template>
-    </template>
-  </div>
-
-  <!-- ******* MODAL CONFIRMAR ELIMINAR ******* -->
-  <div v-if="mostrarConfirmEliminar" class="confirm-modal-overlay">
-    <div class="confirm-modal-box">
-      <div class="confirm-modal-header confirm-modal-header--danger">
-        <span class="confirm-modal-icon">⚠</span>
-        <h3>Eliminar registro</h3>
-      </div>
-      <div class="confirm-modal-body">
-        <p>
-          ¿Seguro que deseas eliminar este registro? Esta acción no se puede
-          deshacer.
-        </p>
-        <div class="confirm-modal-summary">
-          <div class="modal-id-row">
-            <label>Fecha: </label>
-            <span>{{ registroAEliminar?.fecha }}</span>
-          </div>
-          <div class="modal-id-row">
-            <label>Nombre: </label>
-            <span>{{ registroAEliminar?.nombre }}</span>
-          </div>
-          <div class="modal-id-row">
-            <label>Monto: </label>
-            <span>{{ formatMonto(registroAEliminar?.monto) }}</span>
-          </div>
-        </div>
-        <p v-if="errorEliminar" class="modal-error">{{ errorEliminar }}</p>
-      </div>
-      <div class="confirm-modal-actions">
-        <button class="btn-secondary" :disabled="eliminando" @click="cerrarConfirmEliminar">
-          Cancelar
-        </button>
-        <button
-          class="btn-danger btn-danger-solid"
-          :disabled="eliminando"
-          @click="confirmarEliminar"
-        >
-          {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ******* MODAL CONFIRMAR SALDAR ******* -->
-  <div v-if="mostrarConfirmSaldar" class="confirm-modal-overlay">
-    <div class="confirm-modal-box">
-      <div class="confirm-modal-header">
-        <span class="confirm-modal-icon">💰</span>
-        <h3>Saldar registro</h3>
-      </div>
-      <div class="confirm-modal-body">
-        <p>¿Deseas continuar para registrar un abono a este pendiente?</p>
-        <div class="confirm-modal-summary">
-          <div class="modal-id-row">
-            <label>Fecha: </label>
-            <span>{{ itemASaldar?.fecha }}</span>
-          </div>
-          <div class="modal-id-row">
-            <label>Nombre: </label>
-            <span>{{ itemASaldar?.nombre }}</span>
-          </div>
-          <div class="modal-id-row">
-            <label>Saldo pendiente: </label>
-            <span>Q {{ itemASaldar?.saldo_pendiente }}</span>
-          </div>
-        </div>
-      </div>
-      <div class="confirm-modal-actions">
-        <button class="btn-secondary" @click="cerrarConfirmSaldar">Cancelar</button>
-        <button class="btn-primary" @click="confirmarIrASaldar">Continuar</button>
-      </div>
-    </div>
-  </div>
 
     </div><!-- /page-card -->
   </div><!-- /page-wrapper -->
@@ -419,7 +215,6 @@
         <div>
           <h3 class="module-title">Saldar Deuda Pendiente</h3>
           <p class="module-subtitle">
-            
             Complete los datos del pago para registrar el abono.
           </p>
         </div>
@@ -591,13 +386,13 @@
   </div>
 </template>
 
-
 <script>
+
 import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '../../styles/css/EgresosIngresosC.css';
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css'
 

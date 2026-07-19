@@ -1,16 +1,19 @@
 <template>
+
+  <div class="page-wrapper">
+    <div class="page-card">
   <!-- Encabezado -->
-  <div class="deposito-header">
+  <div class="module-header">
     <div>
-      <h2 class="deposito-title">Traslados internos de caja</h2>
-      <p class="deposito-subtitle">
+      <h2 class="module-title">Traslados internos de caja</h2>
+      <p class="module-subtitle">
         Registre el depósito desde caja hacia la cuenta bancaria seleccionada.
       </p>
     </div>
   </div>
 
   <!-- Primera división: cuenta bancaria + documento + fecha -->
-  <div class="division-container division-inline">
+  <div class="section-container section-container--inline">
     <div class="field-group">
       <label class="field-label">Cuenta bancaria</label>
       <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
@@ -36,8 +39,8 @@
   </div>
 
   <!-- Segunda división: monto y observaciones -->
-  <div class="division-container">
-    <h3 class="division-title">Monto a retirar de caja</h3>
+  <div class="section-container">
+    <h3 class="section-title">Monto a retirar de caja</h3>
 
     <div class="field-group">
       <label class="field-label">Valor a retirar</label>
@@ -45,7 +48,7 @@
       <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
     </div>
 
-    <div class="field-group full-width">
+    <div class="field-group field-group--full">
       <label class="field-label">Observaciones</label>
       <input type="text" v-model="descripcion" class="field-control" />
     </div>
@@ -63,7 +66,7 @@
       </div>
 
       <div class="form-actions">
-        <button class="btn-primary" @click="enviarDatos">Guardar</button>
+        <button class="btn btn-primary" @click="enviarDatos">Guardar</button>
         <button class="btn-secondary" @click="limpiar">Limpiar</button>
       </div>
     </div>
@@ -92,144 +95,24 @@
         <p style="color: #6c757d;">{{ mensajeError }}</p>
       </div>
       <div class="form-actions" style="justify-content: center;">
-        <button class="btn-secondary" @click="cerrarModalError" style="min-width: 120px;">
+        <button class="btn btn-secondary" @click="cerrarModalError" style="min-width: 120px;">
           Cerrar
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Registros de depósitos de caja -->
-  <div class="listado-registros">
-    <div class="listado-header">
-      <h3 class="listado-title">Depósitos registrados</h3>
-      <div style="display: flex; align-items: center; gap: 0.6rem;">
-        <span v-if="cargandoRegistros" class="listado-badge">Cargando...</span>
-        <button
-          class="btn-toggle-icon"
-          :title="mostrarRegistros ? 'Ocultar tabla' : 'Mostrar tabla'"
-          :aria-expanded="mostrarRegistros"
-          @click="mostrarRegistros = !mostrarRegistros"
-        >
-          <span class="chevron" :class="{ 'is-open': mostrarRegistros }">▾</span>
-        </button>
-      </div>
-    </div>
-
-    <template v-if="mostrarRegistros">
-      <p v-if="!cargandoRegistros && registros.length === 0" class="listado-empty">
-        No hay registros.
-      </p>
-
-      <div v-if="!cargandoRegistros && registros.length" style="overflow-x: auto;">
-        <table class="table-listado">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Nomenclatura</th>
-              <th>Nombre</th>
-              <th>Cuenta</th>
-              <th>Tipo</th>
-              <th class="right">Monto</th>
-              <th class="center">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in registros" :key="r.id_ingresos_egresos">
-              <td>{{ r.fecha }}</td>
-              <td>{{ r.nomenclatura }}</td>
-              <td>{{ r.nombre }}</td>
-              <td>{{ r.cuenta }}</td>
-              <td>{{ r.tipo }}</td>
-              <td class="right">{{ formatMonto(r.monto) }}</td>
-              <td class="center">
-                <button class="btn-link" @click="abrirConfirmEliminar(r)">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="listado-pagination">
-          <button
-            class="btn-secondary"
-            :disabled="paginaActual <= 1"
-            @click="cargarRegistros(paginaActual - 1)"
-          >
-            Anterior
-          </button>
-          <span class="listado-pagination-info">
-            Página {{ paginaActual }} de {{ totalPaginas }}
-          </span>
-          <button
-            class="btn-secondary"
-            :disabled="paginaActual >= totalPaginas"
-            @click="cargarRegistros(paginaActual + 1)"
-          >
-            Siguiente
-          </button>
-        </div>
-      </div>
-    </template>
-  </div>
-
-  <!-- ******* MODAL CONFIRMAR ELIMINAR ******* -->
-  <div v-if="mostrarConfirmEliminar" class="confirm-modal-overlay">
-    <div class="confirm-modal-box">
-      <div class="confirm-modal-header confirm-modal-header--danger">
-        <span class="confirm-modal-icon">⚠</span>
-        <h3>Eliminar registro</h3>
-      </div>
-      <div class="confirm-modal-body">
-        <p>
-          ¿Seguro que deseas eliminar este registro? Esta acción no se puede
-          deshacer.
-        </p>
-        <div class="confirm-modal-summary">
-          <div class="modal-id-row">
-            <label>Fecha: </label>
-            <span>{{ registroAEliminar?.fecha }}</span>
-          </div>
-          <div class="modal-id-row">
-            <label>Nombre: </label>
-            <span>{{ registroAEliminar?.nombre }}</span>
-          </div>
-          <div class="modal-id-row">
-            <label>Monto: </label>
-            <span>{{ formatMonto(registroAEliminar?.monto) }}</span>
-          </div>
-        </div>
-        <p class="modal-warning">
-          Un depósito de caja crea dos movimientos enlazados (Caja y Bancos).
-          Eliminar solo este registro puede desbalancear la partida; revisa si
-          también debes eliminar el movimiento correspondiente en el otro
-          libro.
-        </p>
-        <p v-if="errorEliminar" class="modal-error">{{ errorEliminar }}</p>
-      </div>
-      <div class="confirm-modal-actions">
-        <button class="btn-secondary" :disabled="eliminando" @click="cerrarConfirmEliminar">
-          Cancelar
-        </button>
-        <button
-          class="btn-danger btn-danger-solid"
-          :disabled="eliminando"
-          @click="confirmarEliminar"
-        >
-          {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
-        </button>
-      </div>
-    </div>
-  </div>
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->
 </template>
 
 <script>
+
 import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '../../styles/css/DepositoCajaA.css';
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css'
 

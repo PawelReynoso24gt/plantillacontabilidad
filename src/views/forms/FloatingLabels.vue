@@ -1,16 +1,19 @@
 <template>
+
+  <div class="page-wrapper">
+    <div class="page-card">
   <!-- Encabezado -->
-  <div class="libro-header">
+  <div class="module-header">
     <div>
-      <h2 class="libro-title">Libro de Bancos - Capilla</h2>
-      <p class="libro-subtitle">
+      <h2 class="module-title">Libro de Bancos - Capilla</h2>
+      <p class="module-subtitle">
         Consulta el movimiento bancario por rango de fechas y cuenta, y genera el PDF.
       </p>
     </div>
   </div>
 
   <!-- Filtros de fecha -->
-  <div class="division-container division-inline">
+  <div class="section-container section-container--inline">
     <div class="field-group">
       <label class="field-label">Fecha inicial</label>
       <input type="date" v-model="fechaInicial" class="field-control" />
@@ -25,7 +28,7 @@
   </div>
 
   <!-- Selección de cuenta bancaria -->
-  <div class="division-container division-inline">
+  <div class="section-container section-container--inline">
     <div class="field-group">
       <label class="field-label">Cuenta bancaria</label>
       <select v-model="cuentaBName" class="field-control">
@@ -40,49 +43,53 @@
 
   <!-- Botones -->
   <div class="form-actions">
-    <button @click="mostrarTabla" class="btn-secondary">
+    <button @click="mostrarTabla" class="btn btn-secondary">
       Vista previa
     </button>
-    <button @click="generarPDF" class="btn-primary">
+    <button @click="generarPDF" class="btn btn-primary">
       Generar PDF
     </button>
   </div>
 
   <!-- Encabezado tipo PDF / vista previa -->
-  <ReportPreviewHeader
-    v-if="ingresosEgresos.length"
-    :empresa="nombreEncabezado"
-    :subtitulo="`Dirección del Proyecto: ${direccionProyecto}`"
-  >
-    <div><strong>REPORTE:</strong> LIBRO BANCOS</div>
-    <div>
-      <strong>ESPECIFICACIÓN:</strong>
-      Desde <span class="rp-value">{{ fechaInicial }}</span> hasta
-      <span class="rp-value">{{ fechaFinal }}</span>
+  <div v-if="ingresosEgresos.length" class="encabezado-container">
+    <div class="encabezado-box">
+      <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
+      <div class="encabezado-direccion">
+        Dirección del Proyecto: {{ direccionProyecto }}
+      </div>
     </div>
-    <div>
-      <strong>CUENTA BANCARIA:</strong>
-      {{
-        cuentaBancariaSeleccionada
-          ? cuentaBancariaSeleccionada.banco_y_cuenta ||
-          cuentaBancariaSeleccionada.nombre_cuenta
-          : ''
-      }}
+
+    <div class="encabezado-detalles">
+      <div><strong>REPORTE:</strong> LIBRO BANCOS</div>
+      <div>
+        <strong>ESPECIFICACIÓN:</strong>
+        Desde {{ fechaInicial }} hasta {{ fechaFinal }}
+      </div>
+      <div>
+        <strong>CUENTA BANCARIA:</strong>
+        {{
+          cuentaBancariaSeleccionada
+            ? cuentaBancariaSeleccionada.banco_y_cuenta ||
+            cuentaBancariaSeleccionada.nombre_cuenta
+            : ''
+        }}
+      </div>
     </div>
-  </ReportPreviewHeader>
+  </div>
 
   <!-- Tabla de resultados -->
-  <div v-if="ingresosEgresos.length" class="tabla-wrapper">
-    <table class="tabla-libro">
+  <div v-if="ingresosEgresos.length" class="table-wrapper">
+    <table class="data-table">
       <thead>
         <tr>
           <th>Conteo</th>
           <th>Fecha</th>
           <th>Cuenta</th>
           <th>Descripción</th>
-          <th class="right">Acredita</th>
-          <th class="right">Debita</th>
-          <th class="right">Saldo</th>
+          <th class="cell-right">Acredita</th>
+          <th class="cell-right">Debita</th>
+          <th class="cell-right">Saldo</th>
         </tr>
       </thead>
       <tbody>
@@ -98,13 +105,13 @@
           ">
             <td>{{ fila.nomenclatura }}</td>
             <td>{{ fila.fecha || '' }}</td>
-            <td class="bold-text">{{ fila.cuenta }}</td>
+            <td class="text-bold">{{ fila.cuenta }}</td>
             <td class="descripcion-col bold-text">
               {{ fila.descripcion }}
             </td>
-            <td class="right bold-text"></td>
-            <td class="right bold-text"></td>
-            <td class="right bold-text">{{ fila.total }}</td>
+            <td class="cell-right text-bold"></td>
+            <td class="cell-right text-bold"></td>
+            <td class="cell-right text-bold">{{ fila.total }}</td>
           </template>
 
           <!-- Filas normales -->
@@ -113,9 +120,9 @@
             <td>{{ fila.fecha }}</td>
             <td>{{ fila.cuenta }}</td>
             <td class="descripcion-col">{{ fila.descripcion }}</td>
-            <td class="right">{{ fila.acredita }}</td>
-            <td class="right">{{ fila.debita }}</td>
-            <td class="right">{{ fila.total }}</td>
+            <td class="cell-right">{{ fila.acredita }}</td>
+            <td class="cell-right">{{ fila.debita }}</td>
+            <td class="cell-right">{{ fila.total }}</td>
           </template>
         </tr>
       </tbody>
@@ -123,13 +130,14 @@
   </div>
 
   <!-- Mensaje cuando no hay datos aún -->
-  <div v-else class="sin-datos">
+  <div v-else class="table-empty">
     No hay datos para mostrar.
     Selecciona rango de fechas y cuenta bancaria y presiona
     <strong>Vista previa</strong>.
   </div>
 
-  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
       <div style="margin-bottom: 1.5rem;">
@@ -148,6 +156,7 @@
 </template>
 
 <script>
+
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
@@ -156,7 +165,7 @@ import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
-import '../../styles/css/InformeBancosC.css'
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 
 export default {
