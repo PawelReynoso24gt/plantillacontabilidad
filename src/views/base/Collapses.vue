@@ -1,84 +1,110 @@
-<template>
-  <div class="page-wrapper">
-    <div class="page-card">
-
-      <!-- Encabezado -->
-      <div class="module-header">
+<template> 
+      <!-- Encabezado principal -->
+      <div class="reporte-header">
         <div>
-          <h2 class="module-title module-title--upper">Ingresos y egresos - reporte final</h2>
-          <p class="module-subtitle">
+          <h2 class="reporte-title">Ingresos y egresos - reporte final</h2>
+          <p class="reporte-subtitle">
             Genera el resumen contable del proyecto agrícola por período.
           </p>
         </div>
       </div>
 
-      <!-- Filtros -->
-      <div class="section-container section-container--inline">
-
-        <div class="field-group">
-          <label class="field-label">Período de informe</label>
-          <select v-model="selectedPeriodo" @change="actualizarMeses" class="field-control">
-            <option disabled value="">Seleccione un período</option>
-            <option v-for="periodo in periodos" :key="periodo" :value="periodo">
-              {{ periodo }}
-            </option>
-          </select>
-          <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
+    <!-- Columna izquierda: período, año, mes o fechas -->
+<div class="id-inputs">
+  <div class="select-group">
+    <label class="field-label">Período de informe</label>
+    <select
+      v-model="selectedPeriodo"
+      @change="actualizarMeses"
+      class="field-control"
+    >
+      <option disabled value="">Seleccione un período</option>
+      <option v-for="periodo in periodos" :key="periodo" :value="periodo">
+        {{ periodo }}
+      </option>
+    </select>
+    <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
   </div>
 
-        <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
-          <label class="field-label">Año</label>
-          <input type="number" v-model="selectedYear" class="field-control" placeholder="Ej: 2026" min="1900" max="2100" />
-          <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
+  <!-- Año: solo cuando sea Mensual / Trimestral / Semestral -->
+
+  <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
+    <label class="field-label">Año</label>
+    <input
+      type="number"
+      v-model="selectedYear"
+      class="field-control"
+      placeholder="Ej: 2026"
+      min="1900"
+      max="2100"
+    />
+    <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
   </div>
 
-        <div class="field-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
-          <label class="field-label">Mes</label>
-          <select v-model="selectedMes" class="field-control">
-            <option disabled value="">Seleccione un mes</option>
-            <option v-for="mes in meses" :key="mes" :value="mes">{{ mes }}</option>
-          </select>
-          <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
+  <!--  Mes: solo si NO es anual -->
+  <div class="select-group" v-if="selectedPeriodo && selectedPeriodo !== 'Anual'">
+    <label class="field-label">Mes</label>
+    <select v-model="selectedMes" class="field-control">
+      <option disabled value="">Seleccione un mes</option>
+      <option v-for="mes in meses" :key="mes" :value="mes">
+        {{ mes }}
+      </option>
+    </select>
+    <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
   </div>
 
-        <div class="field-group" v-if="selectedPeriodo === 'Anual'">
-          <label class="field-label">Fecha inicial</label>
-          <input type="date" v-model="fechaInicio" class="field-control" />
-          <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
+  <!--  Fechas: solo si es anual -->
+  <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+    <label class="field-label">Fecha inicial</label>
+    <input type="date" v-model="fechaInicio" class="field-control" />
+    <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
   </div>
 
-        <div class="field-group" v-if="selectedPeriodo === 'Anual'">
-          <label class="field-label">Fecha final</label>
-          <input type="date" v-model="fechaFin" class="field-control" />
-          <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
+  <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+    <label class="field-label">Fecha final</label>
+    <input type="date" v-model="fechaFin" class="field-control" />
+    <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
   </div>
 
-        <!-- Responsables -->
-        <div class="field-group">
-          <label class="field-label">Contador</label>
-          <input type="text" v-model="contador" class="field-control" />
+        <!-- Columna derecha: responsables -->
+        <div class="nombre-inputs">
+          <div class="numero-input">
+            <label class="field-label">Contador</label>
+            <input type="text" v-model="contador" class="field-control" />
             <small v-if="fieldErrors.contador" class="error-text">{{ fieldErrors.contador }}</small>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Responsable de proyecto agrícola</label>
-          <input type="text" v-model="responsableAgricola" class="field-control" />
+          </div>
+          <div class="numero-input">
+            <label class="field-label">Responsable de proyecto agrícola</label>
+            <input
+              type="text"
+              v-model="responsableAgricola"
+              class="field-control"
+            />
             <small v-if="fieldErrors.responsableAgricola" class="error-text">{{ fieldErrors.responsableAgricola }}</small>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Economa provincial</label>
-          <input type="text" v-model="economaProvincial" class="field-control" />
+          </div>
+          <div class="numero-input">
+            <label class="field-label">Economa provincial</label>
+            <input
+              type="text"
+              v-model="economaProvincial"
+              class="field-control"
+            />
             <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
+          </div>
         </div>
-
       </div>
 
       <!-- Botones -->
       <div class="form-actions">
-        <button @click="mostrarTabla" class="btn btn-secondary">Vista previa</button>
-        <button @click="generarPDF" class="btn btn-primary">Generar PDF</button>
-        <button @click="limpiar" class="btn btn-ghost">Limpiar</button>
+        <button @click="mostrarTabla" class="btn-secondary">
+          Vista previa
+        </button>
+        <button @click="generarPDF" class="btn-primary">
+          Generar PDF
+        </button>
+        <button @click="limpiar" class="btn-ghost">
+          Limpiar
+        </button>
       </div>
 
       <!-- Vista previa del informe (solo si ya hay datos) -->
@@ -97,25 +123,6 @@
           <strong>FECHAS SELECCIONADA:</strong>
           <span class="rp-value">{{ fechaInicio }}</span> a
           <span class="rp-value">{{ fechaFin }}</span>
-      <!-- Encabezado visual del reporte -->
-      <div v-if="reporteData" class="encabezado-container">
-        <div class="encabezado-box">
-          <div class="encabezado-titulo">
-            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }} {{ currentYear }}
-          </div>
-        </div>
-
-        <div class="encabezado-detalles">
-          <div><strong>INFORME CORRESPONDIENTE AL:</strong> {{ periodoTexto }}</div>
-          <div v-if="selectedPeriodo !== 'Anual'">
-            <strong>AÑO:</strong> {{ selectedYear }}
-          </div>
-          <div v-else>
-            <strong>FECHAS SELECCIONADAS:</strong> {{ fechaInicio }} a {{ fechaFin }}
-          </div>
-          <div><strong>PROYECTO:</strong> AGRÍCOLA HOGAR SANTA LUISA</div>
-          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-          <div><strong>FECHA DE CREACIÓN:</strong> {{ fechaHoy }}</div>
         </div>
         <div><strong>PROYECTO:</strong> AGRÍCOLA HOGAR SANTA LUISA</div>
         <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
@@ -124,62 +131,76 @@
         </div>
       </ReportPreviewHeader>
 
-      <!-- Tabla principal -->
-      <div v-if="reporteData" class="table-wrapper mt-3">
-        <table class="data-table">
+      <!-- Tabla principal (preview en pantalla) -->
+      <div v-if="reporteData" class="tabla-wrapper">
+        <table class="tabla-libro">
           <thead>
             <tr>
               <th>Descripción</th>
               <th>Detalle</th>
-              <th class="cell-right">Saldo suma</th>
-              <th class="cell-right">Suma</th>
+              <th class="right">Saldo suma</th>
+              <th class="right">Suma</th>
             </tr>
           </thead>
+
           <tbody>
             <tr v-for="(fila, idx) in tablaPreview" :key="idx">
+              <!-- Encabezados de sección -->
               <template v-if="fila.tipo === 'heading'">
-                <td class="text-bold">{{ fila.col1 }}</td>
+                <td class="bold-text">{{ fila.col1 }}</td>
                 <td></td>
-                <td class="cell-right text-bold">{{ fila.col3 || '' }}</td>
-                <td class="cell-right text-bold">{{ fila.col4 || '' }}</td>
+                <td class="right bold-text">
+                  {{ fila.col3 || '' }}
+                </td>
+                <td class="right bold-text">
+                  {{ fila.col4 || '' }}
+                </td>
               </template>
+
+              <!-- Filas normales -->
               <template v-else>
                 <td>{{ fila.col1 }}</td>
                 <td>{{ fila.col2 }}</td>
-                <td class="cell-right">{{ fila.col3 }}</td>
-                <td class="cell-right">{{ fila.col4 }}</td>
+                <td class="right">{{ fila.col3 }}</td>
+                <td class="right">{{ fila.col4 }}</td>
               </template>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Bloque de firmas -->
+      <!-- Bloque de firmas / responsables -->
       <div v-if="reporteData" class="firmas-wrapper">
         <div class="firma-col">
           <div class="firma-line">(f) _____________________________</div>
-          <div class="firma-nombre">{{ reporteData.contador || contador }}</div>
+          <div class="firma-nombre">
+            {{ reporteData.contador || contador }}
+          </div>
           <div class="firma-cargo">Contador</div>
         </div>
 
         <div class="firma-col">
           <div class="firma-line">(f) _____________________________</div>
-          <div class="firma-nombre">Vo.Bo. {{ reporteData.responsable || responsableAgricola }}</div>
+          <div class="firma-nombre">
+            Vo.Bo. {{ reporteData.responsable || responsableAgricola }}
+          </div>
           <div class="firma-cargo">Responsable de Proyecto Agrícola</div>
         </div>
 
         <div class="firma-col firma-centro">
           <div class="firma-line">(f) _____________________________</div>
-          <div class="firma-nombre">{{ reporteData.economa || economaProvincial }}</div>
+          <div class="firma-nombre">
+            {{ reporteData.economa || economaProvincial }}
+          </div>
           <div class="firma-cargo">Economa provincial</div>
         </div>
       </div>
 
-      <!-- Sin datos -->
-      <div v-else class="table-empty mt-3">
+      <!-- Mensaje cuando aún no se ha pedido nada -->
+      <div v-else class="sin-datos">
         No hay datos para mostrar.<br />
         Selecciona período, fechas o mes, y responsables y presiona
-        <strong>Vista previa</strong>.
+        <span class="badge-ayuda">Vista previa</span>.
       </div>
 
   <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
@@ -197,9 +218,6 @@
       </div>
     </div>
   </div>
-
-    </div>
-  </div>
 </template>
 
 
@@ -211,7 +229,6 @@ import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/IngresosyEgresosA.css'
-import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';

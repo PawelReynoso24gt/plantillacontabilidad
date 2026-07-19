@@ -1,18 +1,16 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
   <!-- Encabezado -->
-  <div class="module-header">
+  <div class="libro-header">
     <div>
-      <h2 class="module-title">Libro de Bancos - Capilla</h2>
-      <p class="module-subtitle">
+      <h2 class="libro-title">Libro de Bancos - Capilla</h2>
+      <p class="libro-subtitle">
         Consulta el movimiento bancario por rango de fechas y cuenta, y genera el PDF.
       </p>
     </div>
   </div>
 
   <!-- Filtros de fecha -->
-  <div class="section-container section-container--inline">
+  <div class="division-container division-inline">
     <div class="field-group">
       <label class="field-label">Fecha inicial</label>
       <input type="date" v-model="fechaInicial" class="field-control" />
@@ -27,7 +25,7 @@
   </div>
 
   <!-- Selección de cuenta bancaria -->
-  <div class="section-container section-container--inline">
+  <div class="division-container division-inline">
     <div class="field-group">
       <label class="field-label">Cuenta bancaria</label>
       <select v-model="cuentaBName" class="field-control">
@@ -42,10 +40,10 @@
 
   <!-- Botones -->
   <div class="form-actions">
-    <button @click="mostrarTabla" class="btn btn-secondary">
+    <button @click="mostrarTabla" class="btn-secondary">
       Vista previa
     </button>
-    <button @click="generarPDF" class="btn btn-primary">
+    <button @click="generarPDF" class="btn-primary">
       Generar PDF
     </button>
   </div>
@@ -74,17 +72,17 @@
   </ReportPreviewHeader>
 
   <!-- Tabla de resultados -->
-  <div v-if="ingresosEgresos.length" class="table-wrapper">
-    <table class="data-table">
+  <div v-if="ingresosEgresos.length" class="tabla-wrapper">
+    <table class="tabla-libro">
       <thead>
         <tr>
           <th>Conteo</th>
           <th>Fecha</th>
           <th>Cuenta</th>
           <th>Descripción</th>
-          <th class="cell-right">Acredita</th>
-          <th class="cell-right">Debita</th>
-          <th class="cell-right">Saldo</th>
+          <th class="right">Acredita</th>
+          <th class="right">Debita</th>
+          <th class="right">Saldo</th>
         </tr>
       </thead>
       <tbody>
@@ -100,13 +98,13 @@
           ">
             <td>{{ fila.nomenclatura }}</td>
             <td>{{ fila.fecha || '' }}</td>
-            <td class="text-bold">{{ fila.cuenta }}</td>
+            <td class="bold-text">{{ fila.cuenta }}</td>
             <td class="descripcion-col bold-text">
               {{ fila.descripcion }}
             </td>
-            <td class="cell-right text-bold"></td>
-            <td class="cell-right text-bold"></td>
-            <td class="cell-right text-bold">{{ fila.total }}</td>
+            <td class="right bold-text"></td>
+            <td class="right bold-text"></td>
+            <td class="right bold-text">{{ fila.total }}</td>
           </template>
 
           <!-- Filas normales -->
@@ -115,9 +113,9 @@
             <td>{{ fila.fecha }}</td>
             <td>{{ fila.cuenta }}</td>
             <td class="descripcion-col">{{ fila.descripcion }}</td>
-            <td class="cell-right">{{ fila.acredita }}</td>
-            <td class="cell-right">{{ fila.debita }}</td>
-            <td class="cell-right">{{ fila.total }}</td>
+            <td class="right">{{ fila.acredita }}</td>
+            <td class="right">{{ fila.debita }}</td>
+            <td class="right">{{ fila.total }}</td>
           </template>
         </tr>
       </tbody>
@@ -125,14 +123,13 @@
   </div>
 
   <!-- Mensaje cuando no hay datos aún -->
-  <div v-else class="table-empty">
+  <div v-else class="sin-datos">
     No hay datos para mostrar.
     Selecciona rango de fechas y cuenta bancaria y presiona
     <strong>Vista previa</strong>.
   </div>
 
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
       <div style="margin-bottom: 1.5rem;">
@@ -160,7 +157,6 @@ import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/InformeBancosC.css'
-import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 
 export default {

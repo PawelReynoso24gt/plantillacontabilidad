@@ -1,19 +1,16 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
-
       <!-- Encabezado -->
-      <div class="module-header">
+      <div class="egreso-header">
         <div>
-          <h2 class="module-title">Registro de egresos - Capilla</h2>
-          <p class="module-subtitle">
+          <h2 class="egreso-title">Registro de egresos - Capilla</h2>
+          <p class="egreso-subtitle">
             Registra egresos a caja o bancos con sus datos de comprobante.
           </p>
         </div>
       </div>
 
-      <!-- Egreso para -->
-      <div class="section-container section-container--inline">
+      <!-- Sección: Egreso para + Fecha -->
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Egreso para</label>
           <select v-model="tipo" class="field-control">
@@ -23,69 +20,110 @@
           </select>
           <small v-if="fieldErrors.tipo" class="error-text">{{ fieldErrors.tipo }}</small>
         </div>
-      </div>
-
-      <!-- Cuenta por pagar -->
-      <div class="section-container section-container--inline">
-        <div class="field-group checkbox-group">
-          <label for="es_pendiente" class="field-label">¿Es una Cuenta por Pagar?</label>
-          <input type="checkbox" v-model="es_pendiente" id="es_pendiente" class="form-check-input" />
-        </div>
-      </div>
-
-      <!-- Fecha -->
-      <div class="section-container section-container--inline">
-        <div class="field-group">
-          <label class="field-label">Fecha</label>
-          <input type="date" v-model="fecha" class="field-control" />
-          <small v-if="fieldErrors.fecha" class="error-text">{{ fieldErrors.fecha }}</small>
     </div>
-      </div>
 
-      <!-- Datos del beneficiario / comprobante -->
-      <div class="section-container section-container--block">
+    <div class="division-container">
+        <div class="numero-fecha-container">
+            <div class="checkbox-line-container">
+                <label for="es_pendiente">¿Es una Cuenta por Pagar?</label>
+                <input type="checkbox" v-model="es_pendiente" id="es_pendiente" class="form-check-input">
+            </div>
+        </div>
+    </div>
+
+  <div class="division-container division-inline">
+    <div class="field-group">
+      <label class="field-label">Fecha</label>
+      <input
+        type="date"
+        v-model="fecha"
+        class="field-control"
+      />
+      <small v-if="fieldErrors.fecha" class="error-text">{{ fieldErrors.fecha }}</small>
+    </div>
+  </div>
+
+      <!-- Sección: Datos del beneficiario / comprobante -->
+      <div class="division-container division-block">
         <div class="field-group">
           <label class="field-label">DPI / NIT / CF</label>
-          <input type="text" v-model="identificacion" class="field-control" placeholder="Ingrese DPI, NIT o CF" />
+          <input
+            type="text"
+            v-model="identificacion"
+            class="field-control"
+            placeholder="Ingrese DPI, NIT o CF"
+          />
           <small v-if="fieldErrors.identificacion" class="error-text">{{ fieldErrors.identificacion }}</small>
         </div>
+
         <div class="field-group">
           <label class="field-label">Nombre / CF</label>
-          <input type="text" v-model="nombre" class="field-control" placeholder="Nombre del proveedor o CF" />
+          <input
+            type="text"
+            v-model="nombre"
+            class="field-control"
+            placeholder="Nombre del proveedor o CF"
+          />
           <small v-if="fieldErrors.nombre" class="error-text">{{ fieldErrors.nombre }}</small>
         </div>
-        <div class="field-group field-group--full">
+
+        <div class="field-group full-width">
           <label class="field-label">Observaciones de comprobante</label>
-          <input type="text" v-model="descripcion" class="field-control" placeholder="Descripción u observaciones del egreso" />
+          <input
+            type="text"
+            v-model="descripcion"
+            class="field-control"
+            placeholder="Descripción u observaciones del egreso"
+          />
         </div>
       </div>
 
-      <!-- Cuenta + Monto -->
-      <div class="section-container section-container--inline">
+      <!-- Sección: Cuenta + Monto -->
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Cuenta</label>
-          <select v-model="cuentaCMB" @change="cargarCuentas" class="field-control">
+          <select
+            v-model="cuentaCMB"
+            @change="cargarCuentas"
+            class="field-control"
+          >
             <option disabled value="">Seleccione una cuenta</option>
-            <option v-for="cuentab in cuentas" :key="cuentab.cuenta" :value="cuentab.cuenta">
+            <option
+              v-for="cuentab in cuentas"
+              :key="cuentab.cuenta"
+              :value="cuentab.cuenta"
+            >
               {{ cuentab.cuenta }}
             </option>
           </select>
           <small v-if="fieldErrors.cuentaCMB" class="error-text">{{ fieldErrors.cuentaCMB }}</small>
         </div>
+
         <div class="field-group">
           <label class="field-label">Monto</label>
-          <input type="text" v-model="monto" class="field-control" placeholder="0.00" />
+          <input
+            type="text"
+            v-model="monto"
+            class="field-control"
+            placeholder="0.00"
+          />
           <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
         </div>
       </div>
 
-      <!-- Datos del pago (solo bancos) -->
-      <div class="section-container section-container--block" v-if="mostrarDivisionCuatro">
-        <h3 class="section-title">Datos del pago</h3>
+      <!-- Sección: Datos del pago (solo bancos) -->
+      <div
+        class="division-container division-block"
+        v-if="mostrarDivisionCuatro"
+      >
+        <p class="division-title">Datos del pago</p>
 
         <div class="field-group">
           <label class="field-label">Documento</label>
-          <select v-model="documento" class="field-control">
+          <select
+            v-model="documento"
+            class="field-control"
+          >
             <option disabled value="">Seleccione documento</option>
             <option value="Transferencia">Transferencia</option>
             <option value="Depósitos">Depósitos</option>
@@ -96,9 +134,17 @@
 
         <div class="field-group">
           <label class="field-label">Cuenta bancaria</label>
-          <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
+          <select
+            v-model="cuentaBName"
+            @change="cargarBancosNoCuenta"
+            class="field-control"
+          >
             <option disabled value="">Seleccione cuenta</option>
-            <option v-for="cuentaN in cuentas_bancarias" :key="cuentaN.cuenta_bancaria" :value="cuentaN.cuenta_bancaria">
+            <option
+              v-for="cuentaN in cuentas_bancarias"
+              :key="cuentaN.cuenta_bancaria"
+              :value="cuentaN.cuenta_bancaria"
+            >
               {{ cuentaN.banco_y_cuenta }}
             </option>
           </select>
@@ -107,13 +153,22 @@
 
         <div class="field-group">
           <label class="field-label">No. documento</label>
-          <input type="text" v-model="numero_documento" class="field-control" placeholder="Número de cheque / depósito / referencia" />
+          <input
+            type="text"
+            v-model="numero_documento"
+            class="field-control"
+            placeholder="Número de cheque / depósito / referencia"
+          />
           <small v-if="fieldErrors.numero_documento" class="error-text">{{ fieldErrors.numero_documento }}</small>
         </div>
 
         <div class="field-group">
           <label class="field-label">Fecha emisión</label>
-          <input type="date" v-model="fecha_emision" class="field-control" />
+          <input
+            type="date"
+            v-model="fecha_emision"
+            class="field-control"
+          />
           <small v-if="fieldErrors.fecha_emision" class="error-text">{{ fieldErrors.fecha_emision }}</small>
         </div>
       </div>
@@ -134,8 +189,12 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn btn-primary" @click="enviarDatos">Guardar</button>
-        <button class="btn btn-secondary" @click="limpiar">Limpiar</button>
+        <button class="btn-primary" @click="enviarDatos">
+          Guardar
+        </button>
+        <button class="btn-secondary" @click="limpiar">
+          Limpiar
+        </button>
       </div>
     </div>
 
@@ -179,19 +238,6 @@
 
         <div v-if="!cargandoRegistros && registros.length" style="overflow-x: auto;">
           <table class="table-listado">
- </div>     <!-- Cuentas Pendientes -->
-      <div class="section-container section-container--block mt-4">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <h3 class="section-title" style="margin: 0;">Cuentas Pendientes por Pagar (Proyecto Capilla)</h3>
-          <button v-if="pendientes.length > 0" @click="cargarPendientes" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">
-            Actualizar
-          </button>
-        </div>
-
-        <p v-if="mensajeVacio" class="text-danger mt-1">{{ mensajeVacio }}</p>
-
-        <div v-if="pendientes.length > 0" class="table-wrapper mt-2">
-          <table class="data-table">
             <thead>
               <tr>
                 <th>Fecha</th>
@@ -215,27 +261,6 @@
                   <button class="btn-link" @click="abrirConfirmEliminar(r)">
                     Eliminar
                   </button>
-                <th>Cuenta Contable</th>
-                <th>Tipo</th>
-                <th>Monto Deuda (Q)</th>
-                <th>Tipo de Saldo</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
-                <td>{{ item.fecha }}</td>
-                <td>{{ item.nomenclatura }}</td>
-                <td>{{ item.nombre }}</td>
-                <td>{{ item.cuentas.cuenta }}</td>
-                <td>{{ item.tipo }}</td>
-                <td class="cell-right">Q {{ item.saldo_pendiente }}</td>
-                <td>
-                  <span v-if="parseFloat(item.monto_debe) > 0" class="badge-debe">DEBE</span>
-                  <span v-else class="badge-haber">HABER</span>
-                </td>
-                <td>
-                  <button @click="abrirModalSaldado(item)">Saldar</button>
                 </td>
               </tr>
             </tbody>
@@ -378,153 +403,140 @@
       </div>
     </div>
   </div>
-        </div>
-      </div>
-
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
 
   <!-- ******* MODAL DE SALDADO ******* -->
   <div v-if="mostrarModalSaldado" class="modal-overlay">
-    <div class="modal-box">
-
-      <div class="module-header">
+    <div class="modal-content egreso-card" style="max-width: 700px;">
+      <div class="egreso-header">
         <div>
-          <h3 class="module-title">Saldar Deuda Pendiente</h3>
-          <p class="module-subtitle">Complete los datos del pago para registrar el abono.</p>
+          <h3 class="egreso-title">Saldar Deuda Pendiente</h3>
+          <p class="egreso-subtitle">
+            Complete los datos del pago para registrar el abono.
+          </p>
         </div>
       </div>
-
-      <!-- ID y cuenta (solo lectura) -->
-      <div class="section-container">
+      
+      <div class="division-container" style="margin-top: 0; background: transparent;">
         <div class="field-group">
           <label class="field-label">ID Deuda</label>
-          <input type="text" :value="formSaldar.deuda_original_id" class="field-control" disabled />
+          <input type="text" :value="formSaldar.deuda_original_id" class="field-control" disabled>
         </div>
         <div class="field-group">
           <label class="field-label">Cuenta Contable</label>
-          <input type="text" :value="formSaldar.nombre_cuenta_visual" class="field-control" disabled />
+          <input type="text" :value="formSaldar.nombre_cuenta_visual" class="field-control" disabled>
         </div>
       </div>
 
-      <!-- Fecha de pago -->
-      <div class="section-container">
+      <!-- Formulario dentro del Modal -->
+      <div class="division-container">
         <div class="field-group">
           <label class="field-label">Fecha de Pago</label>
-          <input type="date" v-model="formSaldar.fecha" class="field-control" />
+          <input type="date" v-model="formSaldar.fecha" class="field-control">
           <small v-if="modalErrors.fecha" class="error-text">{{ modalErrors.fecha }}</small>
         </div>
       </div>
 
-      <!-- Datos del beneficiario -->
-      <div class="section-container">
+      <div class="division-container">
         <div class="field-group">
-          <label class="field-label">DPI / NIT / CF</label>
-          <input type="text" v-model="formSaldar.identificacion" class="field-control" />
+          <label class="field-label">DPI/NIT/CF</label>
+          <input type="text" v-model="formSaldar.identificacion" class="field-control">
           <small v-if="modalErrors.identificacion" class="error-text">{{ modalErrors.identificacion }}</small>
         </div>
         <div class="field-group">
-          <label class="field-label">Nombre / CF</label>
-          <input type="text" v-model="formSaldar.nombre" class="field-control" />
+          <label class="field-label">Nombre/CF</label>
+          <input type="text" v-model="formSaldar.nombre" class="field-control">
           <small v-if="modalErrors.nombre" class="error-text">{{ modalErrors.nombre }}</small>
         </div>
-        <div class="field-group field-group--full">
+        <div class="field-group full-width">
           <label class="field-label">Observaciones</label>
-          <input type="text" v-model="formSaldar.descripcion" class="field-control" />
+          <input type="text" v-model="formSaldar.descripcion" class="field-control">
         </div>
       </div>
 
-      <!-- Medio de pago y monto -->
-      <div class="section-container section-container--inline">
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Medio de Pago</label>
-          <select v-model="formSaldar.tipo" class="field-control">
+          <select v-model="formSaldar.tipo" class="field-control"> 
             <option value="caja">Caja</option>
-            <option value="bancos">Bancos</option>
+            <option value="bancos">Bancos</option>  
           </select>
           <small v-if="modalErrors.tipo" class="error-text">{{ modalErrors.tipo }}</small>
         </div>
         <div class="field-group">
           <label class="field-label">Monto a Pagar (Q)</label>
-          <input type="text" v-model="formSaldar.monto" class="field-control" placeholder="0.00" />
+          <input type="text" v-model="formSaldar.monto" class="field-control" placeholder="0.00">
           <small v-if="modalErrors.monto" class="error-text">{{ modalErrors.monto }}</small>
         </div>
       </div>
 
-      <!-- Sección bancaria condicional -->
-      <div class="section-container section-container--block" v-if="formSaldar.tipo === 'bancos'">
-        <h3 class="section-title">Datos del pago</h3>
-
+      <!-- Sección Bancaria Condicional -->
+      <div class="division-container division-block" v-if="formSaldar.tipo === 'bancos'">
+        <h3 class="division-title">Datos del pago</h3>
+        
         <div class="field-group">
           <label class="field-label">Documento</label>
           <select v-model="formSaldar.documento" class="field-control">
-            <option value="Transferencia">Transferencia</option>
+            <option value="Transferencia">Transferencia</option> 
             <option value="Depósitos">Depósitos</option>
-            <option value="Cheque">Cheque</option>
+            <option value="Cheque">Cheque</option> 
           </select>
           <small v-if="modalErrors.documento" class="error-text">{{ modalErrors.documento }}</small>
         </div>
-
+        
         <div class="field-group">
           <label class="field-label">Cuenta Bancaria</label>
           <select v-model="formSaldar.cuenta_bancaria" class="field-control">
-            <option v-for="cuentaN in cuentas_bancarias" :key="cuentaN.cuenta_bancaria" :value="cuentaN.cuenta_bancaria">
+            <option v-for="cuentaN in cuentas_bancarias" :value="cuentaN.cuenta_bancaria">
               {{ cuentaN.banco_y_cuenta }}
-            </option>
+            </option> 
           </select>
           <small v-if="modalErrors.cuenta_bancaria" class="error-text">{{ modalErrors.cuenta_bancaria }}</small>
         </div>
-
+        
         <div class="field-group">
           <label class="field-label">No. Documento</label>
-          <input type="text" v-model="formSaldar.numero_documento" class="field-control" />
+          <input type="text" v-model="formSaldar.numero_documento" class="field-control">
           <small v-if="modalErrors.numero_documento" class="error-text">{{ modalErrors.numero_documento }}</small>
         </div>
-
+        
         <div class="field-group">
           <label class="field-label">Fecha Emisión</label>
-          <input type="date" v-model="formSaldar.fecha_emision" class="field-control" />
+          <input type="date" v-model="formSaldar.fecha_emision" class="field-control">
           <small v-if="modalErrors.fecha_emision" class="error-text">{{ modalErrors.fecha_emision }}</small>
         </div>
       </div>
 
-      <!-- Botones del modal -->
-      <div class="form-actions">
-        <button class="btn btn-secondary" @click="cerrarModal">Cancelar</button>
-        <button class="btn btn-primary" @click="enviarSaldado">Confirmar Pago</button>
+      <!-- Botones del Modal -->
+      <div class="form-actions" style="margin-top: 1.5rem;">
+        <button class="btn-secondary" @click="cerrarModal">Cancelar</button>
+        <button class="btn-primary" @click="enviarSaldado">Confirmar Pago</button>
       </div>
-
-    </div><!-- /modal-box -->
+    </div>
   </div>
 
   <!-- ******* MODAL DE ÉXITO ******* -->
   <div v-if="mostrarModalExito" class="modal-overlay">
-    <div class="modal-box modal-box--sm">
-
+    <div class="modal-content egreso-card" style="max-width: 450px; text-align: center;">
       <div style="margin-bottom: 1.5rem;">
-        <div style="font-size: 3rem; color: var(--color-success); margin-bottom: 1rem;">✓</div>
-        <h3 style="color: var(--color-dark-alt); margin-bottom: 0.5rem;">¡Pago Exitoso!</h3>
-        <p class="text-muted">{{ datosExito.mensaje || 'El abono se ha registrado correctamente.' }}</p>
+        <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+        <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Pago Exitoso!</h3>
+        <p style="color: #6c757d;">{{ datosExito.mensaje || 'El abono se ha registrado correctamente.' }}</p>
       </div>
-
-      <div class="section-container" style="justify-content: center; margin-bottom: 1.5rem;">
+      
+      <div class="division-container" style="background-color: #f9f9f9; margin-bottom: 1.5rem;">
         <div style="text-align: center; width: 100%;">
-          <p class="text-muted">Saldo Pendiente Restante</p>
-          <h2 style="margin: 0.5rem 0; color: var(--color-dark); font-size: 1.8rem;">
-            Q {{ datosExito.saldo }}
-          </h2>
+          <p style="margin: 0; color: #666; font-size: 0.9rem;">Saldo Pendiente Restante</p>
+          <h2 style="margin: 0.5rem 0; color: #292b57; font-size: 1.8rem;">Q {{ datosExito.saldo }}</h2>
         </div>
       </div>
 
       <div class="form-actions" style="justify-content: center;">
-        <button class="btn btn-primary" @click="cerrarModalExito" style="min-width: 120px;">
+        <button class="btn-primary" @click="cerrarModalExito" style="min-width: 120px;">
           Aceptar
         </button>
       </div>
-
-    </div><!-- /modal-box--sm -->
+    </div>
   </div>
-
 
   <!-- ******* MODAL DE DATOS ENVIADOS CORRECTAMENTE ******* -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
@@ -567,7 +579,7 @@ import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '@/styles/global.css'
+import '../../styles/css/EgresosIngresosC.css'
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css'
 

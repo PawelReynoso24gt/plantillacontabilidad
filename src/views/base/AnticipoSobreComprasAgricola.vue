@@ -1,19 +1,16 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
-
-      <!-- Encabezado -->
-      <div class="module-header">
+     <!-- Encabezado -->
+      <div class="anticipo-header">
         <div>
-          <h2 class="module-title">Anticipo sobre compras</h2>
-          <p class="module-subtitle">
+          <h2 class="anticipo-title">Anticipo sobre compras</h2>
+          <p class="anticipo-subtitle">
             Registro de anticipos pagados para compras agrícolas.
           </p>
         </div>
       </div>
 
       <!-- Egreso para -->
-      <div class="section-container section-container--inline">
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Egreso para</label>
           <select v-model="tipo" class="field-control">
@@ -26,7 +23,7 @@
       </div>
 
       <!-- Fecha -->
-      <div class="section-container section-container--inline">
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Fecha</label>
           <input type="date" v-model="fecha" class="field-control" />
@@ -35,25 +32,27 @@
       </div>
 
       <!-- Identificación / nombre / observaciones -->
-      <div class="section-container">
+      <div class="division-container">
         <div class="field-group">
-          <label class="field-label">DPI / NIT / CF</label>
+          <label class="field-label">DPI/NIT/CF</label>
           <input type="text" v-model="identificacion" class="field-control" />
           <small v-if="fieldErrors.identificacion" class="error-text">{{ fieldErrors.identificacion }}</small>
         </div>
+
         <div class="field-group">
-          <label class="field-label">Nombre / CF</label>
+          <label class="field-label">Nombre/CF</label>
           <input type="text" v-model="nombre" class="field-control" />
           <small v-if="fieldErrors.nombre" class="error-text">{{ fieldErrors.nombre }}</small>
         </div>
-        <div class="field-group field-group--full">
+
+        <div class="field-group full-width">
           <label class="field-label">Observaciones del comprobante</label>
           <input type="text" v-model="descripcion" class="field-control" />
         </div>
       </div>
 
       <!-- Monto -->
-      <div class="section-container section-container--inline">
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Monto</label>
           <input type="text" v-model="monto" class="field-control" placeholder="0.00"/>
@@ -62,8 +61,8 @@
       </div>
 
       <!-- Datos del pago (solo cuando es bancos) -->
-      <div class="section-container section-container--block" v-if="mostrarDivisionCuatro">
-        <h3 class="section-title">Datos del pago</h3>
+      <div class="division-container division-block" v-if="mostrarDivisionCuatro">
+        <h3 class="division-title">Datos del pago</h3>
 
         <div class="field-group">
           <label class="field-label">Documento</label>
@@ -80,7 +79,11 @@
           <label class="field-label">Cuenta bancaria</label>
           <select v-model.number="idCuentaBancaria" class="field-control">
             <option disabled value="">Seleccione una cuenta</option>
-            <option v-for="c in cuentas_bancarias" :key="c.id" :value="c.id">
+            <option
+              v-for="c in cuentas_bancarias"
+              :key="c.id"
+              :value="c.id"
+            >
               {{ c.label }}
             </option>
           </select>
@@ -131,19 +134,15 @@
           @click="toggleMostrarTabla"
         >
           <span class="chevron" :class="{ 'is-open': showTabla }">▾</span>
-        <button class="btn btn-primary" @click="enviarDatos">Guardar</button>
-        <button class="btn btn-secondary" @click="limpiar">Limpiar</button>
-        <button class="btn btn-ghost" @click="toggleMostrarTabla">
-          {{ showTabla ? 'Ocultar tabla' : 'Mostrar tabla' }}
         </button>
       </div>
       </div>
 
       <!-- Tabla de anticipos (colapsable) -->
-      <div v-if="showTabla" class="section-container section-container--block mt-3">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <h3 class="section-title" style="margin: 0;">Anticipos registrados</h3>
-          <span v-if="loading" class="badge badge--warning">Cargando...</span>
+      <div v-if="showTabla" class="tabla-anticipos">
+        <div class="tabla-header">
+          <h3 class="tabla-title">Anticipos registrados</h3>
+          <span v-if="loading" class="tabla-badge">Cargando...</span>
         </div>
 
         <p v-if="!loading && anticipoRowsActivos.length === 0" class="tabla-empty">
@@ -278,67 +277,6 @@
               }}
             </span>
           </div>
-        <p v-if="!loading && anticipoRows.length === 0" class="table-empty">
-          No hay registros.
-        </p>
-
-        <div v-if="!loading && anticipoRows.length" class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Nomenclatura</th>
-                <th>Nombre</th>
-                <th>Cuenta</th>
-                <th>Tipo</th>
-                <th class="cell-right">Monto</th>
-                <th class="cell-right">Monto faltante</th>
-                <th class="cell-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(r, idx) in anticipoRows" :key="idx">
-                <td>{{ r.fecha }}</td>
-                <td>{{ r.nomenclatura }}</td>
-                <td>{{ r.nombre }}</td>
-                <td>{{ r.id_cuentas }}</td>
-                <td>{{ r.tipo }}</td>
-                <td class="cell-right">{{ formatMonto(r.monto) }}</td>
-                <td class="cell-right">{{ formatMonto(r.monto_faltante) }}</td>
-                <td class="cell-center">
-                  <button class="btn-link" @click="openSaldarModal(r)">Saldar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
-
-  <!-- Modal para saldar -->
-  <div v-if="showModal" class="modal-overlay">
-    <div class="modal-box">
-
-      <div class="module-header">
-        <div>
-          <h3 class="module-title">Saldar registro</h3>
-        </div>
-      </div>
-
-      <!-- ID -->
-      <div class="section-container">
-        <div class="field-group">
-          <label class="field-label">ID cuenta</label>
-          <input
-            type="text"
-            :value="modalData.id_ingresos_egresos !== null && modalData.id_ingresos_egresos !== undefined ? modalData.id_ingresos_egresos : '-'"
-            class="field-control"
-            disabled
-          />
-        </div>
-      </div>
 
           <div class="modal-form">
             <div class="input-container">
@@ -463,11 +401,15 @@
             </template>
           </div>
 
-        <div class="field-group">
-          <label class="field-label">Fecha emisión</label>
-          <input type="date" v-model="modalData.fecha_emision" class="field-control" />
+          <div class="modal-actions">
+            <button class="btn-primary" @click="saldarRegistroConfirm">
+              Confirmar
+            </button>
+            <button class="btn-secondary" @click="closeModal">
+              Cancelar
+            </button>
+          </div>
         </div>
-      </div>
       </div>
     <!-- **MODAL DE INGRESO CORRECTO** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">

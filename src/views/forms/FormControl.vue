@@ -1,18 +1,16 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
   <!-- Encabezado -->
-  <div class="module-header">
+  <div class="deposito-header">
     <div>
-      <h2 class="module-title">Traslados internos de caja</h2>
-      <p class="module-subtitle">
+      <h2 class="deposito-title">Traslados internos de caja</h2>
+      <p class="deposito-subtitle">
         Registre el depósito desde caja hacia la cuenta bancaria seleccionada.
       </p>
     </div>
   </div>
 
   <!-- Primera división: cuenta bancaria + documento + fecha -->
-  <div class="section-container section-container--inline">
+  <div class="division-container division-inline">
     <div class="field-group">
       <label class="field-label">Cuenta bancaria</label>
       <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
@@ -38,8 +36,8 @@
   </div>
 
   <!-- Segunda división: monto y observaciones -->
-  <div class="section-container">
-    <h3 class="section-title">Monto a retirar de caja</h3>
+  <div class="division-container">
+    <h3 class="division-title">Monto a retirar de caja</h3>
 
     <div class="field-group">
       <label class="field-label">Valor a retirar</label>
@@ -47,7 +45,7 @@
       <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
     </div>
 
-    <div class="field-group field-group--full">
+    <div class="field-group full-width">
       <label class="field-label">Observaciones</label>
       <input type="text" v-model="descripcion" class="field-control" />
     </div>
@@ -65,7 +63,7 @@
       </div>
 
       <div class="form-actions">
-        <button class="btn btn-primary" @click="enviarDatos">Guardar</button>
+        <button class="btn-primary" @click="enviarDatos">Guardar</button>
         <button class="btn-secondary" @click="limpiar">Limpiar</button>
       </div>
     </div>
@@ -94,7 +92,7 @@
         <p style="color: #6c757d;">{{ mensajeError }}</p>
       </div>
       <div class="form-actions" style="justify-content: center;">
-        <button class="btn btn-secondary" @click="cerrarModalError" style="min-width: 120px;">
+        <button class="btn-secondary" @click="cerrarModalError" style="min-width: 120px;">
           Cerrar
         </button>
       </div>
@@ -224,8 +222,6 @@
       </div>
     </div>
   </div>
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
 </template>
 
 <script>
@@ -233,7 +229,7 @@ import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '@/styles/global.css';;
+import '../../styles/css/DepositoCajaA.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css'
 
