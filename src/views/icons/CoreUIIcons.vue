@@ -1,16 +1,18 @@
 <template>
+  <div class="page-wrapper">
+    <div class="page-card">
   <!-- Encabezado principal -->
-  <div class="libro-header">
+  <div class="module-header">
     <div>
-      <h2 class="libro-title">Libro de caja</h2>
-      <p class="libro-subtitle">
+      <h2 class="module-title">Libro de caja</h2>
+      <p class="module-subtitle">
         Consulta y genera el reporte del libro de caja del proyecto agrícola.
       </p>
     </div>
   </div>
 
   <!-- Filtros de fecha -->
-  <div class="division-container division-inline">
+  <div class="section-container section-container--inline">
     <div class="field-group">
       <label class="field-label">Fecha inicial</label>
       <input type="date" v-model="fechaInicial" class="field-control" />
@@ -25,10 +27,10 @@
 
   <!-- Botones -->
   <div class="form-actions">
-    <button class="btn-secondary" @click="mostrarTabla">
+    <button class="btn btn-secondary" @click="mostrarTabla">
       Vista previa
     </button>
-    <button class="btn-primary" @click="generarPDF">
+    <button class="btn btn-primary" @click="generarPDF">
       Generar PDF
     </button>
   </div>
@@ -48,17 +50,17 @@
   </ReportPreviewHeader>
 
   <!-- Tabla de resultados -->
-  <div v-if="ingresosEgresos.length" class="tabla-wrapper">
-    <table class="tabla-libro">
+  <div v-if="ingresosEgresos.length" class="table-wrapper">
+    <table class="data-table">
       <thead>
         <tr>
           <th>Conteo</th>
           <th>Fecha</th>
           <th>Cuenta</th>
           <th>Descripción</th>
-          <th class="right">Acredita</th>
-          <th class="right">Debita</th>
-          <th class="right">Saldo</th>
+          <th class="cell-right">Acredita</th>
+          <th class="cell-right">Debita</th>
+          <th class="cell-right">Saldo</th>
         </tr>
       </thead>
       <tbody>
@@ -74,13 +76,13 @@
           ">
             <td>{{ fila.nomenclatura }}</td>
             <td>{{ fila.fecha || '' }}</td>
-            <td class="bold-text">{{ fila.cuenta }}</td>
+            <td class="text-bold">{{ fila.cuenta }}</td>
             <td class="descripcion-col bold-text">
               {{ fila.descripcion }}
             </td>
-            <td class="right bold-text"></td>
-            <td class="right bold-text"></td>
-            <td class="right bold-text">{{ fila.total }}</td>
+            <td class="cell-right text-bold"></td>
+            <td class="cell-right text-bold"></td>
+            <td class="cell-right text-bold">{{ fila.total }}</td>
           </template>
 
           <!-- Filas normales -->
@@ -89,9 +91,9 @@
             <td>{{ fila.fecha }}</td>
             <td>{{ fila.cuenta }}</td>
             <td class="descripcion-col">{{ fila.descripcion }}</td>
-            <td class="right">{{ fila.acredita }}</td>
-            <td class="right">{{ fila.debita }}</td>
-            <td class="right">{{ fila.total }}</td>
+            <td class="cell-right">{{ fila.acredita }}</td>
+            <td class="cell-right">{{ fila.debita }}</td>
+            <td class="cell-right">{{ fila.total }}</td>
           </template>
         </tr>
       </tbody>
@@ -99,13 +101,14 @@
   </div>
 
   <!-- Mensaje cuando no hay datos aún -->
-  <div v-else class="sin-datos">
+  <div v-else class="table-empty">
     No hay datos para mostrar.<br />
     Selecciona un rango de fechas y presiona
     <span class="badge-ayuda">Vista previa</span>
   </div>
 
-  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->  <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
       <div style="margin-bottom: 1.5rem;">
@@ -133,6 +136,7 @@ import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
 import '../../styles/css/LibroCajaA.css'
+import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 
 export default {

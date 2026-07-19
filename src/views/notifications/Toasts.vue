@@ -1,7 +1,8 @@
 <template>
-  <div>
+  <div class="page-wrapper">
+    <div class="page-card">
     <!-- Primera división -->
-    <div class="division-container">
+    <div class="section-container">
       <div class="nombre-fecha-container">
         <div class="id-inputs">
           <label>Tipos de cuentas contables</label>
@@ -31,13 +32,14 @@
     <button @click="insertar">Guardar</button>
     <button @click="actualizar" style="margin-left: 10px;">Actualizar</button>
     <button @click="limpiar" style="margin-left: 10px;">Limpiar</button>
-  </div>
+    </div><!-- /page-card -->
+  </div><!-- /page-wrapper -->
 </template>
 
 <script>
 import axios from 'axios';
 import { ref, reactive } from 'vue';
-import '../../styles/css/toasts.css'; 
+import '@/styles/global.css';
 
 export default {
   name: 'Badges',
