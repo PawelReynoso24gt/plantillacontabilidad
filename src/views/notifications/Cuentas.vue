@@ -1,11 +1,9 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
       <!-- Encabezado -->
-      <div class="module-header">
+      <div class="estado-header">
         <div>
-          <h2 class="module-title">Gestión de cuentas contables</h2>
-          <p class="module-subtitle">
+          <h2 class="estado-title">Gestión de cuentas contables</h2>
+          <p class="estado-subtitle">
             Crea, actualiza y administra las cuentas usadas en los reportes contables.
           </p>
         </div>
@@ -144,19 +142,18 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn btn-primary" @click="insertar">
+        <button class="btn-primary" @click="insertar">
           Guardar
         </button>
-        <button class="btn btn-secondary" @click="actualizar">
+        <button class="btn-secondary" @click="actualizar">
           Actualizar
         </button>
-        <button class="btn btn-ghost" @click="limpiar">
+        <button class="btn-ghost" @click="limpiar">
           Limpiar
         </button>
       </div>
-
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->  <!-- **MODAL DE CREACIÓN/ACTUALIZACIÓN CORRECTA** ================================================================================================================================ -->
+  
+  <!-- **MODAL DE CREACIÓN/ACTUALIZACIÓN CORRECTA** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
       <div style="margin-bottom: 1.5rem;">
@@ -177,7 +174,7 @@
 import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import '@/styles/global.css';;
+import '../../styles/css/Cuentas.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 

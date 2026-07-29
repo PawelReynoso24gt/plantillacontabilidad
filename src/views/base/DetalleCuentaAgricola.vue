@@ -1,40 +1,52 @@
 <template>
-
-  <div class="page-wrapper">
-    <div class="page-card">
-
-      <!-- Encabezado -->
-      <div class="module-header">
-        <div>
-          <h2 class="module-title">Libro Mayor</h2>
-          <p class="module-subtitle">
-            Detalle de movimientos de la cuenta seleccionada para el período anual {{ year }}.
-          </p>
-        </div>
+      <!-- Encabezado principal -->
+      <div class="libro-header">
+        <h2 class="libro-title">Libro Mayor</h2>
+        <p class="libro-subtitle">
+          Detalle de movimientos de la cuenta seleccionada para el período anual {{ year }}.
+        </p>
       </div>
 
-      <!-- Info de contexto (solo lectura) -->
-      <div class="section-container section-container--inline">
-        <div class="field-group">
-          <label class="field-label">Cuenta</label>
-          <input type="text" :value="`${codigoCuenta} - ${nombreCuenta}`" class="field-control" disabled />
-        </div>
-        <div class="field-group">
-          <label class="field-label">Período</label>
-          <input type="text" :value="`Anual ${year}`" class="field-control" disabled />
+      <!-- “Filtros” / info de contexto (solo lectura) -->
+      <div class="division-container">
+        <div class="numero-fecha-container">
+          <div class="fecha-inputs">
+            <label>Cuenta</label>
+            <input
+              class="field-control"
+              type="text"
+              :value="`${codigoCuenta} - ${nombreCuenta}`"
+              disabled
+            />
+          </div>
+          <div class="fecha-inputs">
+            <label>Período</label>
+            <input
+              class="field-control"
+              type="text"
+              :value="`Anual ${year}`"
+              disabled
+            />
+          </div>
         </div>
       </div>
 
       <!-- Botones -->
       <div class="form-actions">
-        <button @click="volver" class="btn btn-secondary">Regresar</button>
-        <button @click="generarPDF" class="btn btn-primary">Generar PDF</button>
+        <button @click="generarPDF" class="btn-primary">
+          Generar PDF
+        </button>
+        <button class="btn-primary" @click="volver">
+          Regresar
+        </button>
       </div>
 
-      <!-- Encabezado visual del reporte -->
+      <!-- Encabezado tipo PDF / vista previa -->
       <div v-if="ingresosEgresos.length" class="encabezado-container">
         <div class="encabezado-box">
-          <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
+          <div class="encabezado-titulo">
+            {{ nombreEncabezado }}
+          </div>
           <div class="encabezado-direccion">
             Dirección del Proyecto: {{ direccionProyecto }}
           </div>
@@ -42,15 +54,24 @@
 
         <div class="encabezado-detalles">
           <div><strong>REPORTE:</strong> LIBRO MAYOR</div>
-          <div><strong>CUENTA:</strong> {{ nombreCuenta }}</div>
-          <div><strong>PERÍODO:</strong> Anual {{ year }}</div>
-          <div><strong>FECHA REPORTE:</strong> {{ fechaHoy }}</div>
+          <div>
+            <strong>CUENTA:</strong>
+            {{ nombreCuenta }}
+          </div>
+          <div>
+            <strong>PERÍODO:</strong>
+            Anual {{ year }}
+          </div>
+          <div>
+            <strong>FECHA REPORTE:</strong>
+            {{ fechaHoy }}
+          </div>
         </div>
       </div>
 
       <!-- Tabla de movimientos -->
-      <div v-if="ingresosEgresos.length" class="table-wrapper mt-3">
-        <table class="data-table">
+      <div v-if="ingresosEgresos.length" class="tabla-wrapper">
+        <table class="tabla-libro">
           <thead>
             <tr>
               <th>Conteo</th>
@@ -58,49 +79,63 @@
               <th>Fecha</th>
               <th>Cuenta</th>
               <th>Descripción</th>
-              <th class="cell-right">Acredita</th>
-              <th class="cell-right">Debita</th>
-              <th class="cell-right">Saldo</th>
+              <th class="right">Acredita</th>
+              <th class="right">Debita</th>
+              <th class="right">Saldo</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="(fila, idx) in tablaFormateada"
               :key="idx"
-              :class="{ 'fila-resaltada': fila.cuenta === 'Saldo inicial' || fila.cuenta === 'Suma total' }"
+              :class="{
+                'fila-resaltada':
+                  fila.cuenta === 'Saldo inicial' ||
+                  fila.cuenta === 'Suma total'
+              }"
             >
               <!-- Filas especiales (Saldo inicial / Suma total) -->
-              <template v-if="fila.cuenta === 'Saldo inicial' || fila.cuenta === 'Suma total'">
+              <template
+                v-if="fila.cuenta === 'Saldo inicial' || fila.cuenta === 'Suma total'"
+              >
                 <td>{{ fila.nomenclatura }}</td>
                 <td>{{ fila.numero_documento }}</td>
                 <td>{{ fila.fecha || '' }}</td>
-                <td class="text-bold">{{ fila.cuenta }}</td>
-                <td class="text-bold">{{ fila.descripcion }}</td>
-                <td class="cell-right text-bold"></td>
-                <td class="cell-right text-bold"></td>
-                <td class="cell-right text-bold">{{ fila.total }}</td>
+                <td class="bold-text">{{ fila.cuenta }}</td>
+                <td class="descripcion-col bold-text">
+                  {{ fila.descripcion }}
+                </td>
+                <td class="right bold-text"></td>
+                <td class="right bold-text"></td>
+                <td class="right bold-text">{{ fila.total }}</td>
               </template>
 
               <!-- Filas normales -->
               <template v-else>
-                <td class="link-cuenta" @click="irAPartida(fila.idIngresoEgreso)" title="Ver Partida">
-                  {{ fila.nomenclatura }}
-                </td>
+                <!-- AQUI ESTÁ EL CAMBIO: Link en Nomenclatura -->
+              <td
+                class="link-cuenta"
+                @click="irAPartida(fila.idIngresoEgreso)"
+                title="Ver Partida"
+              >
+                {{ fila.nomenclatura }}
+              </td>
+
                 <td>{{ fila.numero_documento }}</td>
                 <td>{{ fila.fecha }}</td>
                 <td>{{ fila.cuenta }}</td>
-                <td>{{ fila.descripcion }}</td>
-                <td class="cell-right">{{ fila.acredita }}</td>
-                <td class="cell-right">{{ fila.debita }}</td>
-                <td class="cell-right">{{ fila.total }}</td>
+                <td class="descripcion-col">{{ fila.descripcion }}</td>
+                <td class="right">{{ fila.acredita }}</td>
+                <td class="right">{{ fila.debita }}</td>
+                <td class="right">{{ fila.total }}</td>
               </template>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Sin datos -->
-      <div v-else class="table-empty mt-3">
+      <!-- Mensaje cuando no hay datos -->
+      <div v-else class="sin-datos">
         No hay datos para mostrar. Esta cuenta no tiene movimientos para el período.
       </div>
 
@@ -120,19 +155,16 @@
     </div>
   </div>
 
-    </div>
-  </div>
 </template>
 
 <script>
-
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
-import '@/styles/global.css';
+import '../../styles/css/LibroDiarioA.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 

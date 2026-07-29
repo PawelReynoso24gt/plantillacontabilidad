@@ -1,19 +1,16 @@
 <template>
-
-  <div class="page-wrapper">
-    <div class="page-card">
   <!-- Encabezado -->
-  <div class="module-header">
+  <div class="libro-header">
     <div>
-      <h2 class="module-title">Libro de Caja - Capilla</h2>
-      <p class="module-subtitle">
+      <h2 class="libro-title">Libro de Caja - Capilla</h2>
+      <p class="libro-subtitle">
         Consulta el movimiento de caja por rango de fechas y genera el PDF.
       </p>
     </div>
   </div>
 
   <!-- Filtros de fecha -->
-  <div class="section-container section-container--inline">
+  <div class="division-container division-inline">
     <div class="field-group">
       <label class="field-label">Fecha inicial</label>
       <input type="date" v-model="fechaInicial" class="field-control" />
@@ -29,40 +26,36 @@
 
   <!-- Botones -->
   <div class="form-actions">
-    <button @click="mostrarTabla" class="btn btn-secondary">Vista previa</button>
-    <button @click="generarPDF" class="btn btn-primary">Generar PDF</button>
+    <button @click="mostrarTabla" class="btn-secondary">Vista previa</button>
+    <button @click="generarPDF" class="btn-primary">Generar PDF</button>
   </div>
 
   <!-- Encabezado tipo PDF / vista previa -->
-  <div v-if="ingresosEgresos.length" class="encabezado-container">
-    <div class="encabezado-box">
-      <div class="encabezado-titulo">{{ nombreEncabezado }}</div>
-      <div class="encabezado-direccion">
-        Dirección del Proyecto: {{ direccionProyecto }}
-      </div>
+  <ReportPreviewHeader
+    v-if="ingresosEgresos.length"
+    :empresa="nombreEncabezado"
+    :subtitulo="`Dirección del Proyecto: ${direccionProyecto}`"
+  >
+    <div><strong>REPORTE:</strong> LIBRO CAJA</div>
+    <div>
+      <strong>ESPECIFICACIÓN:</strong>
+      Desde <span class="rp-value">{{ fechaInicial }}</span> hasta
+      <span class="rp-value">{{ fechaFinal }}</span>
     </div>
-
-    <div class="encabezado-detalles">
-      <div><strong>REPORTE:</strong> LIBRO CAJA</div>
-      <div>
-        <strong>ESPECIFICACIÓN:</strong>
-        Desde {{ fechaInicial }} hasta {{ fechaFinal }}
-      </div>
-    </div>
-  </div>
+  </ReportPreviewHeader>
 
   <!-- Tabla -->
-  <div v-if="ingresosEgresos.length" class="table-wrapper">
-    <table class="data-table">
+  <div v-if="ingresosEgresos.length" class="tabla-wrapper">
+    <table class="tabla-libro">
       <thead>
         <tr>
           <th>Conteo</th>
           <th>Fecha</th>
           <th>Cuenta</th>
           <th>Descripción</th>
-          <th class="cell-right">Acredita</th>
-          <th class="cell-right">Debita</th>
-          <th class="cell-right">Saldo</th>
+          <th class="right">Acredita</th>
+          <th class="right">Debita</th>
+          <th class="right">Saldo</th>
         </tr>
       </thead>
 
@@ -79,11 +72,11 @@
           ">
             <td>{{ fila.nomenclatura }}</td>
             <td>{{ fila.fecha }}</td>
-            <td class="text-bold">{{ fila.cuenta }}</td>
+            <td class="bold-text">{{ fila.cuenta }}</td>
             <td class="descripcion-col bold-text">{{ fila.descripcion }}</td>
-            <td class="cell-right text-bold"></td>
-            <td class="cell-right text-bold"></td>
-            <td class="cell-right text-bold">{{ fila.total }}</td>
+            <td class="right bold-text"></td>
+            <td class="right bold-text"></td>
+            <td class="right bold-text">{{ fila.total }}</td>
           </template>
 
           <!-- Filas normales -->
@@ -92,9 +85,9 @@
             <td>{{ fila.fecha }}</td>
             <td>{{ fila.cuenta }}</td>
             <td class="descripcion-col">{{ fila.descripcion }}</td>
-            <td class="cell-right">{{ fila.acredita }}</td>
-            <td class="cell-right">{{ fila.debita }}</td>
-            <td class="cell-right">{{ fila.total }}</td>
+            <td class="right">{{ fila.acredita }}</td>
+            <td class="right">{{ fila.debita }}</td>
+            <td class="right">{{ fila.total }}</td>
           </template>
         </tr>
       </tbody>
@@ -102,7 +95,7 @@
   </div>
 
   <!-- Sin datos -->
-  <div v-else class="table-empty">
+  <div v-else class="sin-datos">
     No hay datos para mostrar.
     Selecciona un rango de fechas y presiona <strong>Vista previa</strong>.
   </div>
@@ -121,12 +114,11 @@
         </button>
       </div>
     </div>
-  </div>    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
+  </div>
+
 </template>
 
 <script>
-
 import { ref, computed, reactive, onUnmounted, onMounted } from 'vue';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
@@ -135,7 +127,7 @@ import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
-import '@/styles/global.css';
+import '../../styles/css/InformeLCajaC.css'
 import '../../styles/css/GlobalAlertsModals.css';
 
 export default {

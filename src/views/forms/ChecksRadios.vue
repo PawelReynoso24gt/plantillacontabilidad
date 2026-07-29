@@ -1,18 +1,18 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
+  <div class="dep-wrapper">
+    <div class="dep-card">
       <!-- Encabezado -->
-      <div class="module-header">
+      <div class="dep-header">
         <div>
-          <h2 class="module-title">Depósitos de caja - Capilla</h2>
-          <p class="module-subtitle">
+          <h2 class="dep-title">Depósitos de caja - Capilla</h2>
+          <p class="dep-subtitle">
             Registra los depósitos desde caja hacia una cuenta bancaria.
           </p>
         </div>
       </div>
 
       <!-- Sección: banco + número documento + fecha -->
-      <div class="section-container section-container--inline">
+      <div class="division-container division-inline">
         <div class="field-group">
           <label class="field-label">Banco / Cuenta bancaria</label>
           <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
@@ -40,8 +40,8 @@
       </div>
 
       <!-- Sección: monto + observaciones -->
-      <div class="section-container section-container--block">
-        <p class="section-title">Monto a depositar</p>
+      <div class="division-container division-block">
+        <p class="division-title">Monto a depositar</p>
 
         <div class="field-group">
           <label class="field-label">Valor a depositar</label>
@@ -49,7 +49,7 @@
           <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
         </div>
 
-        <div class="field-group field-group--full">
+        <div class="field-group full-width">
           <label class="field-label">Observaciones</label>
           <input type="text" v-model="descripcion" class="field-control"
             placeholder="Detalle del depósito (opcional)" />
@@ -70,10 +70,10 @@
 
         <!-- Botones -->
         <div class="form-actions">
-          <button class="btn btn-primary" @click="insertar">
+          <button class="btn-primary" @click="insertar">
             Guardar
           </button>
-          <button class="btn btn-secondary" @click="limpiar">
+          <button class="btn-secondary" @click="limpiar">
             Limpiar
           </button>
         </div>
@@ -241,7 +241,7 @@ import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '@/styles/global.css';
+import '../../styles/css/DepYRetiroCajaC.css'
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css'
 

@@ -1,23 +1,23 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
-
       <!-- Encabezado -->
-      <div class="module-header">
-        <div>
-          <h2 class="module-title">Gestión de cuentas bancarias</h2>
-          <p class="module-subtitle">
-            Administra las cuentas bancarias registradas y actualiza su información.
-          </p>
-        </div>
+      <div class="estado-header">
+        <h2 class="estado-title">Gestión de cuentas bancarias</h2>
+        <p class="estado-subtitle">
+          Administra las cuentas bancarias registradas y actualiza su información.
+        </p>
       </div>
 
-      <!-- Formulario -->
-      <div class="section-container section-container--block">
-        <div class="field-row">
+      <!-- Formulario principal -->
+      <div class="nombre-fecha-container">
+        <!-- Fila 1 -->
+        <div class="row-inline">
           <div class="field-group">
             <label class="field-label">Cuentas registradas</label>
-            <select v-model="selectedProject" @change="cargarDatosCuenta" class="field-control">
+            <select
+              v-model="selectedProject"
+              @change="cargarDatosCuenta"
+              class="field-control"
+            >
               <option disabled value="">Seleccione una cuenta</option>
               <option
                 v-for="project in projects"
@@ -32,21 +32,42 @@
 
           <div class="field-group">
             <label class="field-label">Número de cuenta</label>
-            <input type="text" v-model="numero_cuenta" class="field-control" placeholder="Ej. 123456789" />
+            <input
+              type="text"
+              v-model="numero_cuenta"
+              class="field-control"
+              placeholder="Ej. 123456789"
+            />
             <small v-if="fieldErrors.numero_cuenta" class="error-text">{{ fieldErrors.numero_cuenta }}</small>
           </div>
+        </div>
 
+        <!-- Fila 2 -->
+        <div class="row-inline">
           <div class="field-group">
             <label class="field-label">Estado</label>
-            <input type="text" v-model="estado" :disabled="isDisabled" class="field-control" placeholder="1 = Activo, 0 = Inactivo" />
+            <input
+              type="text"
+              v-model="estado"
+              :disabled="isDisabled"
+              class="field-control"
+              placeholder="1 = Activo, 0 = Inactivo"
+            />
             <small v-if="fieldErrors.estado" class="error-text">{{ fieldErrors.estado }}</small>
           </div>
 
           <div class="field-group">
             <label class="field-label">Banco asignado</label>
-            <select v-model="banco" class="field-control">
+            <select
+              v-model="banco"
+              class="field-control"
+            >
               <option disabled value="">Seleccione un banco</option>
-              <option v-for="bn in bancos" :key="bn.id" :value="bn.banco">
+              <option
+                v-for="bn in bancos"
+                :key="bn.id"
+                :value="bn.banco"
+              >
                 {{ bn.banco }}
               </option>
             </select>
@@ -57,9 +78,9 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn btn-ghost" @click="limpiar">Limpiar</button>
-        <button class="btn btn-secondary" @click="actualizar">Actualizar</button>
-        <button class="btn btn-primary" @click="insertar">Guardar</button>
+        <button class="btn-primary" @click="insertar">Guardar</button>
+        <button class="btn-secondary" @click="actualizar">Actualizar</button>
+        <button class="btn-ghost" @click="limpiar">Limpiar</button>
       </div>
   <!-- **MODAL DE CREACIÓN/ACTUALIZACIÓN CORRECTA** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
@@ -76,16 +97,13 @@
       </div>
     </div>
   </div>
-
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
 </template>
 
 <script>
 import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import '@/styles/global.css';
+import '../../styles/css/CuentasBancarias.css'
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 

@@ -1,12 +1,9 @@
 <template>
-
-  <div class="page-wrapper">
-    <div class="page-card">
      <!-- Encabezado -->
-      <div class="module-header">
+      <div class="estado-header">
         <div>
-          <h2 class="module-title">Gestión de bancos</h2>
-          <p class="module-subtitle">
+          <h2 class="estado-title">Gestión de bancos</h2>
+          <p class="estado-subtitle">
             Crea, actualiza y administra los bancos registrados en el sistema.
           </p>
         </div>
@@ -66,13 +63,13 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn btn-primary" @click="insertar">
+        <button class="btn-primary" @click="insertar">
           Guardar
         </button>
-        <button class="btn btn-secondary" @click="actualizar">
+        <button class="btn-secondary" @click="actualizar">
           Actualizar
         </button>
-        <button class="btn btn-ghost" @click="limpiar">
+        <button class="btn-ghost" @click="limpiar">
           Limpiar
         </button>
       </div>
@@ -92,17 +89,13 @@
       </div>
     </div>
   </div>
-
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
 </template>
 
 <script>
-
 import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import '@/styles/global.css';
+import '../../styles/css/Bancos.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 

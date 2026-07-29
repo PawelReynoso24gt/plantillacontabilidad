@@ -1,18 +1,16 @@
 <template>
-  <div class="page-wrapper">
-    <div class="page-card">
   <!-- Encabezado -->
-  <div class="module-header">
+  <div class="retiros-header">
     <div>
-      <h2 class="module-title">Traslados internos de bancos</h2>
-      <p class="module-subtitle">
+      <h2 class="retiros-title">Traslados internos de bancos</h2>
+      <p class="retiros-subtitle">
         Registre el retiro desde una cuenta bancaria hacia caja.
       </p>
     </div>
   </div>
 
   <!-- Primera división -->
-  <div class="section-container section-container--inline">
+  <div class="division-container division-inline">
     <div class="field-group">
       <label class="field-label">Cuenta bancaria</label>
       <select v-model="cuentaBName" @change="cargarBancosNoCuenta" class="field-control">
@@ -38,8 +36,8 @@
   </div>
 
   <!-- Segunda división -->
-  <div class="section-container">
-    <h3 class="section-title">Monto a retirar de bancos</h3>
+  <div class="division-container">
+    <h3 class="division-title">Monto a retirar de bancos</h3>
 
     <div class="field-group">
       <label class="field-label">Valor a retirar</label>
@@ -47,7 +45,7 @@
       <small v-if="fieldErrors.monto" class="error-text">{{ fieldErrors.monto }}</small>
     </div>
 
-    <div class="field-group field-group--full">
+    <div class="field-group full-width">
       <label class="field-label">Observaciones</label>
       <input type="text" v-model="descripcion" class="field-control" />
     </div>
@@ -66,13 +64,12 @@
       </div>
 
       <div class="form-actions">
-        <button class="btn btn-primary" @click="enviarDatos">Guardar</button>
-        <button class="btn btn-secondary" @click="limpiar">Limpiar</button>
+        <button class="btn-primary" @click="enviarDatos">Guardar</button>
+        <button class="btn-secondary" @click="limpiar">Limpiar</button>
       </div>
     </div>
 
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->    <!-- **MODAL DE INGRESO CORRECTO** -->
+    <!-- **MODAL DE INGRESO CORRECTO** -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
     <div class="modal-content deposito-card" style="max-width: 450px; text-align: center;">
       <div style="margin-bottom: 1.5rem;">
@@ -233,7 +230,7 @@ import axios from 'axios';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
-import '@/styles/global.css';;
+import '../../styles/css/RetirosBancosA.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import '../../styles/css/ListadoRegistrosA.css'
 

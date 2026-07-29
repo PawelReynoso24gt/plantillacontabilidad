@@ -1,147 +1,166 @@
 <template>
+  <div class="balance-agricola-page">
+  <!-- Título principal -->
+  <div class="reporte-header">
+    <h2 class="reporte-title">Balance General - Agrícola</h2>
+    <p class="reporte-subtitle">
+      Resumen de saldos, ingresos y egresos del período seleccionado.
+    </p>
+  </div>
 
-  <div class="page-wrapper">
-    <div class="page-card">
- 
-      <!-- Encabezado -->
-      <div class="module-header">
-        <div>
-          <h2 class="module-title module-title--upper">Balance General - Agrícola</h2>
-          <p class="module-subtitle">
-            Resumen de saldos, ingresos y egresos del período seleccionado.
-          </p>
-        </div>
-      </div>
- 
-      <!-- Filtros -->
-      <div class="section-container section-container--inline">
-        <div class="field-group">
-          <label class="field-label">Período de informe</label>
-          <select v-model="selectedPeriodo" @change="actualizarMeses" class="field-control">
-            <option v-for="periodo in periodos" :key="periodo" :value="periodo">
+  <!-- Filtros / encabezado del form -->
+  <div class="division-container">
+    <!-- Filtros / encabezado del form -->
+    <div class="nombre-fecha-container">
+      <div class="id-inputs">
+        <div class="select-group">
+          <label>Período de informe</label>
+          <select v-model="selectedPeriodo" @change="actualizarMeses">
+            <option
+              v-for="periodo in periodos"
+              :key="periodo"
+              :value="periodo"
+            >
               {{ periodo }}
             </option>
           </select>
           <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
         </div>
- 
-        <div class="field-group" v-if="selectedPeriodo !== 'Anual'">
-          <label class="field-label">Mes</label>
-          <select v-model="selectedMes" class="field-control">
-            <option v-for="mes in meses" :key="mes" :value="mes">{{ mes }}</option>
-          </select>
-          <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
+
+        <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+        <label>Mes</label>
+        <select v-model="selectedMes">
+          <option v-for="mes in meses" :key="mes" :value="mes">
+            {{ mes }}
+          </option>
+        </select>
+        <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
       </div>
- 
-        <div class="field-group" v-if="selectedPeriodo !== 'Anual'">
-          <label class="field-label">Año</label>
-          <input
-            type="number"
-            v-model="selectedYear"
-            :max="currentYear"
-            min="2000"
-            placeholder="Ej: 2025"
-            class="field-control"
-          />
-          <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
+
+       <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+        <label>Año</label>
+        <input
+          type="number"
+          v-model="selectedYear"
+          :max="currentYear"
+          min="2000"
+          placeholder="Ej: 2025"
+        />
+        <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
       </div>
- 
-        <div class="field-group" v-if="selectedPeriodo === 'Anual'">
-          <label class="field-label">Fecha inicial</label>
-          <input type="date" v-model="fechaInicio" class="field-control" />
-          <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
+    
+       <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+        <label>Fecha inicial</label>
+        <input type="date" v-model="fechaInicio" />
+        <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
       </div>
- 
-        <div class="field-group" v-if="selectedPeriodo === 'Anual'">
-          <label class="field-label">Fecha final</label>
-          <input type="date" v-model="fechaFin" class="field-control" />
+
+      <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+        <label>Fecha final</label>
+        <input type="date" v-model="fechaFin" />
         <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
-        </div>
       </div>
- 
-      <!-- Botones -->
-      <div class="form-actions">
-        <button @click="generarPDF" class="btn btn-primary">Generar PDF</button>
-        <button @click="mostrarTabla" class="btn btn-secondary">Vista previa</button>
-        <button @click="limpiar" class="btn btn-ghost">Limpiar</button>
+
       </div>
- 
-      <!-- Encabezado visual del reporte -->
-      <div v-if="reporteData" class="encabezado-container">
-        <div class="encabezado-box">
-          <div class="encabezado-titulo">
-            REPORTE FINAL {{ selectedPeriodo.toUpperCase() }}
-            {{ selectedPeriodo === 'Anual' ? '' : selectedYear }}
-          </div>
-        </div>
- 
-        <div class="encabezado-detalles">
-          <div>
-            <strong>INFORME CORRESPONDIENTE AL:</strong> {{ periodoTexto }}
-          </div>
-          <div v-if="selectedPeriodo !== 'Anual'">
-            <strong>AÑO:</strong> {{ selectedYear }}
-          </div>
-          <div v-else>
-            <strong>RANGO:</strong> {{ fechaInicio }} al {{ fechaFin }}
-          </div>
-          <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA - HOGAR SANTA LUISA DE MARILLAC</div>
-          <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
-          <div><strong>FECHA:</strong> {{ fechaHoy }}</div>
-        </div>
-      </div>
- 
-      <!-- Tabla principal -->
-      <div v-if="reporteData" class="table-wrapper mt-3">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Cuenta</th>
-              <th>Descripción</th>
-              <th>Detalle</th>
-              <th class="cell-right">Saldo suma</th>
-              <th class="cell-right">Suma</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(fila, idx) in tablaPreview" :key="idx">
-              <td class="cell-right text-bold">
-                <span
-                  v-if="fila.esCuenta && fila.cuenta"
-                  class="link-cuenta"
-                  @click="irDetalleCuenta(fila.cuenta, fila.col1)"
-                >
-                  {{ fila.cuenta }}
-                </span>
-                <span v-else>{{ fila.cuenta || '' }}</span>
-              </td>
- 
-              <template v-if="fila.tipo === 'heading'">
-                <td class="text-bold">{{ fila.col1 }}</td>
-                <td></td>
-                <td class="cell-right text-bold">{{ fila.col3 || '' }}</td>
-                <td class="cell-right text-bold">{{ fila.col4 || '' }}</td>
-              </template>
- 
-              <template v-else>
-                <td>{{ fila.col1 }}</td>
-                <td>{{ fila.col2 }}</td>
-                <td class="cell-right">{{ fila.col3 }}</td>
-                <td class="cell-right">{{ fila.col4 }}</td>
-              </template>
-            </tr>
-          </tbody>
-        </table>
-      </div>
- 
-      <!-- Sin datos -->
-      <div v-else class="table-empty mt-3">
-        No hay datos para mostrar. Selecciona período y mes y presiona
-        <strong>"Vista previa"</strong>.
-      </div>
- 
-    </div><!-- /page-card -->
-  </div><!-- /page-wrapper -->
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="form-actions">
+    <button @click="generarPDF" class="btn-secondary">
+      Generar PDF
+    </button>
+    <button @click="mostrarTabla" class="btn-secondary">
+      Vista previa
+    </button>
+    <button @click="limpiar" class="btn-ghost">
+      Limpiar
+    </button>
+  </div>
+
+  <!-- Vista previa del informe (solo si ya hay datos) -->
+  <ReportPreviewHeader
+    v-if="reporteData"
+    :empresa="`REPORTE FINAL ${selectedPeriodo.toUpperCase()} ${selectedPeriodo === 'Anual' ? '' : selectedYear}`"
+  >
+    <div>
+      <strong>INFORME CORRESPONDIENTE AL:</strong>
+      {{ periodoTexto }}
+    </div>
+    <div v-if="selectedPeriodo !== 'Anual'">
+      <strong>AÑO:</strong> <span class="rp-value">{{ selectedYear }}</span>
+    </div>
+
+    <div v-else>
+      <strong>RANGO:</strong>
+      <span class="rp-value">{{ fechaInicio }}</span> al
+      <span class="rp-value">{{ fechaFin }}</span>
+    </div>
+    <div><strong>PROYECTO:</strong> PROYECTO AGRÍCOLA - HOGAR SANTA LUISA DE MARILLAC</div>
+    <div><strong>LUGAR:</strong> QUETZALTENANGO, GUATEMALA</div>
+    <div>
+      <strong>FECHA:</strong> {{ fechaHoy }}
+    </div>
+  </ReportPreviewHeader>
+
+  <!-- Tabla principal (preview en pantalla) -->
+  <div v-if="reporteData" class="tabla-wrapper">
+    <table class="tabla-libro">
+      <thead>
+        <tr>
+          <th>Cuenta</th>
+          <th>Descripción</th>
+          <th>Detalle</th>
+          <th class="right">Saldo suma</th>
+          <th class="right">Suma</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="(fila, idx) in tablaPreview" :key="idx">
+          <!-- Columna Cuenta: código numerado + link a Libro Mayor -->
+          <td class="right bold-text">
+            <span
+              v-if="fila.esCuenta && fila.cuenta"
+              class="link-cuenta"
+              @click="irDetalleCuenta(fila.cuenta, fila.col1)"
+            >
+              {{ fila.cuenta }}
+            </span>
+            <span v-else>
+              {{ fila.cuenta || '' }}
+            </span>
+          </td>
+
+          <!-- fila tipo heading (título/sección) -->
+          <template v-if="fila.tipo === 'heading'">
+            <td class="bold-text">{{ fila.col1 }}</td>
+            <td></td>
+            <td class="right bold-text">
+              {{ fila.col3 || '' }}
+            </td>
+            <td class="right bold-text">
+              {{ fila.col4 || '' }}
+            </td>
+          </template>
+
+          <!-- filas normales -->
+          <template v-else>
+            <td>{{ fila.col1 }}</td>
+            <td>{{ fila.col2 }}</td>
+            <td class="right">{{ fila.col3 }}</td>
+            <td class="right">{{ fila.col4 }}</td>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje cuando aún no se ha pedido nada -->
+  <div v-else class="sin-datos">
+    No hay datos para mostrar. Selecciona período y mes y presiona
+    <strong>"Vista previa"</strong>.
+  </div>
 
   <!-- **MODAL DE DESCARGA CORRECTA** ================================================================================================================================ -->
   <div v-if="mostrarModalExitoFormulario" class="modal-overlay">
@@ -159,10 +178,10 @@
     </div>
   </div>
 
+  </div>
 </template>
 
 <script>
-
 import axios from 'axios';
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
 import { saveAs } from 'file-saver';
@@ -171,9 +190,10 @@ import { aplicarNumeracion } from '../../../utils/numeracion';
 import { buildReportPdf } from '@/pdf/PdfReportBuilder';
 import { formatCurrency } from '@/pdf/format';
 import ReportPreviewHeader from '@/components/ReportPreviewHeader.vue';
-import '@/styles/global.css';
 import '../../styles/css/GlobalAlertsModals.css';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
+import '../../styles/css/BalanceGeneralAgricola.css';
+
 export default {
   name: 'BalanceGeneralAgricola',
   components: { ReportPreviewHeader },
