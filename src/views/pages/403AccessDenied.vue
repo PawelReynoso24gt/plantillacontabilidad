@@ -33,7 +33,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Regresar a la página anterior
+        Regresar al inicio
       </button>
 
     </div>
@@ -42,12 +42,23 @@
 
 <script setup>
   import { useRouter } from 'vue-router';
+  import { useStore } from 'vuex';
   import { onMounted, onUnmounted } from 'vue'; // Importamos los ciclos de vida
 
   const router = useRouter();
+  const store = useStore();
 
+  // No usamos router.go(-1): la página anterior es justo la que provocó el 403,
+  // así que volver atrás vuelve a disparar el mismo error. Mandamos al dashboard
+  // del proyecto activo (o al login si no hay proyecto/sesión).
   const regresar = () => {
-    router.go(-1); // Esto hace exactamente lo mismo: volver 1 paso atrás
+    if (store.state.projectToken === '1') {
+      router.push('/theme/colors');
+    } else if (store.state.projectToken === '2') {
+      router.push('/honey123');
+    } else {
+      router.push('/login');
+    }
   };
 
   // Función que revisa qué tecla se presionó

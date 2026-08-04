@@ -7,6 +7,8 @@ const store = createStore({
     selectedProject: localStorage.getItem('selectedProject') || '',
     projectToken: localStorage.getItem('projectToken') || null,
     token: localStorage.getItem('token') || '', // Estado para el token de autenticación
+    idRol: localStorage.getItem('idRol') ? Number(localStorage.getItem('idRol')) : null,
+    usuarioActual: localStorage.getItem('usuarioActual') || '',
   },
   mutations: {
     toggleSidebar(state) {
@@ -42,6 +44,22 @@ const store = createStore({
       state.projectToken = null;
       localStorage.removeItem('projectToken');
     },
+    setIdRol(state, idRol) {
+      state.idRol = idRol;
+      localStorage.setItem('idRol', idRol);
+    },
+    setUsuarioActual(state, usuario) {
+      state.usuarioActual = usuario;
+      localStorage.setItem('usuarioActual', usuario);
+    },
+    clearIdRol(state) {
+      state.idRol = null;
+      localStorage.removeItem('idRol');
+    },
+    clearUsuarioActual(state) {
+      state.usuarioActual = '';
+      localStorage.removeItem('usuarioActual');
+    },
   },
   actions: {
     updateSelectedProject({ commit }, project) {
@@ -53,16 +71,25 @@ const store = createStore({
     login({ commit }, token) {
       commit('setToken', token);
     },
+    updateIdRol({ commit }, idRol) {
+      commit('setIdRol', idRol);
+    },
+    updateUsuarioActual({ commit }, usuario) {
+      commit('setUsuarioActual', usuario);
+    },
     logout({ commit }) {
       commit('clearToken');
       commit('clearSelectedProject');
       commit('clearProjectToken');
+      commit('clearIdRol');
+      commit('clearUsuarioActual');
       localStorage.clear();
       sessionStorage.clear();
     },
   },
   getters: {
     isAuthenticated: state => !!state.token, // Getter para verificar si el usuario está autenticado
+    esAdmin: state => state.idRol === 1, // Getter para verificar si el usuario autenticado es administrador (id_rol 1)
   },
 });
 

@@ -3,17 +3,17 @@
       <!-- Encabezado -->
       <div class="module-header">
         <div>
-          <h2 class="module-title">Gestión de usuarios</h2>
+          <h2 class="module-title">{{ esAdmin ? 'Gestión de usuarios' : 'Mi cuenta' }}</h2>
           <p class="module-subtitle">
-            Crea, actualiza y administra los usuarios del sistema.
+            {{ esAdmin ? 'Crea, actualiza y administra los usuarios del sistema.' : 'Cambia tu contraseña de acceso.' }}
           </p>
         </div>
       </div>
 
       <!-- Primera división -->
       <div class="division-container">
-        <!-- Fila 1: usuarios registrados + usuario -->
-        <div class="division-inline">
+        <!-- Fila 1: usuarios registrados + usuario (solo administrador) -->
+        <div class="division-inline" v-if="esAdmin">
           <!-- Select de usuarios -->
           <div class="field-group">
             <label class="field-label">Usuarios registrados</label>
@@ -50,7 +50,7 @@
         <div class="division-inline">
           <!-- Contraseña -->
           <div class="field-group">
-            <label class="field-label">Contraseña</label>
+            <label class="field-label">{{ esAdmin ? 'Contraseña' : 'Nueva contraseña' }}</label>
             <div class="field-control field-control--with-button">
               <input
                 :type="showPassword ? 'text' : 'password'"
@@ -69,8 +69,8 @@
             </div>
           </div>
 
-          <!-- Estado -->
-          <div class="field-group">
+          <!-- Estado (solo administrador) -->
+          <div class="field-group" v-if="esAdmin">
             <label class="field-label">Estado</label>
             <input
               type="text"
@@ -100,11 +100,11 @@
 
       <!-- Botones -->
       <div class="form-actions">
-        <button class="btn-primary" @click="insertar">
+        <button v-if="esAdmin" class="btn-primary" @click="insertar">
           Guardar
         </button>
         <button class="btn-secondary" @click="actualizar">
-          Actualizar
+          {{ esAdmin ? 'Actualizar' : 'Cambiar contraseña' }}
         </button>
         <button class="btn-ghost" @click="limpiar">
           Limpiar
@@ -118,7 +118,7 @@
       <div style="margin-bottom: 1.5rem;">
         <div style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;">✓</div>
         <h3 style="color: #14491b; margin-bottom: 0.5rem;">¡Operación Exitosa!</h3>
-        <p style="color: #6c757d;">El usuario se ha guardado/actualizado correctamente en el sistema.</p>
+        <p style="color: #6c757d;">{{ esAdmin ? 'El usuario se ha guardado/actualizado correctamente en el sistema.' : 'Tu contraseña se ha actualizado correctamente.' }}</p>
       </div>
       
       <div class="form-actions" style="justify-content: center;">
@@ -136,6 +136,7 @@
 import axios from 'axios';
 import { ref, computed, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; // para redirección de rutas
+import { useStore } from 'vuex';
 import { manejarErrorRuta } from '../../../utils/manejarErrores.js';
 import '../../styles/css/Login.css';
 import '../../styles/css/GlobalAlertsModals.css';
@@ -144,6 +145,7 @@ export default {
   name: 'Badges',
   setup() {
     const router = useRouter();
+    const store = useStore();
     const usuarios = ref('');
     const contrasenias = ref('');
     const estado = ref('');
@@ -152,6 +154,9 @@ export default {
     const errorMessage = ref('');
     const successMessage = ref('');
     const showPassword = ref(false);
+
+    // Un usuario que no es administrador (id_rol !== 1) solo puede cambiar su propia contraseña
+    const esAdmin = computed(() => store.getters.esAdmin);
 
     const estadoenabled = computed(() => !!selectedProject.value);
 
@@ -227,6 +232,22 @@ export default {
         });
     };
 
+    // Para un usuario no administrador: carga solo su propia cuenta, sin pasar por getLogins (admin-only)
+    const cargarMiCuenta = () => {
+      const miUsuario = store.state.usuarioActual;
+      if (!miUsuario) return;
+
+      axios
+        .get(`http://127.0.0.1:8000/logins/getProjectName/${miUsuario}`)
+        .then((response) => {
+          usuarios.value = response.data.usuarios;
+        })
+        .catch((err) => {
+          console.error('Error al obtener mi cuenta:', err);
+          manejarErrorRuta(err, router);
+        });
+    };
+
     const insertar = () => {
       let tieneErrores = false;
 
@@ -257,30 +278,39 @@ export default {
     const actualizar = () => {
       let tieneErrores = false;
 
-      if (!selectedProject.value) {
-        mostrarErrorCampo('selectedProject', 'Por favor, selecciona un usuario para actualizar.');
-        tieneErrores = true;
-      }
-      if (!usuarios.value) { mostrarErrorCampo('usuarios', 'Falta por llenar datos'); tieneErrores = true; }
       if (!contrasenias.value) { mostrarErrorCampo('contrasenias', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!estado.value) { mostrarErrorCampo('estado', 'Falta por llenar datos'); tieneErrores = true; }
+
+      if (esAdmin.value) {
+        if (!selectedProject.value) {
+          mostrarErrorCampo('selectedProject', 'Por favor, selecciona un usuario para actualizar.');
+          tieneErrores = true;
+        }
+        if (!usuarios.value) { mostrarErrorCampo('usuarios', 'Falta por llenar datos'); tieneErrores = true; }
+        if (!estado.value) { mostrarErrorCampo('estado', 'Falta por llenar datos'); tieneErrores = true; }
+      }
 
       if (tieneErrores) return;
 
-      const datos = {
-        usuarios: usuarios.value.trim(),
-        contrasenias: contrasenias.value.trim(),
-        estado: estado.value.trim()
-      };
+      // Un usuario no administrador solo puede tocar su propia cuenta y solo su contraseña
+      const usuarioObjetivo = esAdmin.value ? selectedProject.value.usuarios : store.state.usuarioActual;
+      const datos = esAdmin.value
+        ? {
+            usuarios: usuarios.value.trim(),
+            contrasenias: contrasenias.value.trim(),
+            estado: estado.value.trim()
+          }
+        : {
+            contrasenias: contrasenias.value.trim()
+          };
 
       axios
         .put(
-          `http://127.0.0.1:8000/logins/update/${selectedProject.value.usuarios}`,
+          `http://127.0.0.1:8000/logins/update/${usuarioObjetivo}`,
           datos
         )
         .then(() => {
           mostrarModalExitoFormulario.value = true;
-          cargarProyectos();
+          if (esAdmin.value) cargarProyectos();
         })
         .catch((err) => {
           console.error('ERROR ACTUALIZACIÓN:', err?.response?.data || err.message);
@@ -289,16 +319,25 @@ export default {
     };
 
     const limpiar = () => {
-      usuarios.value = '';
       contrasenias.value = '';
-      estado.value = '';
-      selectedProject.value = null;
       errorMessage.value = '';
       successMessage.value = '';
       showPassword.value = false;
+
+      if (esAdmin.value) {
+        usuarios.value = '';
+        estado.value = '';
+        selectedProject.value = null;
+      } else {
+        cargarMiCuenta();
+      }
     };
 
-    cargarProyectos();
+    if (esAdmin.value) {
+      cargarProyectos();
+    } else {
+      cargarMiCuenta();
+    }
 
     onMounted(() => {
       // Encendemos el detector de teclado
@@ -325,6 +364,7 @@ export default {
       estadoenabled,
       togglePasswordVisibility,
       showPassword,
+      esAdmin,
       /////////
       fieldErrors,
       cerrarModalExitoFormulario,

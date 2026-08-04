@@ -154,6 +154,8 @@ export default {
           if (response.status === 200) {
             //console.log('Full response:', response.data);
             store.dispatch('login', response.data.token);
+            store.dispatch('updateIdRol', response.data.id_rol);
+            store.dispatch('updateUsuarioActual', response.data.usuario);
 
             const projectToken = tipoProyecto.value === 'agricola' ? '1' : '2';
 

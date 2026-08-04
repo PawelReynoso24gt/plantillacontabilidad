@@ -20,7 +20,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Regresar a la página anterior
+        Ir a iniciar sesión
       </button>
 
     </div>
@@ -33,9 +33,10 @@
 
   const router = useRouter();
 
-  // Función para volver atrás en el historial
+  // Un 401 significa que no hay sesión válida (o expiró), así que volver atrás
+  // solo regresaría a una página que vuelve a pedir autenticación. Mandamos al login.
   const regresar = () => {
-    router.go(-1); 
+    router.push('/login');
   };
 
   // Función que revisa si se presionó la tecla Enter
