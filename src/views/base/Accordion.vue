@@ -882,7 +882,7 @@ export default {
       axios.get('http://127.0.0.1:8000/in_eg/getAllCuentasEgresoAG')
         .then((response) => {
           cuentas.splice(0, cuentas.length, ...response.data);
-          console.log(response.data); 
+          //console.log(response.data); 
         })
         .catch((err) => {
           console.error(err);
