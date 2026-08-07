@@ -795,7 +795,7 @@ export default {
       loading.value = true;
       try {
         const { data } = await axios.get(
-          'http://localhost:8000/in_eg/tablaVistaAnticipoCA'
+          'http://127.0.0.1:8000/in_eg/tablaVistaAnticipoCA'
         );
         anticipoRows.value = Array.isArray(data) ? data : [];
 
@@ -808,7 +808,7 @@ export default {
                 return;
               }
               const resp = await axios.post(
-                'http://localhost:8000/saldar_anticipos/getMontoFaltanteCA',
+                'http://127.0.0.1:8000/saldar_anticipos/getMontoFaltanteCA',
                 { id_ingresos_egresos: id }
               );
               r.monto_faltante = resp?.data?.monto_faltante ?? 0;
@@ -987,7 +987,7 @@ export default {
 
       try {
         const url =
-          'http://localhost:8000/saldar_anticipos/saldarAnticipoCA';
+          'http://127.0.0.1:8000/saldar_anticipos/saldarAnticipoCA';
         await axios.post(url, payload);
         
         showModal.value = false; // Cerramos el modal actual

@@ -785,7 +785,7 @@ export default {
       loading.value = true;
       try {
         const { data } = await axios.get(
-          'http://localhost:8000/in_eg/tablaVistaAnticipoAG'
+          'http://127.0.0.1:8000/in_eg/tablaVistaAnticipoAG'
         );
         anticipoRows.value = Array.isArray(data) ? data : [];
 
@@ -798,7 +798,7 @@ export default {
                 return;
               }
               const resp = await axios.post(
-                'http://localhost:8000/saldar_anticipos/getMontoFaltanteAG',
+                'http://127.0.0.1:8000/saldar_anticipos/getMontoFaltanteAG',
                 { id_ingresos_egresos: id }
               );
               r.monto_faltante = resp?.data?.monto_faltante ?? 0;
