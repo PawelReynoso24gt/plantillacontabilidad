@@ -1,3 +1,5 @@
+<!-- ! SE USO EL MISMO COMPONENTE DE BALANCE GENERAL PARA ESTE -->
+
 <template>
   <div class="balance-capilla-page">
   <!-- Título principal -->
@@ -248,7 +250,7 @@ export default {
 
     const periodoTexto = computed(() => {
       if (selectedPeriodo.value === 'Mensual') {
-        return `RESUMEN DE ${selectedMes.value?.toUpperCase?.() || ''}`;
+        return `ESTADO DE RESULTADOS DE ${selectedMes.value?.toUpperCase?.() || ''}`;
       } else if (selectedPeriodo.value === 'Trimestral') {
         const trimestre = {
           Enero: 'PRIMER TRIMESTRE',
@@ -256,13 +258,13 @@ export default {
           Julio: 'TERCER TRIMESTRE',
           Octubre: 'CUARTO TRIMESTRE'
         };
-        return `RESUMEN ${trimestre[selectedMes.value] || ''}`;
+        return `ESTADO DE RESULTADOS ${trimestre[selectedMes.value] || ''}`;
       } else if (selectedPeriodo.value === 'Semestral') {
         return selectedMes.value === 'Enero'
-          ? 'RESUMEN PRIMER SEMESTRE'
-          : 'RESUMEN SEGUNDO SEMESTRE';
+          ? 'ESTADO DE RESULTADOS PRIMER SEMESTRE'
+          : 'ESTADO DE RESULTADOS SEGUNDO SEMESTRE';
       } else if (selectedPeriodo.value === 'Anual') {
-        return 'RESUMEN ANUAL';
+        return 'ESTADO DE RESULTADOS ANUAL';
       }
       return '';
     });
@@ -756,8 +758,8 @@ export default {
       } else if (selectedPeriodo.value === 'Semestral') {
         periodoTextoPDF =
           selectedMes.value === 'Enero'
-            ? 'RESUMEN PRIMER SEMESTRE'
-            : 'RESUMEN SEGUNDO SEMESTRE';
+            ? 'ESTADO DE RESULTADOS PRIMER SEMESTRE'
+            : 'ESTADO DE RESULTADOS SEGUNDO SEMESTRE';
       } else if (selectedPeriodo.value === 'Anual') {
         periodoTextoPDF = 'ESTADO DE RESULTADOS ANUAL';
       }

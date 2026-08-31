@@ -1,3 +1,5 @@
+<!-- ! SE USO EL MISMO COMPONENTE DE BALANCE GENERAL PARA ESTE -->
+
 <template>
   <div class="balance-agricola-page">
   <!-- Título principal -->
@@ -257,7 +259,7 @@ export default {
 
     const periodoTexto = computed(() => {
       if (selectedPeriodo.value === 'Mensual') {
-        return `RESUMEN DE ${selectedMes.value?.toUpperCase?.() || ''} ${selectedYear.value}`;
+        return `ESTADO DE RESULTADOS DE ${selectedMes.value?.toUpperCase?.() || ''} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Trimestral') {
         const trimestre = {
           Enero: 'PRIMER TRIMESTRE',
@@ -265,14 +267,14 @@ export default {
           Julio: 'TERCER TRIMESTRE',
           Octubre: 'CUARTO TRIMESTRE'
         };
-        return `RESUMEN ${trimestre[selectedMes.value] || ''} ${selectedYear.value}`;
+        return `ESTADO DE RESULTADOS ${trimestre[selectedMes.value] || ''} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Semestral') {
         const sem = selectedMes.value === 'Enero'
-          ? 'RESUMEN PRIMER SEMESTRE'
-          : 'RESUMEN SEGUNDO SEMESTRE';
+          ? 'ESTADO DE RESULTADOS PRIMER SEMESTRE'
+          : 'ESTADO DE RESULTADOS SEGUNDO SEMESTRE';
         return `${sem} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Anual') {
-        return `RESUMEN ANUAL (${fechaInicio.value} al ${fechaFin.value})`;
+        return `ESTADO DE RESULTADOS ANUAL (${fechaInicio.value} al ${fechaFin.value})`;
       }
       return '';
     });
