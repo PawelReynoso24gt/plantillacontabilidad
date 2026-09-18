@@ -51,6 +51,7 @@
         <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
       </div>
     
+      
        <div class="select-group" v-if="selectedPeriodo === 'Anual'">
         <label>Fecha inicial</label>
         <input type="date" v-model="fechaInicio" />
@@ -63,8 +64,37 @@
         <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
       </div>
 
+      <div class="nombre-inputs">
+          <div class="numero-input">
+            <label class="field-label">Contador</label>
+            <input type="text" v-model="contador" class="field-control" />
+            <small v-if="fieldErrors.contador" class="error-text">{{ fieldErrors.contador }}</small>
+          </div>
+          <div class="numero-input">
+            <label class="field-label">Responsable de proyecto agrícola</label>
+            <input
+              type="text"
+              v-model="responsableAgricola"
+              class="field-control"
+            />
+            <small v-if="fieldErrors.responsableAgricola" class="error-text">{{ fieldErrors.responsableAgricola }}</small>
+          </div>
+          <div class="numero-input">
+            <label class="field-label">Economa provincial</label>
+            <input
+              type="text"
+              v-model="economaProvincial"
+              class="field-control"
+            />
+            <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
+          </div>
+        </div>
+      
       </div>
+      
     </div>
+
+    
   </div>
 
   <!-- Botones -->
@@ -80,6 +110,7 @@
     </button>
   </div>
 
+  
   <!-- Vista previa del informe (solo si ya hay datos) -->
   <ReportPreviewHeader
     v-if="reporteData"
@@ -203,6 +234,9 @@ export default {
     const router = useRouter();
     const mostrarModalExitoFormulario = ref(false);
     const selectedYear = ref('');
+    const contador = ref('');
+    const responsableAgricola = ref('');
+    const economaProvincial = ref('');
     const fechaInicio = ref('');
     const fechaFin = ref('');
     const selectedPeriodo = ref('');
@@ -216,7 +250,10 @@ export default {
       selectedYear: '',
       selectedMes: '',
       fechaInicio: '',
-      fechaFin: ''
+      fechaFin: '',
+      contador: '',
+      responsableAgricola: '',
+      economaProvincial: '',
     });
 
     const mostrarErrorCampo = (campo, mensaje) => {
@@ -275,8 +312,9 @@ export default {
         return `${sem} ${selectedYear.value}`;
       } else if (selectedPeriodo.value === 'Anual') {
         return `ESTADO DE RESULTADOS ANUAL (${fechaInicio.value} al ${fechaFin.value})`;
-      }
+      }      
       return '';
+      
     });
 
       const actualizarMeses = () => {
@@ -684,10 +722,20 @@ export default {
       fechaFin.value = '';
       meses.value = [];
       reporteData.value = null;
+      contador.value = '';
+      responsableAgricola.value = '';
+      economaProvincial.value = '';
     };
 
   const buildPayload = () => {
     const tipo = selectedPeriodo.value.toLowerCase();
+
+      const base = {
+    tipo,
+    contador: contador.value,
+    responsable: responsableAgricola.value,
+    economa: economaProvincial.value
+  };
 
     if (selectedPeriodo.value === 'Anual') {
       return {
@@ -854,7 +902,46 @@ export default {
       pushRow('SALDO FINAL EN BANCO', '', formatCurrency(data.total_saldo_final_bancos), '');
       pushRow('SUMAS IGUALES', '', formatCurrency(data.total_saldo_final), formatCurrency(data.total_saldo_final), true);
 
+      
       const doc = buildReportPdf({ orientation: 'portrait', metadata, columns, rows });
+
+      // Firmas
+        let yOffset = doc.lastAutoTable.finalY + 15;
+        const pageHeight = doc.internal.pageSize.height;
+        const pageMargin = 20;
+        const addPageIfNeeded = () => {
+          if (yOffset > pageHeight - pageMargin) {
+            doc.addPage();
+            yOffset = 20;
+          }
+        };
+
+        doc.setFontSize(10);
+        addPageIfNeeded();
+        doc.text('Hecho por:', 20, yOffset);
+        doc.text('Revisado por:', 140, yOffset);
+        yOffset += 15;
+        addPageIfNeeded();
+        doc.text('(f)_____________________________', 20, yOffset);
+        doc.text('(f)_____________________________', 120, yOffset);
+        yOffset += 5;
+        addPageIfNeeded();
+        doc.text(String(contador.value ?? ''), 25, yOffset);
+        doc.text('Contador', 40, yOffset + 5);
+        doc.text('Vo.Bo. ' + String(responsableAgricola.value ?? ''), 125, yOffset);
+        doc.text(
+          'Responsable de Proyecto Agricola',
+          125,
+          yOffset + 5
+        );
+        yOffset += 40;
+        addPageIfNeeded();
+        doc.text('(f)__________________________________', 65, yOffset);
+        yOffset += 4;
+        addPageIfNeeded();
+        doc.text(String(economaProvincial.value ?? ''), 75, yOffset);
+        doc.text('Economa provincial', 85, yOffset + 5);
+
       const blob = doc.output('blob');
       saveAs(blob, 'estado_resultados_agricola.pdf');
       mostrarModalExitoFormulario.value = true;
@@ -862,10 +949,13 @@ export default {
       console.error('Error al generar el PDF:', error);
       manejarErrorRuta(error, router);
     }
+ 
   };
 
-
     return {
+       contador,
+      responsableAgricola,
+      economaProvincial,
       selectedPeriodo,
       selectedMes,
       selectedYear,

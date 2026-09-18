@@ -87,7 +87,7 @@ export function drawReportTable(doc, { startY, columns, rows }) {
     doc.setFontSize(8);
     doc.setTextColor(120);
     doc.setFont(undefined, 'normal');
-    doc.text(`Generado el ${new Date().toLocaleDateString('es-GT')}`, 10, pageHeight - 8);
+    //doc.text(`Generado el ${new Date().toLocaleDateString('es-GT')}`, 10, pageHeight - 8);
     doc.text(`Página ${i} de ${totalPages}`, pageWidth - 10, pageHeight - 8, { align: 'right' });
   }
 
