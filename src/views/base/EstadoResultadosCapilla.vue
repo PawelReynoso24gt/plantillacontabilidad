@@ -10,9 +10,10 @@
     </p>
   </div>
 
-  <!-- Filtros / encabezado del form -->
+<!-- Filtros / encabezado del form -->
   <div class="division-container">
-    <!-- Filtros / encabezado del form -->
+    
+    <!-- PRIMERA FILA: Fechas y Períodos -->
     <div class="nombre-fecha-container">
       <div class="id-inputs">
         <div class="select-group">
@@ -29,43 +30,71 @@
           <small v-if="fieldErrors.selectedPeriodo" class="error-text">{{ fieldErrors.selectedPeriodo }}</small>
         </div>
 
-       <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
-  <label>Mes</label>
-  <select v-model="selectedMes">
-    <option v-for="mes in meses" :key="mes" :value="mes">
-      {{ mes }}
-    </option>
-  </select>
-  <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
-</div>
+        <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+          <label>Mes</label>
+          <select v-model="selectedMes">
+            <option v-for="mes in meses" :key="mes" :value="mes">
+              {{ mes }}
+            </option>
+          </select>
+          <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
+        </div>
 
-<div class="select-group" v-if="selectedPeriodo !== 'Anual'">
-  <label>Año</label>
-  <input
-    type="number"
-    v-model="selectedYear"
-    :max="currentYear"
-    min="2000"
-    placeholder="Ej: 2025"
-  />
-  <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
-</div>
+        <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+          <label>Año</label>
+          <input
+            type="number"
+            v-model="selectedYear"
+            :max="currentYear"
+            min="2000"
+            placeholder="Ej: 2025"
+          />
+          <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
+        </div>
 
-<div class="select-group" v-if="selectedPeriodo === 'Anual'">
-  <label>Fecha inicial</label>
-  <input type="date" v-model="fechaInicio" />
-  <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
-</div>
+        <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+          <label>Fecha inicial</label>
+          <input type="date" v-model="fechaInicio" />
+          <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
+        </div>
 
-<div class="select-group" v-if="selectedPeriodo === 'Anual'">
-  <label>Fecha final</label>
-  <input type="date" v-model="fechaFin" />
-  <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
-</div>
+        <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+          <label>Fecha final</label>
+          <input type="date" v-model="fechaFin" />
+          <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
+        </div>
 
       </div>
+    </div> <!-- AQUI SE CIERRA nombre-fecha-container -->
+
+    <!-- SEGUNDA FILA: Cajas de texto de firmas -->
+    <div class="nombre-inputs">
+      <div class="numero-input">
+        <label class="field-label">Contador</label>
+        <input type="text" v-model="contador" class="field-control" />
+        <small v-if="fieldErrors.contador" class="error-text">{{ fieldErrors.contador }}</small>
+      </div>
+      <div class="numero-input">
+        <label class="field-label">Responsable de proyecto capilla</label>
+        <input
+          type="text"
+          v-model="responsableCapilla"
+          class="field-control"
+        />
+        <small v-if="fieldErrors.responsableCapilla" class="error-text">{{ fieldErrors.responsableCapilla }}</small>
+      </div>
+      <div class="numero-input">
+        <label class="field-label">Economa provincial</label>
+        <input
+          type="text"
+          v-model="economaProvincial"
+          class="field-control"
+        />
+        <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
+      </div>
     </div>
-  </div>
+    
+  </div> <!-- AQUI SE CIERRA division-container -->
 
   <!-- Botones -->
   <div class="form-actions">
@@ -203,6 +232,10 @@ export default {
     const periodos = ['Mensual', 'Trimestral', 'Semestral', 'Anual'];
     const meses = ref([]);
 
+    const contador = ref('');
+    const responsableCapilla = ref(''); // Cambiado a responsableCapilla por contexto
+    const economaProvincial = ref('');
+
     const reporteData = ref(null);
 
     const fieldErrors = reactive({
@@ -210,7 +243,10 @@ export default {
       selectedYear: '',
       selectedMes: '',
       fechaInicio: '',
-      fechaFin: ''
+      fechaFin: '',
+      contador: '',
+      responsableCapilla: '', // Actualizado
+      economaProvincial: '',
     });
 
     const mostrarErrorCampo = (campo, mensaje) => {
@@ -674,6 +710,9 @@ export default {
       fechaFin.value = '';
       meses.value = [];
       reporteData.value = null;
+      contador.value = '';
+      responsableCapilla.value = '';
+      economaProvincial.value = '';
     };
 
     const buildPayload = () => {
@@ -682,6 +721,9 @@ export default {
     if (selectedPeriodo.value === 'Anual') {
       return {
         tipo,
+        contador: contador.value,
+        responsable: responsableCapilla.value,
+        economa: economaProvincial.value,
         fecha_inicio: fechaInicio.value,
         fecha_fin: fechaFin.value
       };
@@ -846,8 +888,46 @@ export default {
       pushRow('SUMAS IGUALES', '', formatCurrency(data.total_saldo_final), formatCurrency(data.total_saldo_final), true);
 
       const doc = buildReportPdf({ orientation: 'portrait', metadata, columns, rows });
+
+      // Firmas
+      let yOffset = doc.lastAutoTable.finalY + 15;
+      const pageHeight = doc.internal.pageSize.height;
+      const pageMargin = 20;
+      const addPageIfNeeded = () => {
+        if (yOffset > pageHeight - pageMargin) {
+          doc.addPage();
+          yOffset = 20;
+        }
+      };
+
+      doc.setFontSize(10);
+      addPageIfNeeded();
+      doc.text('Hecho por:', 20, yOffset);
+      doc.text('Revisado por:', 140, yOffset);
+      yOffset += 15;
+      addPageIfNeeded();
+      doc.text('(f)_____________________________', 20, yOffset);
+      doc.text('(f)_____________________________', 120, yOffset);
+      yOffset += 5;
+      addPageIfNeeded();
+      doc.text(String(contador.value ?? ''), 25, yOffset);
+      doc.text('Contador', 40, yOffset + 5);
+      doc.text('Vo.Bo. ' + String(responsableCapilla.value ?? ''), 125, yOffset);
+      doc.text(
+        'Responsable de Proyecto Capilla',
+        125,
+        yOffset + 5
+      );
+      yOffset += 40;
+      addPageIfNeeded();
+      doc.text('(f)__________________________________', 65, yOffset);
+      yOffset += 4;
+      addPageIfNeeded();
+      doc.text(String(economaProvincial.value ?? ''), 75, yOffset);
+      doc.text('Economa provincial', 85, yOffset + 5);
+
       const blob = doc.output('blob');
-      saveAs(blob, 'reporte_balance_capilla.pdf');
+      saveAs(blob, 'estado_resultados_capilla.pdf');
       mostrarModalExitoFormulario.value = true;
     } catch (error) {
       console.error('Error al generar el PDF:', error);
@@ -877,7 +957,10 @@ export default {
       /////////////
       fieldErrors,
       cerrarModalExitoFormulario,
-      mostrarModalExitoFormulario
+      mostrarModalExitoFormulario,
+      contador, // Añadido
+      responsableCapilla, // Añadido
+      economaProvincial, // Añadido
     };
   }
 };

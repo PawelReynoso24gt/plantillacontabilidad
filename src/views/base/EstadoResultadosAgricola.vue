@@ -10,9 +10,10 @@
     </p>
   </div>
 
-  <!-- Filtros / encabezado del form -->
+<!-- Filtros / encabezado del form -->
   <div class="division-container">
-    <!-- Filtros / encabezado del form -->
+    
+    <!-- PRIMERA FILA: Fechas y Períodos -->
     <div class="nombre-fecha-container">
       <div class="id-inputs">
         <div class="select-group">
@@ -30,72 +31,69 @@
         </div>
 
         <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
-        <label>Mes</label>
-        <select v-model="selectedMes">
-          <option v-for="mes in meses" :key="mes" :value="mes">
-            {{ mes }}
-          </option>
-        </select>
-        <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
-      </div>
+          <label>Mes</label>
+          <select v-model="selectedMes">
+            <option v-for="mes in meses" :key="mes" :value="mes">
+              {{ mes }}
+            </option>
+          </select>
+          <small v-if="fieldErrors.selectedMes" class="error-text">{{ fieldErrors.selectedMes }}</small>
+        </div>
 
-       <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
-        <label>Año</label>
-        <input
-          type="number"
-          v-model="selectedYear"
-          :max="currentYear"
-          min="2000"
-          placeholder="Ej: 2025"
-        />
-        <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
-      </div>
-    
-      
-       <div class="select-group" v-if="selectedPeriodo === 'Anual'">
-        <label>Fecha inicial</label>
-        <input type="date" v-model="fechaInicio" />
-        <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
-      </div>
-
-      <div class="select-group" v-if="selectedPeriodo === 'Anual'">
-        <label>Fecha final</label>
-        <input type="date" v-model="fechaFin" />
-        <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
-      </div>
-
-      <div class="nombre-inputs">
-          <div class="numero-input">
-            <label class="field-label">Contador</label>
-            <input type="text" v-model="contador" class="field-control" />
-            <small v-if="fieldErrors.contador" class="error-text">{{ fieldErrors.contador }}</small>
-          </div>
-          <div class="numero-input">
-            <label class="field-label">Responsable de proyecto agrícola</label>
-            <input
-              type="text"
-              v-model="responsableAgricola"
-              class="field-control"
-            />
-            <small v-if="fieldErrors.responsableAgricola" class="error-text">{{ fieldErrors.responsableAgricola }}</small>
-          </div>
-          <div class="numero-input">
-            <label class="field-label">Economa provincial</label>
-            <input
-              type="text"
-              v-model="economaProvincial"
-              class="field-control"
-            />
-            <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
-          </div>
+        <div class="select-group" v-if="selectedPeriodo !== 'Anual'">
+          <label>Año</label>
+          <input
+            type="number"
+            v-model="selectedYear"
+            :max="currentYear"
+            min="2000"
+            placeholder="Ej: 2025"
+          />
+          <small v-if="fieldErrors.selectedYear" class="error-text">{{ fieldErrors.selectedYear }}</small>
         </div>
       
-      </div>
-      
-    </div>
+        <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+          <label>Fecha inicial</label>
+          <input type="date" v-model="fechaInicio" />
+          <small v-if="fieldErrors.fechaInicio" class="error-text">{{ fieldErrors.fechaInicio }}</small>
+        </div>
 
+        <div class="select-group" v-if="selectedPeriodo === 'Anual'">
+          <label>Fecha final</label>
+          <input type="date" v-model="fechaFin" />
+          <small v-if="fieldErrors.fechaFin" class="error-text">{{ fieldErrors.fechaFin }}</small>
+        </div>
+      </div>
+    </div> <!-- AQUI SE CIERRA nombre-fecha-container -->
+
+    <!-- SEGUNDA FILA: Cajas de texto de firmas (Ahora fuera del contenedor de arriba) -->
+    <div class="nombre-inputs">
+      <div class="numero-input">
+        <label class="field-label">Contador</label>
+        <input type="text" v-model="contador" class="field-control" />
+        <small v-if="fieldErrors.contador" class="error-text">{{ fieldErrors.contador }}</small>
+      </div>
+      <div class="numero-input">
+        <label class="field-label">Responsable de proyecto agrícola</label>
+        <input
+          type="text"
+          v-model="responsableAgricola"
+          class="field-control"
+        />
+        <small v-if="fieldErrors.responsableAgricola" class="error-text">{{ fieldErrors.responsableAgricola }}</small>
+      </div>
+      <div class="numero-input">
+        <label class="field-label">Economa provincial</label>
+        <input
+          type="text"
+          v-model="economaProvincial"
+          class="field-control"
+        />
+        <small v-if="fieldErrors.economaProvincial" class="error-text">{{ fieldErrors.economaProvincial }}</small>
+      </div>
+    </div>
     
-  </div>
+  </div> <!-- AQUI SE CIERRA division-container -->
 
   <!-- Botones -->
   <div class="form-actions">
