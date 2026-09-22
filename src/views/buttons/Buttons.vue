@@ -237,7 +237,7 @@
               <tr v-for="r in registros" :key="r.id_ingresos_egresos">
                 <td>{{ r.fecha }}</td>
                 <td>{{ r.nomenclatura }}</td>
-                <td>{{ r.nombre }}</td>
+                <td>{{ r.nombre || 'N/D' }}</td>
                 <td>{{ r.cuenta }}</td>
                 <td>{{ r.tipo }}</td>
                 <td class="right">{{ formatMonto(r.monto) }}</td>
@@ -333,7 +333,7 @@
           </div>
           <div class="modal-id-row">
             <label>Nombre: </label>
-            <span>{{ registroAEliminar?.nombre }}</span>
+            <span>{{ registroAEliminar?.nombre || 'N/D' }}</span>
           </div>
           <div class="modal-id-row">
             <label>Monto: </label>
@@ -373,7 +373,7 @@
           </div>
           <div class="modal-id-row">
             <label>Nombre: </label>
-            <span>{{ itemASaldar?.nombre }}</span>
+            <span>{{ itemASaldar?.nombre || 'N/D' }}</span>
           </div>
           <div class="modal-id-row">
             <label>Saldo pendiente: </label>
@@ -902,7 +902,7 @@ export default {
         // 1. Validaciones de campos básicos
         if (!formSaldar.fecha) { mostrarErrorModal('fecha', 'Falta por llenar datos'); tieneErrores = true; }
         if (!formSaldar.identificacion) { mostrarErrorModal('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-        if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+        // if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Comentado porque el nombre puede ser opcional
         if (!formSaldar.tipo) { mostrarErrorModal('tipo', 'Falta por llenar datos'); tieneErrores = true; }
 
         // Validación del monto (Vacío y formato numérico)
@@ -931,7 +931,7 @@ export default {
             fecha: formSaldar.fecha,
             monto: formSaldar.monto,
             identificacion: formSaldar.identificacion,
-            nombre: formSaldar.nombre,
+            nombre: formSaldar.nombre || null, // Si el nombre es opcional, enviamos un string vacío si no se proporciona
             descripcion: formSaldar.descripcion,
             tipo: formSaldar.tipo,
             cuenta: formSaldar.cuenta,
@@ -1009,7 +1009,7 @@ export default {
       if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
       if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
       if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      // if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Comentado porque el nombre puede ser opcional
       // if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
       if (!cuentaCMB.value) { mostrarErrorCampo('cuentaCMB', 'Falta por llenar datos'); tieneErrores = true; }
 
@@ -1040,7 +1040,7 @@ export default {
       const data = {
         fecha: fecha.value,
         identificacion: identificacion.value,
-        nombre: nombre.value,
+        nombre: nombre.value || null, // Si el nombre es opcional, enviamos un string vacío si no se proporciona
         descripcion: descripcion.value,
         monto: monto.value,
         tipo: tipo.value,

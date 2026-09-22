@@ -245,7 +245,7 @@
               <tr v-for="r in registros" :key="r.id_ingresos_egresos">
                 <td>{{ r.fecha }}</td>
                 <td>{{ r.nomenclatura }}</td>
-                <td>{{ r.nombre }}</td>
+                <td>{{ r.nombre || 'N/D' }}</td>
                 <td>{{ r.cuenta }}</td>
                 <td>{{ r.tipo }}</td>
                 <td class="right">{{ formatMonto(r.monto) }}</td>
@@ -305,10 +305,10 @@
                   <tr v-for="item in pendientes" :key="item.id_ingresos_egresos">
                       <td>{{ item.fecha }}</td>
                       <td>{{ item.nomenclatura }}</td>
-                      <td>{{ item.nombre }}</td>
+                      <td>{{ item.nombre || 'N/D' }}</td>
                       <td>{{ item.cuentas.cuenta }}</td>
                       <td>{{ item.tipo }}</td>
-                      <td>Q {{ item.saldo_pendiente }}</td>
+                      <td>Q {{ parseFloat(item.saldo_pendiente).toFixed(2) }}</td>
                       <td>
                           <span v-if="parseFloat(item.monto_debe) > 0" class="saldo-debe">DEBE</span>
                           <span v-else class="saldo-haber">HABER</span>
@@ -341,7 +341,7 @@
           </div>
           <div class="modal-id-row">
             <label>Nombre: </label>
-            <span>{{ registroAEliminar?.nombre }}</span>
+            <span>{{ registroAEliminar?.nombre || 'N/D' }}</span>
           </div>
           <div class="modal-id-row">
             <label>Monto: </label>
@@ -381,7 +381,7 @@
           </div>
           <div class="modal-id-row">
             <label>Nombre: </label>
-            <span>{{ itemASaldar?.nombre }}</span>
+            <span>{{ itemASaldar?.nombre || 'N/D' }}</span>
           </div>
           <div class="modal-id-row">
             <label>Saldo pendiente: </label>
@@ -935,7 +935,7 @@ export default {
       if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
       if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
       if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      // if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Nombre es opcional
       if (!cuentaCMB.value) { mostrarErrorCampo('cuentaCMB', 'Falta por llenar datos'); tieneErrores = true; }
 
       // 2. Validación de Monto (Vacío y Formato)
@@ -967,7 +967,7 @@ export default {
       const data = {
         fecha: fecha.value,
         identificacion: identificacion.value,
-        nombre: nombre.value,
+        nombre: nombre.value||null, // <-- Si nombre está vacío, enviamos null
         descripcion: descripcion.value,
         monto: monto.value,
         tipo: tipo.value,
@@ -1033,7 +1033,7 @@ export default {
         // 1. Validaciones de campos básicos
         if (!formSaldar.fecha) { mostrarErrorModal('fecha', 'Falta por llenar datos'); tieneErrores = true; }
         if (!formSaldar.identificacion) { mostrarErrorModal('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-        if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+        // if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Nombre es opcional
         if (!formSaldar.tipo) { mostrarErrorModal('tipo', 'Falta por llenar datos'); tieneErrores = true; }
 
         // Validación del monto (Vacío y formato numérico)
@@ -1062,7 +1062,7 @@ export default {
             fecha: formSaldar.fecha,
             monto: formSaldar.monto,
             identificacion: formSaldar.identificacion,
-            nombre: formSaldar.nombre,
+            nombre: formSaldar.nombre || null, // <-- Si nombre está vacío, enviamos null
             descripcion: formSaldar.descripcion,
             tipo: formSaldar.tipo,
             cuenta: formSaldar.cuenta,

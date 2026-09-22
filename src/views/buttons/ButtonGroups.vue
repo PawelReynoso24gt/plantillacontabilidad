@@ -955,7 +955,7 @@ export default {
         // 1. Validaciones de campos básicos
         if (!formSaldar.fecha) { mostrarErrorModal('fecha', 'Falta por llenar datos'); tieneErrores = true; }
         if (!formSaldar.identificacion) { mostrarErrorModal('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-        if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+        // if (!formSaldar.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Nombre es opcional, no se valida
         if (!formSaldar.tipo) { mostrarErrorModal('tipo', 'Falta por llenar datos'); tieneErrores = true; }
 
         // Validación del monto (Vacío y formato numérico)
@@ -984,7 +984,7 @@ export default {
           fecha: formSaldar.fecha,
           monto: formSaldar.monto,
           identificacion: formSaldar.identificacion,
-          nombre: formSaldar.nombre,
+          nombre: formSaldar.nombre || null, // Nombre es opcional, enviar null si está vacío
           descripcion: formSaldar.descripcion,
           tipo: formSaldar.tipo,
           cuenta: formSaldar.cuenta,
@@ -1023,7 +1023,7 @@ export default {
       if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
       if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
       if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      // if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Nombre es opcional, no se valida
       // if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
       if (!cuentaCMB.value) { mostrarErrorCampo('cuentaCMB', 'Falta por llenar datos'); tieneErrores = true; }
 
@@ -1054,7 +1054,7 @@ export default {
       const data = {
         fecha: fecha.value,
         identificacion: identificacion.value,
-        nombre: nombre.value,
+        nombre: nombre.value || null, // Nombre es opcional, enviar null si está vacío
         descripcion: descripcion.value,
         monto: monto.value,
         tipo: tipo.value,

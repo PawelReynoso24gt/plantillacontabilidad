@@ -180,7 +180,7 @@
           <tr v-for="(r, idx) in anticipoRowsActivos" :key="idx">
             <td>{{ r.fecha }}</td>
             <td>{{ r.nomenclatura }}</td>
-            <td>{{ r.nombre }}</td>
+            <td>{{ r.nombre || 'N/D' }}</td>
             <td>{{ r.id_cuentas }}</td>
             <td>{{ r.tipo }}</td>
             <td class="right">{{ formatMonto(r.monto) }}</td>
@@ -217,7 +217,7 @@
             </div>
             <div class="modal-id-row">
               <label>Nombre: </label>
-              <span>{{ registroAEliminar?.nombre }}</span>
+              <span>{{ registroAEliminar?.nombre || 'N/D' }}</span>
             </div>
             <div class="modal-id-row">
               <label>Monto: </label>
@@ -257,7 +257,7 @@
             </div>
             <div class="modal-id-row">
               <label>Nombre: </label>
-              <span>{{ itemASaldar?.nombre }}</span>
+              <span>{{ itemASaldar?.nombre || 'N/D' }}</span>
             </div>
             <div class="modal-id-row">
               <label>Monto faltante: </label>
@@ -727,8 +727,8 @@ export default {
       if (!tipo.value) { mostrarErrorCampo('tipo', 'Falta por llenar datos'); tieneErrores = true; }
       if (!fecha.value) { mostrarErrorCampo('fecha', 'Falta por llenar datos'); tieneErrores = true; }
       if (!identificacion.value) { mostrarErrorCampo('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
+      // if (!nombre.value) { mostrarErrorCampo('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Nombre puede ser opcional según el contexto
+      // if (!descripcion.value) { mostrarErrorCampo('descripcion', 'Falta por llenar datos'); tieneErrores = true; }
 
       // 2. Validación de Monto (Vacío y Formato Numérico)
       if (!monto.value) {
@@ -763,7 +763,7 @@ export default {
       const data = {
         fecha: fecha.value,
         identificacion: identificacion.value,
-        nombre: nombre.value,
+        nombre: nombre.value || null, // Si nombre está vacío, enviamos cadena vacía
         descripcion: descripcion.value,
         monto: monto.value,
         tipo: tipo.value, // Envía 'caja' o 'bancos' dinámicamente
@@ -929,7 +929,7 @@ export default {
       if (!modalData.id_cuentas) { mostrarErrorModal('id_cuentas', 'Falta por llenar datos'); tieneErrores = true; }
       if (!modalData.fecha) { mostrarErrorModal('fecha', 'Falta por llenar datos'); tieneErrores = true; }
       if (!modalData.identificacion) { mostrarErrorModal('identificacion', 'Falta por llenar datos'); tieneErrores = true; }
-      if (!modalData.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; }
+      // if (!modalData.nombre) { mostrarErrorModal('nombre', 'Falta por llenar datos'); tieneErrores = true; } <-- Nombre puede ser opcional según el contexto
       if (!modalData.tipo) { mostrarErrorModal('tipo', 'Falta por llenar datos'); tieneErrores = true; }
 
       // 3. Validaciones Lógicas de Montos
@@ -965,7 +965,7 @@ export default {
         fecha:
           modalData.fecha || new Date().toISOString().slice(0, 10),
         identificacion: modalData.identificacion || '',
-        nombre: modalData.nombre || '',
+        nombre: modalData.nombre || null,
         descripcion: modalData.descripcion || '',
         monto: montoAbono,
         tipo: modalData.tipo || '',
